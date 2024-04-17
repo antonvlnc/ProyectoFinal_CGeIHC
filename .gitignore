@@ -1,0 +1,3 @@
+*.ipch
+#Esto es un comentario
+#*.txt esto excluye a todos los archivos .txt
