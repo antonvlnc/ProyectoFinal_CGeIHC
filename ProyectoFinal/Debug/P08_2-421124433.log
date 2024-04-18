@@ -1,2 +1,20 @@
-﻿C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(531,5): warning MSB8028: El directorio intermedio (Debug\) contiene archivos compartidos de otro proyecto (P07-421124433.vcxproj, P08-421124433.vcxproj). Esto puede dar lugar a un comportamiento incorrecto de limpieza y recompilación.
-  P08_2-421124433.vcxproj -> C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\P08_2-421124433\Debug\P08_2-421124433.exe
+﻿C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(531,5): warning MSB8028: El directorio intermedio (Debug\) contiene archivos compartidos de otro proyecto (P07-421124433.vcxproj, P08-421124433.vcxproj, P08_2-421124433.vcxproj). Esto puede dar lugar a un comportamiento incorrecto de limpieza y recompilación.
+  Window.cpp
+C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\Window.h(12,36): warning C4244: 'return': conversión de 'GLint' a 'GLfloat'; posible pérdida de datos
+  (compilando archivo de origen "Window.cpp")
+  
+C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\Window.h(13,37): warning C4244: 'return': conversión de 'GLint' a 'GLfloat'; posible pérdida de datos
+  (compilando archivo de origen "Window.cpp")
+  
+C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\Window.cpp(236,25): warning C4244: '=': conversión de 'double' a 'GLint'; posible pérdida de datos
+C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\Window.cpp(246,24): warning C4244: '=': conversión de 'double' a 'GLint'; posible pérdida de datos
+C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\Window.cpp(253,24): warning C4244: '=': conversión de 'double' a 'GLint'; posible pérdida de datos
+C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\Window.cpp(260,25): warning C4244: '=': conversión de 'double' a 'GLint'; posible pérdida de datos
+C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\Window.cpp(320,22): warning C4244: '=': conversión de 'double' a 'GLfloat'; posible pérdida de datos
+C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\Window.cpp(321,22): warning C4244: '=': conversión de 'double' a 'GLfloat'; posible pérdida de datos
+C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\Window.cpp(325,28): warning C4244: '=': conversión de 'double' a 'GLfloat'; posible pérdida de datos
+C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\Window.cpp(326,40): warning C4244: '=': conversión de 'double' a 'GLfloat'; posible pérdida de datos
+C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\Window.cpp(328,21): warning C4244: '=': conversión de 'double' a 'GLfloat'; posible pérdida de datos
+C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\Window.cpp(329,21): warning C4244: '=': conversión de 'double' a 'GLfloat'; posible pérdida de datos
+C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\Window.cpp(94): warning C4715: 'Window::Initialise': no todas las rutas de acceso de control devuelven un valor
+  P08_2-421124433.vcxproj -> C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\Debug\Proyecto_Final.exe
