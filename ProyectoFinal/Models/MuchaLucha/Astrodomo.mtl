@@ -12,5 +12,5 @@ newmtl 01___Default
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka ..\..\textures\muchalucha\Astrodomo_Texture.tga
-	map_Kd ..\..\textures\muchalucha\Astrodomo_Texture.tga
+	map_Ka Astrodomo_Texture.tga
+	map_Kd Astrodomo_Texture.tga
