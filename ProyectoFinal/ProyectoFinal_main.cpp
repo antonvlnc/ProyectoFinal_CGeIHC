@@ -1,8 +1,9 @@
 /*
-Práctica 7: Iluminación 1 
+Prï¿½ctica 7: Iluminaciï¿½n 1 
 */
 //para cargar imagen
 #define STB_IMAGE_IMPLEMENTATION
+
 
 #include <stdio.h>
 #include <string.h>
@@ -28,7 +29,7 @@ Práctica 7: Iluminación 1
 #include"Model.h"
 #include "Skybox.h"
 
-//para iluminación
+//para iluminaciï¿½n
 #include "CommonValues.h"
 #include "DirectionalLight.h"
 #include "PointLight.h"
@@ -37,7 +38,7 @@ Práctica 7: Iluminación 1
 
 const float toRadians = 3.14159265f / 180.0f;
 
-//Para animación
+//Para animaciï¿½n
 float movCoche;
 float movOffset;
 float rotllanta;
@@ -80,11 +81,11 @@ Model freno_tras_der;
 Model cofre_text;
 
 
-//MODELO DE LÁMPARA
+//MODELO DE Lï¿½MPARA
 Model desk_lamp;
 
 
-//MODELO DE PUERTA METÁLICA CON CARTEL
+//MODELO DE PUERTA METï¿½LICA CON CARTEL
 Model puerta_marco;
 Model reja_der;
 Model reja_izq;
@@ -135,7 +136,7 @@ static const char* vShader = "shaders/shader_light.vert";
 static const char* fShader = "shaders/shader_light.frag";
 
 
-//función de calculo de normales por promedio de vértices 
+//funciï¿½n de calculo de normales por promedio de vï¿½rtices 
 void calcAverageNormals(unsigned int* indices, unsigned int indiceCount, GLfloat* vertices, unsigned int verticeCount,
 	unsigned int vLength, unsigned int normalOffset)
 {
@@ -436,7 +437,7 @@ int main()
 	//	NO HE IMPORTADO LOS FRENOS
 
 
-	//CAPÓ TEXTURIZADO
+	//CAPï¿½ TEXTURIZADO
 
 	cofre_text = Model();
 	cofre_text.LoadModel("Models/cofre_text.obj");
@@ -447,7 +448,7 @@ int main()
 	desk_lamp.LoadModel("Models/lampara_escritorio.obj");
 
 
-	//PUERTA METÁLICA CON PANEL PARA REPORTE 08
+	//PUERTA METï¿½LICA CON PANEL PARA REPORTE 08
 	puerta_marco = Model();
 	puerta_marco.LoadModel("Models/puerta_marco.obj");
 
@@ -488,7 +489,7 @@ int main()
 	Material_opaco = Material(0.3f, 4);
 
 
-	//luz direccional, sólo 1 y siempre debe de existir
+	//luz direccional, sï¿½lo 1 y siempre debe de existir
 	mainLight = DirectionalLight(1.0f, 1.0f, 1.0f,
 		0.3f, 0.3f,
 		0.0f, 0.0f, -1.0f);
@@ -501,7 +502,7 @@ int main()
 	/*unsigned int pointLightCount3 = 0;*/
 
 
-	//Declaración de primer luz puntual (magenta) | PARA LUMINARIA
+	//Declaraciï¿½n de primer luz puntual (magenta) | PARA LUMINARIA
 	pointLights[0] = PointLight(1.0f, 0.0f, 1.0f,
 		0.0f, 3.0f,
 		-60.0f, 25.5f, 65.0f,
@@ -704,7 +705,7 @@ int main()
 			}
 		}
 
-		//rotPuerta += movOffset * deltaTime; //esta es la que permite que haya movimiento por que? movOffset hace que vaya más lento en lugar de rotPuertaOffset
+		//rotPuerta += movOffset * deltaTime; //esta es la que permite que haya movimiento por que? movOffset hace que vaya mï¿½s lento en lugar de rotPuertaOffset
 
 
 		//Recibir eventos del usuario
@@ -723,7 +724,7 @@ int main()
 		uniformEyePosition = shaderList[0].GetEyePositionLocation();
 		uniformColor = shaderList[0].getColorLocation();
 		
-		//información en el shader de intensidad especular y brillo
+		//informaciï¿½n en el shader de intensidad especular y brillo
 		uniformSpecularIntensity = shaderList[0].GetSpecularIntensityLocation();
 		uniformShininess = shaderList[0].GetShininessLocation();
 
@@ -731,13 +732,13 @@ int main()
 		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
 		glUniform3f(uniformEyePosition, camera.getCameraPosition().x, camera.getCameraPosition().y, camera.getCameraPosition().z);
 
-		// luz ligada a la cámara de tipo flash
-		//sirve para que en tiempo de ejecución (dentro del while) se cambien propiedades de la luz
+		// luz ligada a la cï¿½mara de tipo flash
+		//sirve para que en tiempo de ejecuciï¿½n (dentro del while) se cambien propiedades de la luz
 		glm::vec3 lowerLight = camera.getCameraPosition();
 		lowerLight.y -= 0.3f;
 		//spotLights[0].SetFlash(lowerLight, camera.getCameraDirection());
 
-		//información al shader de fuentes de iluminación
+		//informaciï¿½n al shader de fuentes de iluminaciï¿½n
 		shaderList[0].SetDirectionalLight(&mainLight);
 		shaderList[0].SetPointLights(pointLights, pointLightCount);
 		shaderList[0].SetSpotLights(spotLights, spotLightCount);
@@ -837,9 +838,9 @@ int main()
 		//color = glm::vec3(0.0f, 0.0f, 0.0f); //modelo de coche de color negro
 
 		/*model = glm::mat4(1.0);*/
-		model = glm::translate(model, glm::vec3(0.0f, 5.0f, -1.5f)); //traslación inicial para posicionarlo
+		model = glm::translate(model, glm::vec3(0.0f, 5.0f, -1.5f)); //traslaciï¿½n inicial para posicionarlo
 
-		//aplicarle escala al auto para que tenga más espacio para desplazarse
+		//aplicarle escala al auto para que tenga mï¿½s espacio para desplazarse
 
 
 		model = glm::translate(model, glm::vec3(0.0f, 0.0f, -mainWindow.getmovimiento_avanza_retrocede()));
@@ -882,14 +883,14 @@ int main()
 
 
 
-		//CAPÓ
+		//CAPï¿½
 
 
 		//color = glm::vec3(1.0f, 0.0f, 0.0f); //capo color magenta
 
 		/*model = glm::mat4(1.0);*/
 		model = glm::translate(model, glm::vec3(0.0f, 1.8f, -7.0f));
-		model = glm::rotate(model, glm::radians(mainWindow.getarticulacion_capo()), glm::vec3(1.0f, 0.0f, 0.0f)); //CORREGIR ROTACIÓN
+		model = glm::rotate(model, glm::radians(mainWindow.getarticulacion_capo()), glm::vec3(1.0f, 0.0f, 0.0f)); //CORREGIR ROTACIï¿½N
 
 		//modelaux = model;
 
@@ -909,7 +910,7 @@ int main()
 
 		/*model = glm::mat4(1.0);*/
 		model = glm::translate(model, glm::vec3(-5.6f, 0.0f, -6.0f));
-		model = glm::rotate(model, glm::radians(mainWindow.getarticulacion_puerta()), glm::vec3(0.0f, 1.0f, 0.0f)); //CORREGIR ROTACIÓN
+		model = glm::rotate(model, glm::radians(mainWindow.getarticulacion_puerta()), glm::vec3(0.0f, 1.0f, 0.0f)); //CORREGIR ROTACIï¿½N
 
 		//modelaux = model;
 
@@ -928,7 +929,7 @@ int main()
 
 		/*model = glm::mat4(1.0);*/
 		model = glm::translate(model, glm::vec3(-5.2f, -2.0f, -9.5f));
-		model = glm::rotate(model, glm::radians(mainWindow.getarticulacion_avanza()), glm::vec3(-1.0f, 0.0f, 0.0f)); //CORREGIR ROTACIÓN
+		model = glm::rotate(model, glm::radians(mainWindow.getarticulacion_avanza()), glm::vec3(-1.0f, 0.0f, 0.0f)); //CORREGIR ROTACIï¿½N
 
 		//modelaux = model;
 
@@ -980,7 +981,7 @@ int main()
 
 		
 		model = glm::translate(model, glm::vec3(-5.2f, -2.0f, 8.5f));
-		model = glm::rotate(model, glm::radians(mainWindow.getarticulacion_avanza()), glm::vec3(-1.0f, 0.0f, 0.0f)); //CORREGIR ROTACIÓN
+		model = glm::rotate(model, glm::radians(mainWindow.getarticulacion_avanza()), glm::vec3(-1.0f, 0.0f, 0.0f)); //CORREGIR ROTACIï¿½N
 		/*modelaux = model;*/
 		model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
 		//glUniform3fv(uniformColor, 1, glm::value_ptr(color));
@@ -1016,7 +1017,7 @@ int main()
 
 		
 
-		//Agave ¿qué sucede si lo renderizan antes del coche y el helicóptero?
+		//Agave ï¿½quï¿½ sucede si lo renderizan antes del coche y el helicï¿½ptero?
 		model = glm::mat4(1.0);
 		model = glm::translate(model, glm::vec3(0.0f, 1.0f, -4.0f));
 		model = glm::scale(model, glm::vec3(4.0f, 4.0f, 4.0f));
@@ -1034,7 +1035,7 @@ int main()
 		model = modelaux;
 
 
-		//LÁMPARA PARA REPORTE 07
+		//Lï¿½MPARA PARA REPORTE 07
 
 		model = glm::mat4(1.0);
 		model = glm::translate(model, glm::vec3(25.0f, -0.95f, 5.0f));
@@ -1045,7 +1046,7 @@ int main()
 
 		model = modelaux;
 
-		//PUERTA METÁLICA CON MARCO PARA LETRERO, PARA PRACTICA 08
+		//PUERTA METï¿½LICA CON MARCO PARA LETRERO, PARA PRACTICA 08
 
 		model = glm::mat4(1.0);
 		model = glm::translate(model, glm::vec3(-3.0f, -0.95f, 70.0f));
@@ -1080,7 +1081,7 @@ int main()
 		model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 
 
-		//model = glm::rotate(model, rotPuerta, glm::vec3(0.0f, 1.0f, 0.0f)); //CORREGIR ROTACIÓN
+		//model = glm::rotate(model, rotPuerta, glm::vec3(0.0f, 1.0f, 0.0f)); //CORREGIR ROTACIï¿½N
 
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		reja_izq.RenderModel();
