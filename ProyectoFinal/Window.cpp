@@ -31,6 +31,7 @@ Window::Window(GLint windowWidth, GLint windowHeight)
 	avanza_retrocede_helicoptero = 0.0f;
 	/*articulacion_avanza_helicoptero = 0.0f;*/
 
+	MusicaSi = true;
 
 	muevex = 2.0f;
 	for (size_t i = 0; i < 1024; i++)
@@ -180,19 +181,19 @@ void Window::ManejaTeclado(GLFWwindow* window, int key, int code, int action, in
 
 
 
-	//PUERTA ABRIR
-	if (key == GLFW_KEY_O)
-	{
-		if (theWindow->articulacion_puerta > -5)
-		{
+	////PUERTA ABRIR
+	//if (key == GLFW_KEY_O)
+	//{
+	//	if (theWindow->articulacion_puerta > -5)
+	//	{
 
-		}
-		else
-		{
-			theWindow->articulacion_puerta += 10.0;
-		}
+	//	}
+	//	else
+	//	{
+	//		theWindow->articulacion_puerta += 10.0;
+	//	}
 
-	}
+	//}
 	//PUERTA CERRAR
 	if (key == GLFW_KEY_P)
 	{
@@ -229,27 +230,26 @@ void Window::ManejaTeclado(GLFWwindow* window, int key, int code, int action, in
 
 
 
-	//ARTICULACION AVANZA
-	if (key == GLFW_KEY_I)
-	{
+	////ARTICULACION AVANZA
+	//if (key == GLFW_KEY_I)
+	//{
 
-		theWindow->luz_tras = 0.0; //apagamos la luz trasera
+	//	theWindow->luz_tras = 0.0; //apagamos la luz trasera
 
-		theWindow->articulacion_avanza += 10.0;
-		//AUTO HACE TRANSLATE (AVANZA O RETROCEDE)
-		theWindow->avanza_retrocede += 1.0;
+	//	theWindow->articulacion_avanza += 10.0;
+	//	//AUTO HACE TRANSLATE (AVANZA O RETROCEDE)
+	//	theWindow->avanza_retrocede += 1.0;
 
 
-		
+	//	
 
-		//AQUÍ LA LUZ DELANTERA (AZUL) DEBE ENCENDERSE, POR DEFECTO DEBE ESTAR ENCENDIDA
-		theWindow->luz_del = 1.0;
+	//	//AQUÍ LA LUZ DELANTERA (AZUL) DEBE ENCENDERSE, POR DEFECTO DEBE ESTAR ENCENDIDA
+	//	theWindow->luz_del = 1.0;
 
-	}
+	//}
 	//ARTICULACION REVERSA
 	if (key == GLFW_KEY_K)
-	{
-		
+	{	
 		theWindow->luz_del = 0.0; //apagamos la luz delantera
 
 		theWindow->articulacion_avanza -= 10.0;
@@ -258,8 +258,6 @@ void Window::ManejaTeclado(GLFWwindow* window, int key, int code, int action, in
 
 		//AQUÍ LA LUZ TRASERA (ROJA) DEBE ENCENDERSE, POR DEFECTO DEBE ESTAR APAGADA
 		theWindow->luz_tras = 1.0;
-
-
 	}
 
 
@@ -300,6 +298,16 @@ void Window::ManejaTeclado(GLFWwindow* window, int key, int code, int action, in
 	if (key == GLFW_KEY_0)
 	{
 		theWindow->K = 0;
+	}
+
+	//Botones para reproducir musica
+	if (key == GLFW_KEY_I)
+	{
+		theWindow -> MusicaSi = true;
+	}
+	if (key == GLFW_KEY_O)
+	{
+		theWindow ->  MusicaSi = false;
 	}
 
 

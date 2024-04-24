@@ -37,6 +37,10 @@ Pr�ctica 7: Iluminaci�n 1
 #include "SpotLight.h"
 #include "Material.h"
 
+//Para sonido
+#include <irrklang.h>
+using namespace irrklang;
+
 const float toRadians = 3.14159265f / 180.0f;
 
 //Para animaci�n
@@ -61,6 +65,7 @@ Texture dirtTexture;
 Texture plainTexture;
 Texture pisoTexture;
 Texture AgaveTexture;
+Texture AstrodomoTexture;
 
 Model Kitt_M;
 Model Llanta_M;
@@ -82,6 +87,7 @@ Model freno_tras_der;
 Model cofre_text;
 
 
+
 //MODELO DE L�MPARA
 Model desk_lamp;
 
@@ -97,7 +103,8 @@ Model luminaria;
 
 //Model puertaLetrero;
 
-
+//Modelo Astrodomo
+Model Astrodomo;
 
 Skybox skybox;
 
@@ -460,8 +467,10 @@ int main()
 	reja_izq.LoadModel("Models/reja_izq.obj");
 
 
-
-
+	//----------Modelos Mucha Lucha---------------------
+	Astrodomo = Model();
+	Astrodomo.LoadModel("Models/MuchaLucha/Astrodomo.obj");
+ 
 
 	//LUMINARIA PARA REPORTE 08
 	luminaria = Model();
@@ -667,6 +676,18 @@ int main()
 	abre = true;
 	rotPuerta = 0.5f;
 
+
+	//Sonido ambiental
+	ISoundEngine* Ambiental = createIrrKlangDevice();
+	Ambiental->play2D("Sound/Ambiental.wav", true);
+	Ambiental->setSoundVolume(0.2f);
+
+	////Sonido con teclado (Pendiente)
+	//ISoundEngine* AstrodomoSound = createIrrKlangDevice();
+	//AstrodomoSound->play2D("Sound/Mucha_Lucha.wav", true);
+	//
+
+	
 	////Loop mientras no se cierra la ventana
 	while (!mainWindow.getShouldClose())
 	{
@@ -705,8 +726,7 @@ int main()
 				abre = false;
 			}
 		}
-
-		//rotPuerta += movOffset * deltaTime; //esta es la que permite que haya movimiento por que? movOffset hace que vaya m�s lento en lugar de rotPuertaOffset
+		
 
 
 		//Recibir eventos del usuario
@@ -1011,7 +1031,12 @@ int main()
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		Blackhawk_M.RenderModel();
 
-
+		//Modelos Mucha Lucha
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(150.0f, 0.0f, -50.0));
+		model = glm::scale(model, glm::vec3(1.5f, 1.5f, 1.5f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		Astrodomo.RenderModel();
 
 
 	
