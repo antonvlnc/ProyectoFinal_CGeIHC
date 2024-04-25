@@ -682,9 +682,15 @@ int main()
 	Ambiental->play2D("Sound/Ambiental.wav", true);
 	Ambiental->setSoundVolume(0.2f);
 
+	//Pista de fondo
+	ISoundEngine* Intro = createIrrKlangDevice();
+	Intro->play2D("Sound/Lab_Dexter.wav", true);
+	Intro->setSoundVolume(0.15f);
+
 	////Sonido con teclado (Pendiente)
-	//ISoundEngine* AstrodomoSound = createIrrKlangDevice();
-	//AstrodomoSound->play2D("Sound/Mucha_Lucha.wav", true);
+	/*ISoundEngine* AstrodomoSound = createIrrKlangDevice();
+	AstrodomoSound->play2D("Sound/Mucha_Lucha.wav", true);
+	AstrodomoSound->setSoundVolume(0.1f);*/
 	//
 
 	
@@ -898,14 +904,7 @@ int main()
 		spotLights2[3].SetPos(carLightPos);
 
 
-
-
-
-
-
-
 		//CAP�
-
 
 		//color = glm::vec3(1.0f, 0.0f, 0.0f); //capo color magenta
 
