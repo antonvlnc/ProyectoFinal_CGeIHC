@@ -65,6 +65,7 @@ Texture dirtTexture;
 Texture plainTexture;
 Texture pisoTexture;
 Texture AgaveTexture;
+Texture reforma_layout;
 Texture AstrodomoTexture;
 
 Model Kitt_M;
@@ -196,11 +197,13 @@ void CreateObjects()
 		1, 2, 3
 	};
 
+	//cambiar los valores para que en lugar de |10| sea directamente 300
+
 	GLfloat floorVertices[] = {
-		-10.0f, 0.0f, -10.0f,	0.0f, 0.0f,		0.0f, -1.0f, 0.0f,
-		10.0f, 0.0f, -10.0f,	10.0f, 0.0f,	0.0f, -1.0f, 0.0f,
-		-10.0f, 0.0f, 10.0f,	0.0f, 10.0f,	0.0f, -1.0f, 0.0f,
-		10.0f, 0.0f, 10.0f,		10.0f, 10.0f,	0.0f, -1.0f, 0.0f
+		-1.0f, 0.0f, -1.0f,		0.0f, 0.0f,			0.0f, -1.0f, 0.0f, //0
+		1.0f, 0.0f, -1.0f,		1.0f, 0.0f,		0.0f, -1.0f, 0.0f, //1
+		-1.0f, 0.0f, 1.0f,		0.0f, 1.0f,		0.0f, -1.0f, 0.0f, //2
+		1.0f, 0.0f, 1.0f,		1.0f, 1.0f,		0.0f, -1.0f, 0.0f //3
 	};
 
 	unsigned int vegetacionIndices[] = {
@@ -232,10 +235,13 @@ void CreateObjects()
 	obj2->CreateMesh(vertices, indices, 32, 12);
 	meshList.push_back(obj2); //mesh list 1
 
+
+	//PISO
 	Mesh *obj3 = new Mesh();
 	obj3->CreateMesh(floorVertices, floorIndices, 32, 6);
 	meshList.push_back(obj3); //mesh list 2
 
+	//-----------
 	Mesh* obj4 = new Mesh();
 	obj4->CreateMesh(vegetacionVertices, vegetacionIndices, 64, 12);
 	meshList.push_back(obj4); //mesh list 3
@@ -406,6 +412,9 @@ int main()
 	AgaveTexture = Texture("Textures/Agave.tga");
 	AgaveTexture.LoadTextureA();
 
+	reforma_layout = Texture("Textures/reforma_layout.png");
+	reforma_layout.LoadTextureA();
+
 	Kitt_M = Model();
 	Kitt_M.LoadModel("Models/kitt_optimizado.obj");
 	Llanta_M = Model();
@@ -484,7 +493,7 @@ int main()
 
 
 	
-
+	//SKYBOX
 	std::vector<std::string> skyboxFaces;
 	skyboxFaces.push_back("Textures/Skybox/sky-right.jpg");
 	skyboxFaces.push_back("Textures/Skybox/sky-left.jpg");
@@ -704,35 +713,42 @@ int main()
 
 		//ANIMACION: PUERTA QUE ROTA
 
-		if (abre) {
+		//if (abre) {
 
 
-			//rotPuerta > 0.0f && rotPuerta < 145.0f
-			if (rotPuerta > -4.0f) //-0.2
-			{
-				rotPuerta += movOffset * deltaTime; //movOffset en lugar de rotPuertOffset
-			}
+		//	//rotPuerta > 0.0f && rotPuerta < 145.0f
+		//	if (rotPuerta > -4.0f) //-0.2
+		//	{
+		//		rotPuerta += movOffset * deltaTime; //movOffset en lugar de rotPuertOffset
+		//	}
 
-			else  /*if (rotPuerta==25.0f)*//* if (rotPuerta==144.0)*/ {
-				/*rotPuerta -= movOffset * deltaTime;*/
-				abre = true;
-			}
-		}
+		//	else  /*if (rotPuerta==25.0f)*//* if (rotPuerta==144.0)*/ {
+		//		/*rotPuerta -= movOffset * deltaTime;*/
+		//		abre = true;
+		//	}
+		//}
 
-		else {
-			if (rotPuerta > 25.0f)
-			{
+		//else {
+		//	if (rotPuerta > 25.0f)
+		//	{
 
-				//esperar 2 segundos
-				rotPuerta -= movOffset * deltaTime;
+		//		//esperar 2 segundos
+		//		rotPuerta -= movOffset * deltaTime;
 
-			}
+		//	}
 
-			else {
-				abre = false;
-			}
-		}
-		
+
+		//	else {
+		//		abre = false;
+		//	}
+		//}
+
+		//rotPuerta += movOffset * deltaTime; //esta es la que permite que haya movimiento por que? movOffset hace que vaya m�s lento en lugar de rotPuertaOffset
+
+			//else {
+				//abre = false;
+			//}
+		//}
 
 
 		//Recibir eventos del usuario
@@ -767,59 +783,60 @@ int main()
 
 		//informaci�n al shader de fuentes de iluminaci�n
 		shaderList[0].SetDirectionalLight(&mainLight);
-		shaderList[0].SetPointLights(pointLights, pointLightCount);
-		shaderList[0].SetSpotLights(spotLights, spotLightCount);
+		/*shaderList[0].SetPointLights(pointLights, pointLightCount);
+		shaderList[0].SetSpotLights(spotLights, spotLightCount);*/
 
 
 
 
 
-		//PARA CONTROLAR EL ENCENDIDO DE LAS LUCES PUNTUALES
+		////PARA CONTROLAR EL ENCENDIDO DE LAS LUCES PUNTUALES
 
-		if (mainWindow.getlight() == 0) //si k en 0, 
-		{
+		//if (mainWindow.getlight() == 0) //si k en 0, 
+		//{
 
-			shaderList[0].SetPointLights(pointLights, pointLightCount); //luz 1 = roja
-		}
-		else
-		{
+		//	shaderList[0].SetPointLights(pointLights, pointLightCount); //luz 1 = roja
+		//}
+		//else
+		//{
 
-			shaderList[0].SetPointLights(pointLights2, pointLightCount2); //luz negra (apagada)
+		//	shaderList[0].SetPointLights(pointLights2, pointLightCount2); //luz negra (apagada)
 
-		}
-
-
-		//PARA CONTROLAR EL ENCENDIDO Y APAGADO DE LA LUZ DELANTERA
-
-		if (mainWindow.getLuzDel() == 0)
-		{
-
-			shaderList[0].SetSpotLights(spotLights2, spotLightCount2);
-		}
-		else
-		{
-
-			shaderList[0].SetSpotLights(spotLights, spotLightCount);
-		}
+		//}
 
 
+		////PARA CONTROLAR EL ENCENDIDO Y APAGADO DE LA LUZ DELANTERA
 
-		//PARA CONTROLAR EL ENCENDIDO Y APAGADO DE LA LUZ TRASERA
+		//if (mainWindow.getLuzDel() == 0)
+		//{
 
-		if (mainWindow.getLuzTras() == 0)
-		{
+		//	shaderList[0].SetSpotLights(spotLights2, spotLightCount2);
+		//}
+		//else
+		//{
 
-			shaderList[0].SetSpotLights(spotLights, spotLightCount);
-		}
-		else
-		{
-
-			shaderList[0].SetSpotLights(spotLights2, spotLightCount2);
-		}
+		//	shaderList[0].SetSpotLights(spotLights, spotLightCount);
+		//}
 
 
 
+		////PARA CONTROLAR EL ENCENDIDO Y APAGADO DE LA LUZ TRASERA
 
+		//if (mainWindow.getLuzTras() == 0)
+		//{
+
+		//	shaderList[0].SetSpotLights(spotLights, spotLightCount);
+		//}
+		//else
+		//{
+
+		//	shaderList[0].SetSpotLights(spotLights2, spotLightCount2);
+		//}
+
+
+
+
+		//PISO??
 
 		glm::mat4 model(1.0);
 		glm::mat4 modelaux(1.0);
@@ -827,213 +844,228 @@ int main()
 
 		model = glm::mat4(1.0);
 		model = glm::translate(model, glm::vec3(0.0f, -1.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(30.0f, 1.0f, 30.0f));
+		model = glm::scale(model, glm::vec3(450.0f, 1.0f, 700.0f)); //Esto indica que el piso es 300x300? era 30 en las esquinas
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
 
-		pisoTexture.UseTexture();
+		reforma_layout.UseTexture();
 		Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
 
-		meshList[2]->RenderMesh();
+		//RENDERIZAMOS EL PISO
+		meshList[2]->RenderMesh(); //Esto creo que es un cubo
 
 		model = modelaux;
 
 
-		//DADO DE 10 CARAS POR C DIGO
-		model = glm::mat4(1.0);
-		model = glm::translate(model, glm::vec3(25.0f, -0.9f, 7.0f)); //4.5,9.5,-2.0
-		model = glm::rotate(model, 90 * toRadians, glm::vec3(-1.0f, 0.0f, 0.0f)); //inclinaci n
-		model = glm::scale(model, glm::vec3(0.6f, 0.6f, 0.6f));
-		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-		dado10Caras.UseTexture(); //usamos la textura
-		meshList[4]->RenderMesh();
+		////DADO DE 10 CARAS POR CODIGO
+		//model = glm::mat4(1.0);
+		//model = glm::translate(model, glm::vec3(25.0f, -0.9f, 7.0f)); //4.5,9.5,-2.0
+		//model = glm::rotate(model, 90 * toRadians, glm::vec3(-1.0f, 0.0f, 0.0f)); //inclinaci n
+		//model = glm::scale(model, glm::vec3(0.6f, 0.6f, 0.6f));
+		//glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		//dado10Caras.UseTexture(); //usamos la textura
+		//meshList[4]->RenderMesh();
 
 
 
 
 
-		//INICIO DEL DIBUJO DEL AUTO
-		model = glm::mat4(1.0);
+		////INICIO DEL DIBUJO DEL AUTO
+		//model = glm::mat4(1.0);
 
-		model = glm::translate(model, glm::vec3(0.0f, -2.0, 0.0f)); //TRASLACION INICIAL -2.8
-
-
-		modelaux = model;
+		//model = glm::translate(model, glm::vec3(0.0f, -2.0, 0.0f)); //TRASLACION INICIAL -2.8
 
 
-		//CUERPO DEL AUTO
-		//color = glm::vec3(0.0f, 0.0f, 0.0f); //modelo de coche de color negro
-
-		/*model = glm::mat4(1.0);*/
-		model = glm::translate(model, glm::vec3(0.0f, 5.0f, -1.5f)); //traslaci�n inicial para posicionarlo
-
-		//aplicarle escala al auto para que tenga m�s espacio para desplazarse
+		//modelaux = model;
 
 
-		model = glm::translate(model, glm::vec3(0.0f, 0.0f, -mainWindow.getmovimiento_avanza_retrocede()));
+		////CUERPO DEL AUTO
+		////color = glm::vec3(0.0f, 0.0f, 0.0f); //modelo de coche de color negro
+
+		///*model = glm::mat4(1.0);*/
+		//model = glm::translate(model, glm::vec3(0.0f, 5.0f, -1.5f)); //traslaci�n inicial para posicionarlo
+
+		////aplicarle escala al auto para que tenga m�s espacio para desplazarse
 
 
-		modelaux = model;
+		//model = glm::translate(model, glm::vec3(0.0f, 0.0f, -mainWindow.getmovimiento_avanza_retrocede()));
 
 
-		model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
-
-		//glUniform3fv(uniformColor, 1, glm::value_ptr(color));
-		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-
-		cuerpo.RenderModel();//modificar por el modelo sin las 4 patas y sin cola
-
-		model = modelaux;
+		//modelaux = model;
 
 
-		//LUZ
-		
-		// Luz vehiculo delantera (azul)
-		model = modelaux;
-		glm::vec3 carLightPos = model[3]; //og 3
-		//carLightPos.x += 0.0f;//2.5
-		carLightPos.z += 3.0f; //3.0
-		spotLights[0].SetPos(carLightPos);
+		//model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
+
+		////glUniform3fv(uniformColor, 1, glm::value_ptr(color));
+		//glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+
+		//cuerpo.RenderModel();//modificar por el modelo sin las 4 patas y sin cola
+
+		//model = modelaux;
 
 
-		// Luz vehiculo trasera (rojo)
-		model = modelaux;
+		////LUZ
+		//
+		//// Luz vehiculo delantera (azul)
+		//model = modelaux;
 		//glm::vec3 carLightPos = model[3]; //og 3
-		//carLightPos.x += 0.0f;//2.5
-		carLightPos.z -= 3.0f; //3.0
-		spotLights2[3].SetPos(carLightPos);
+		////carLightPos.x += 0.0f;//2.5
+		//carLightPos.z += 3.0f; //3.0
+		//spotLights[0].SetPos(carLightPos);
 
+
+		//// Luz vehiculo trasera (rojo)
+		//model = modelaux;
+		////glm::vec3 carLightPos = model[3]; //og 3
+		////carLightPos.x += 0.0f;//2.5
+		//carLightPos.z -= 3.0f; //3.0
+		//spotLights2[3].SetPos(carLightPos);
+
+
+
+
+
+
+
+
+
+		////CAP�
+
+
+		////color = glm::vec3(1.0f, 0.0f, 0.0f); //capo color magenta
 
 		//CAP�
 
 		//color = glm::vec3(1.0f, 0.0f, 0.0f); //capo color magenta
 
-		/*model = glm::mat4(1.0);*/
-		model = glm::translate(model, glm::vec3(0.0f, 1.8f, -7.0f));
-		model = glm::rotate(model, glm::radians(mainWindow.getarticulacion_capo()), glm::vec3(1.0f, 0.0f, 0.0f)); //CORREGIR ROTACI�N
 
-		//modelaux = model;
+		///*model = glm::mat4(1.0);*/
+		//model = glm::translate(model, glm::vec3(0.0f, 1.8f, -7.0f));
+		//model = glm::rotate(model, glm::radians(mainWindow.getarticulacion_capo()), glm::vec3(1.0f, 0.0f, 0.0f)); //CORREGIR ROTACI�N
 
-		model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
-		//glUniform3fv(uniformColor, 1, glm::value_ptr(color));
-		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-		cofre_text.RenderModel();
+		////modelaux = model;
 
-
-		model = modelaux;
+		//model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
+		////glUniform3fv(uniformColor, 1, glm::value_ptr(color));
+		//glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		//cofre_text.RenderModel();
 
 
-
-		//PUERTA
-
-		//color = glm::vec3(0.0f, 0.0f, 0.2f); //PUERTA COLOR BLANCO
-
-		/*model = glm::mat4(1.0);*/
-		model = glm::translate(model, glm::vec3(-5.6f, 0.0f, -6.0f));
-		model = glm::rotate(model, glm::radians(mainWindow.getarticulacion_puerta()), glm::vec3(0.0f, 1.0f, 0.0f)); //CORREGIR ROTACI�N
-
-		//modelaux = model;
-
-		model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
-		//glUniform3fv(uniformColor, 1, glm::value_ptr(color));
-		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-		puerta.RenderModel();
-
-		model = modelaux;
+		//model = modelaux;
 
 
 
-		//RUEDA DELANTERA IZQUIERDA  mainWindow.getmovimiento_avanza_retrocede()
+		////PUERTA
 
-		//color = glm::vec3(0.0f, 0.0f, 0.0f); //RUEDA COLOR AZUL
+		////color = glm::vec3(0.0f, 0.0f, 0.2f); //PUERTA COLOR BLANCO
 
-		/*model = glm::mat4(1.0);*/
-		model = glm::translate(model, glm::vec3(-5.2f, -2.0f, -9.5f));
-		model = glm::rotate(model, glm::radians(mainWindow.getarticulacion_avanza()), glm::vec3(-1.0f, 0.0f, 0.0f)); //CORREGIR ROTACI�N
+		///*model = glm::mat4(1.0);*/
+		//model = glm::translate(model, glm::vec3(-5.6f, 0.0f, -6.0f));
+		//model = glm::rotate(model, glm::radians(mainWindow.getarticulacion_puerta()), glm::vec3(0.0f, 1.0f, 0.0f)); //CORREGIR ROTACI�N
 
-		//modelaux = model;
+		////modelaux = model;
 
-		model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
-		//glUniform3fv(uniformColor, 1, glm::value_ptr(color));
-		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-		delantera_izq.RenderModel();
+		//model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
+		////glUniform3fv(uniformColor, 1, glm::value_ptr(color));
+		//glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		//puerta.RenderModel();
 
-		model = modelaux;
-
-
-
-		//RUEDA DELANTERA DERECHA
-		model = glm::translate(model, glm::vec3(5.2f, -2.0f, -9.5f));
-		model = glm::rotate(model, glm::radians(mainWindow.getarticulacion_avanza()), glm::vec3(-1.0f, 0.0f, 0.0f));
-
-		//modelaux = model;
-
-		model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
-		//glUniform3fv(uniformColor, 1, glm::value_ptr(color));
-		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-		delantera_der.RenderModel();
-
-		model = modelaux;
+		//model = modelaux;
 
 
 
+		////RUEDA DELANTERA IZQUIERDA  mainWindow.getmovimiento_avanza_retrocede()
+
+		////color = glm::vec3(0.0f, 0.0f, 0.0f); //RUEDA COLOR AZUL
+
+		///*model = glm::mat4(1.0);*/
+		//model = glm::translate(model, glm::vec3(-5.2f, -2.0f, -9.5f));
+		//model = glm::rotate(model, glm::radians(mainWindow.getarticulacion_avanza()), glm::vec3(-1.0f, 0.0f, 0.0f)); //CORREGIR ROTACI�N
+
+		////modelaux = model;
+
+		//model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
+		////glUniform3fv(uniformColor, 1, glm::value_ptr(color));
+		//glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		//delantera_izq.RenderModel();
+
+		//model = modelaux;
 
 
 
-		//RUEDA TRASERA DERECHA
+		////RUEDA DELANTERA DERECHA
+		//model = glm::translate(model, glm::vec3(5.2f, -2.0f, -9.5f));
+		//model = glm::rotate(model, glm::radians(mainWindow.getarticulacion_avanza()), glm::vec3(-1.0f, 0.0f, 0.0f));
 
-		model = glm::translate(model, glm::vec3(5.2f, -2.0f, 8.5f));
-		model = glm::rotate(model, glm::radians(mainWindow.getarticulacion_avanza()), glm::vec3(-1.0f, 0.0f, 0.0f)); //CORREGIR 
+		////modelaux = model;
 
-		model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
-		//glUniform3fv(uniformColor, 1, glm::value_ptr(color));
-		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-		trasera_der.RenderModel();
+		//model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
+		////glUniform3fv(uniformColor, 1, glm::value_ptr(color));
+		//glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		//delantera_der.RenderModel();
 
-		model = modelaux;
+		//model = modelaux;
 
 
 
 
 
 
-		//RUEDA TRASERA IZQUIERDA
+		////RUEDA TRASERA DERECHA
 
-		
-		model = glm::translate(model, glm::vec3(-5.2f, -2.0f, 8.5f));
-		model = glm::rotate(model, glm::radians(mainWindow.getarticulacion_avanza()), glm::vec3(-1.0f, 0.0f, 0.0f)); //CORREGIR ROTACI�N
-		/*modelaux = model;*/
-		model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
-		//glUniform3fv(uniformColor, 1, glm::value_ptr(color));
-		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-		trasera_izq.RenderModel();
+		//model = glm::translate(model, glm::vec3(5.2f, -2.0f, 8.5f));
+		//model = glm::rotate(model, glm::radians(mainWindow.getarticulacion_avanza()), glm::vec3(-1.0f, 0.0f, 0.0f)); //CORREGIR 
 
-		model = modelaux;//puede que lo cambie a modelaux
+		//model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
+		////glUniform3fv(uniformColor, 1, glm::value_ptr(color));
+		//glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		//trasera_der.RenderModel();
 
+		//model = modelaux;
 
 
 
 
 
-		//HELICOPTERO
 
-		model = glm::mat4(1.0);
-		model = glm::translate(model, glm::vec3(0.0f, 100.0f, 6.0));
-		model = glm::translate(model, glm::vec3(-mainWindow.getmovimiento_helicoptero(), 0.0f, 0.0f));
-		spotLights[1].SetPos(model[3]);
-		spotLights2[1].SetPos(model[3]);
-		
-		//model = glm::translate(model, glm::vec3(mainWindow.getmovimiento_helicoptero(), 0.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(8.5f, 8.5f, 8.5f));
-		model = glm::rotate(model, -90 * toRadians, glm::vec3(1.0f, 0.0f, 0.0f));
-		model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
-		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-		Blackhawk_M.RenderModel();
+		////RUEDA TRASERA IZQUIERDA
+
+		//
+		//model = glm::translate(model, glm::vec3(-5.2f, -2.0f, 8.5f));
+		//model = glm::rotate(model, glm::radians(mainWindow.getarticulacion_avanza()), glm::vec3(-1.0f, 0.0f, 0.0f)); //CORREGIR ROTACI�N
+		///*modelaux = model;*/
+		//model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
+		////glUniform3fv(uniformColor, 1, glm::value_ptr(color));
+		//glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		//trasera_izq.RenderModel();
+
+		//model = modelaux;//puede que lo cambie a modelaux
+
+
+
+
+
+
+		////HELICOPTERO
+
+		//model = glm::mat4(1.0);
+		//model = glm::translate(model, glm::vec3(0.0f, 100.0f, 6.0));
+		//model = glm::translate(model, glm::vec3(-mainWindow.getmovimiento_helicoptero(), 0.0f, 0.0f));
+		//spotLights[1].SetPos(model[3]);
+		//spotLights2[1].SetPos(model[3]);
+		//
+		////model = glm::translate(model, glm::vec3(mainWindow.getmovimiento_helicoptero(), 0.0f, 0.0f));
+		//model = glm::scale(model, glm::vec3(8.5f, 8.5f, 8.5f));
+		//model = glm::rotate(model, -90 * toRadians, glm::vec3(1.0f, 0.0f, 0.0f));
+		//model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
+		//glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		//Blackhawk_M.RenderModel();
 
 		//Modelos Mucha Lucha
 		model = glm::mat4(1.0);
-		model = glm::translate(model, glm::vec3(150.0f, 0.0f, -50.0));
-		model = glm::scale(model, glm::vec3(1.5f, 1.5f, 1.5f));
+		model = glm::translate(model, glm::vec3(-300.0f, -8.0f, -295.0)); //X para ancho del mapa y Z para largo del mapa
+		model = glm::scale(model, glm::vec3(5.0f, 5.0f, 5.0f));
+		model = glm::rotate(model, -270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		Astrodomo.RenderModel();
 
@@ -1042,74 +1074,74 @@ int main()
 
 		
 
-		//Agave �qu� sucede si lo renderizan antes del coche y el helic�ptero?
-		model = glm::mat4(1.0);
-		model = glm::translate(model, glm::vec3(0.0f, 1.0f, -4.0f));
-		model = glm::scale(model, glm::vec3(4.0f, 4.0f, 4.0f));
-		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		////Agave �qu� sucede si lo renderizan antes del coche y el helic�ptero?
+		//model = glm::mat4(1.0);
+		//model = glm::translate(model, glm::vec3(0.0f, 1.0f, -4.0f));
+		//model = glm::scale(model, glm::vec3(4.0f, 4.0f, 4.0f));
+		//glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 
-		//blending: transparencia o traslucidez
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		AgaveTexture.UseTexture();
-		Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
-		meshList[3]->RenderMesh();
-		glDisable(GL_BLEND);
+		////blending: transparencia o traslucidez
+		//glEnable(GL_BLEND);
+		//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		//AgaveTexture.UseTexture();
+		////Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
+		//meshList[3]->RenderMesh();
+		//glDisable(GL_BLEND);
 
 
 		model = modelaux;
 
 
-		//L�MPARA PARA REPORTE 07
+		////L�MPARA PARA REPORTE 07
 
-		model = glm::mat4(1.0);
-		model = glm::translate(model, glm::vec3(25.0f, -0.95f, 5.0f));
-		model = glm::scale(model, glm::vec3(0.008f,0.008f,0.008f));
-		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-		desk_lamp.RenderModel();
+		//model = glm::mat4(1.0);
+		//model = glm::translate(model, glm::vec3(25.0f, -0.95f, 5.0f));
+		//model = glm::scale(model, glm::vec3(0.008f,0.008f,0.008f));
+		//glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		//desk_lamp.RenderModel();
 
 
 		model = modelaux;
 
 		//PUERTA MET�LICA CON MARCO PARA LETRERO, PARA PRACTICA 08
 
-		model = glm::mat4(1.0);
-		model = glm::translate(model, glm::vec3(-3.0f, -0.95f, 70.0f));
-		model = glm::scale(model, glm::vec3(14.0f, 14.0f, 14.0f));
-		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-		puerta_marco.RenderModel();
+		//model = glm::mat4(1.0);
+		//model = glm::translate(model, glm::vec3(-3.0f, -0.95f, 70.0f));
+		//model = glm::scale(model, glm::vec3(14.0f, 14.0f, 14.0f));
+		//glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		//puerta_marco.RenderModel();
 
-		model = modelaux;
-
-
-
-
-		//REJA DERECHA
-		model = glm::mat4(1.0);
-		model = glm::translate(model, glm::vec3(-17.5f, 10.25f, 70.0f));
-		model = glm::scale(model, glm::vec3(14.0f, 14.0f, 14.0f));
-		model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
-
-		model = glm::rotate(model,rotPuerta*toRadians, glm::vec3(0.0f, 0.1f, 0.0f));
-
-		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-		reja_der.RenderModel();
-
-		model = modelaux;
+		//model = modelaux;
 
 
 
-		//REJA IZQUIERDA
-		model = glm::mat4(1.0);
-		model = glm::translate(model, glm::vec3(4.5f, -0.95f, 70.0f));
-		model = glm::scale(model, glm::vec3(14.0f, 14.0f, 14.0f));
-		model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+
+		////REJA DERECHA
+		//model = glm::mat4(1.0);
+		//model = glm::translate(model, glm::vec3(-17.5f, 10.25f, 70.0f));
+		//model = glm::scale(model, glm::vec3(14.0f, 14.0f, 14.0f));
+		//model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+
+		//model = glm::rotate(model,rotPuerta*toRadians, glm::vec3(0.0f, 0.1f, 0.0f));
+
+		//glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		//reja_der.RenderModel();
+
+		//model = modelaux;
+
+
+
+		////REJA IZQUIERDA
+		//model = glm::mat4(1.0);
+		//model = glm::translate(model, glm::vec3(4.5f, -0.95f, 70.0f));
+		//model = glm::scale(model, glm::vec3(14.0f, 14.0f, 14.0f));
+		//model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 
 
 		//model = glm::rotate(model, rotPuerta, glm::vec3(0.0f, 1.0f, 0.0f)); //CORREGIR ROTACI�N
 
-		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-		reja_izq.RenderModel();
+		//glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		//reja_izq.RenderModel();
 
 		model = modelaux;
 
@@ -1121,8 +1153,8 @@ int main()
 		//MODELO DE LUMINARIA PARA REPORTE 08
 
 		model = glm::mat4(1.0);
-		model = glm::translate(model, glm::vec3(-70.0f, -0.95f, 65.0f));
-		model = glm::scale(model, glm::vec3(1.7f, 1.7f, 1.7f));
+		model = glm::translate(model, glm::vec3(-90.0f, -0.95f, -100.0f));
+		model = glm::scale(model, glm::vec3(4.0f, 4.0f, 4.0f));
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		luminaria.RenderModel();
 
