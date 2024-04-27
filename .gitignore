@@ -3,3 +3,4 @@ ProyectoFinal/Debug
 ProyectoFinal/.vs
 #Esto es un comentario
 #*.txt esto excluye a todos los archivos .txt
+/ProyectoFinal/.vs
