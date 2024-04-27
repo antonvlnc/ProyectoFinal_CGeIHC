@@ -14,8 +14,6 @@ public:
 	GLfloat getXChange();
 	GLfloat getYChange();
 	GLfloat getmuevex() { return muevex; }
-
-
 	GLfloat getarticulacion_capo() { return articulacion_capo; }
 	GLfloat getarticulacion_puerta() { return articulacion_puerta; }
 	GLfloat getarticulacion_avanza() { return articulacion_avanza; }
@@ -35,6 +33,10 @@ public:
 	//PARA EL CONTROL DE LAS LUCES CUANDO EL AUTO AVANCE/RETROCEDA
 	GLint getLuzDel() { return luz_del; }
 	GLint getLuzTras() { return luz_tras; }
+
+	//PARA LA MUSICA
+	GLboolean getMusica() { return MusicaSi; }
+
 
 
 	bool getShouldClose() {
@@ -59,6 +61,7 @@ private:
 	GLfloat anguK = 0.0f;
 	GLfloat muevex, articulacion_capo, articulacion_puerta, articulacion_avanza, articulacion_reversa, articulacion_gira_der, articulacion_gira_izq, avanza_retrocede, avanza_retrocede_helicoptero, avanza_helicoptero, retrocede_helicoptero;
 	bool mouseFirstMoved;
+	GLboolean MusicaSi;
 	static void ManejaTeclado(GLFWwindow* window, int key, int code, int action, int mode);
 	static void ManejaMouse(GLFWwindow* window, double xPos, double yPos);
 
