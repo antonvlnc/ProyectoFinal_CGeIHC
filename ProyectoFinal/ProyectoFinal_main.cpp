@@ -65,11 +65,8 @@ Texture dirtTexture;
 Texture plainTexture;
 Texture pisoTexture;
 Texture AgaveTexture;
-<<<<<<< HEAD
 Texture reforma_layout;
-=======
 Texture AstrodomoTexture;
->>>>>>> main
 
 Model Kitt_M;
 Model Llanta_M;
@@ -136,9 +133,9 @@ static double limitFPS = 1.0 / 60.0;
 DirectionalLight mainLight;
 //para declarar varias luces de tipo pointlight
 PointLight pointLights[MAX_POINT_LIGHTS];
-//PointLight pointLights2[MAX_POINT_LIGHTS];
+PointLight pointLights2[MAX_POINT_LIGHTS];
 SpotLight spotLights[MAX_SPOT_LIGHTS];
-//SpotLight spotLights2[MAX_SPOT_LIGHTS];
+SpotLight spotLights2[MAX_SPOT_LIGHTS];
 //SpotLight spotLights3[MAX_SPOT_LIGHTS];
 
 // Vertex Shader
@@ -511,155 +508,155 @@ int main()
 	Material_opaco = Material(0.3f, 4);
 
 
-	////luz direccional, s�lo 1 y siempre debe de existir
-	//mainLight = DirectionalLight(1.0f, 1.0f, 1.0f,
-	//	0.3f, 0.3f,
-	//	0.0f, 0.0f, -1.0f);
+	//luz direccional, s�lo 1 y siempre debe de existir
+	mainLight = DirectionalLight(1.0f, 1.0f, 1.0f,
+		0.3f, 0.3f,
+		0.0f, 0.0f, -1.0f);
 
 
-	////contador de luces puntuales
+	//contador de luces puntuales
 
-	//unsigned int pointLightCount = 0;
-	//unsigned int pointLightCount2 = 0;
-	///*unsigned int pointLightCount3 = 0;*/
-
-
-	////Declaraci�n de primer luz puntual (magenta) | PARA LUMINARIA
-	//pointLights[0] = PointLight(1.0f, 0.0f, 1.0f,
-	//	0.0f, 3.0f,
-	//	-60.0f, 25.5f, 65.0f,
-	//	1.0f, 0.045f, 0.0075f);
-	//pointLightCount++;
+	unsigned int pointLightCount = 0;
+	unsigned int pointLightCount2 = 0;
+	/*unsigned int pointLightCount3 = 0;*/
 
 
-
-
-	////LUZ PUNTUAL PARA LA DESK LAMP
-	//pointLights[1] = PointLight(1.0f, 1.0f, 1.0f,
-	//	0.0f, 3.0f,
-	//	25.0f, 2.5f, 7.0f,
-	//	1.0f, 0.14f, 0.07f);
-	//pointLightCount++;
+	//Declaraci�n de primer luz puntual (magenta) | PARA LUMINARIA
+	pointLights[0] = PointLight(1.0f, 0.0f, 1.0f,
+		0.0f, 3.0f,
+		-60.0f, 25.5f, 65.0f,
+		1.0f, 0.045f, 0.0075f);
+	pointLightCount++;
 
 
 
 
-
-	////LUZ NEGRA PARA APAGAR (ARREGLO 2 DE POINTLIGHTS)
-	//pointLights2[0] = PointLight(0.0f, 0.0f, 0.0f,
-	//	0.0f, 24.0f,
-	//	4.0f, 9.0f, 12.0f,
-	//	0.3f, 0.2f, 0.1f);
-	//pointLightCount2++;
+	//LUZ PUNTUAL PARA LA DESK LAMP
+	pointLights[1] = PointLight(1.0f, 1.0f, 1.0f,
+		0.0f, 3.0f,
+		25.0f, 2.5f, 7.0f,
+		1.0f, 0.14f, 0.07f);
+	pointLightCount++;
 
 
 
 
 
-	//unsigned int spotLightCount = 0; //ARREGLO 0 -> TODAS LAS LUCES ENCENDIDAS
-	//unsigned int spotLightCount2 = 0; //ARREGLO 1 -> CUANDO EL AUTO AVANZA
-	////unsigned int spotLightCount3 = 0; //ARREGLO 2 -> CUANDO EL AUTO RETROCEDE
-
-
-
-	////PRIMER ARREGLO DE SPOTLIGHTS (TODAS LAS SPOTLIGHTS ENCENDIDAS)
-
-
-
-	//// Luz vehiculo delantera (azul)
-	//spotLights[0] = SpotLight(0.0f, 0.0f, 1.0f,
-	//	1.0f, 2.0f,
-	//	0.0f, 50.0f, -10.0f,
-	//	0.0f, 0.0f, -10.0f,
-	//	1.0f, 0.01f, 0.001f,
-	//	20.0f);
-	//spotLightCount++;
-	//
-
-	//// Luz helicoptero
-	//spotLights[1] = SpotLight(1.0f, 1.0f, 0.0f,
-	//	1.0f, 2.0f,
-	//	5.0f, 10.0f, 0.0f,
-	//	0.0f, -5.0f, 0.0f,
-	//	1.0f, 0.01f, 0.001f,
-	//	15.0f);
-
-
-	//spotLightCount++;
-
-
-	////LUZ SPOTLIGHT QUE ILUMINA PUERTA DE REJA
-
-	//spotLights[2] = SpotLight(0.0f, 1.0f, 1.0f,
-	//	3.0f, 5.0f,
-	//	-2.0f, 12.0f, -5.0f,
-	//	0.0f, 0.0f, 5.0f,
-	//	1.0f, 0.01f, 0.001f,
-	//	15.0f);
-
-
-	//spotLightCount++;
-
-
-
-	//// Luz vehiculo trasera (rojo) APAGADA
-	//spotLights[3] = SpotLight(0.0f, 0.0f, 0.0f,
-	//	1.0f, 2.0f,
-	//	0.0f, 50.0f, 10.0f,
-	//	0.0f, 0.0f, 10.0f,
-	//	1.0f, 0.01f, 0.001f,
-	//	20.0f);
-	//spotLightCount++;
+	//LUZ NEGRA PARA APAGAR (ARREGLO 2 DE POINTLIGHTS)
+	pointLights2[0] = PointLight(0.0f, 0.0f, 0.0f,
+		0.0f, 24.0f,
+		4.0f, 9.0f, 12.0f,
+		0.3f, 0.2f, 0.1f);
+	pointLightCount2++;
 
 
 
 
 
-	////SEGUNDO ARREGLO (CUANDO EL AUTO RETROCEDE)
+	unsigned int spotLightCount = 0; //ARREGLO 0 -> TODAS LAS LUCES ENCENDIDAS
+	unsigned int spotLightCount2 = 0; //ARREGLO 1 -> CUANDO EL AUTO AVANZA
+	//unsigned int spotLightCount3 = 0; //ARREGLO 2 -> CUANDO EL AUTO RETROCEDE
 
 
 
-	//// Luz vehiculo delantera (azul) APAGADA
-	//spotLights2[0] = SpotLight(0.0f, 0.0f, 0.0f,
-	//	1.0f, 2.0f,
-	//	0.0f, 50.0f, -10.0f,
-	//	0.0f, 0.0f, -10.0f,
-	//	1.0f, 0.01f, 0.001f,
-	//	20.0f);
-	//spotLightCount2++;
+	//PRIMER ARREGLO DE SPOTLIGHTS (TODAS LAS SPOTLIGHTS ENCENDIDAS)
 
 
 
-	//// Luz helicoptero
-	//spotLights2[1] = SpotLight(1.0f, 1.0f, 0.0f,
-	//	1.0f, 2.0f,
-	//	5.0f, 10.0f, 0.0f,
-	//	0.0f, -5.0f, 0.0f,
-	//	1.0f, 0.01f, 0.001f,
-	//	15.0f);
-	//spotLightCount2++;
+	// Luz vehiculo delantera (azul)
+	spotLights[0] = SpotLight(0.0f, 0.0f, 1.0f,
+		1.0f, 2.0f,
+		0.0f, 50.0f, -10.0f,
+		0.0f, 0.0f, -10.0f,
+		1.0f, 0.01f, 0.001f,
+		20.0f);
+	spotLightCount++;
+	
+
+	// Luz helicoptero
+	spotLights[1] = SpotLight(1.0f, 1.0f, 0.0f,
+		1.0f, 2.0f,
+		5.0f, 10.0f, 0.0f,
+		0.0f, -5.0f, 0.0f,
+		1.0f, 0.01f, 0.001f,
+		15.0f);
 
 
-	////LUZ SPOTLIGHT QUE ILUMINA PUERTA DE REJA
-
-	//spotLights2[2] = SpotLight(0.0f, 1.0f, 1.0f,
-	//	3.0f, 5.0f,
-	//	-2.0f, 12.0f, -5.0f,
-	//	0.0f, 0.0f, 5.0f,
-	//	1.0f, 0.01f, 0.001f,
-	//	15.0f);
-	//spotLightCount2++;
+	spotLightCount++;
 
 
-	////luz trasera del auto ENCENDIDA
+	//LUZ SPOTLIGHT QUE ILUMINA PUERTA DE REJA
 
-	//spotLights2[3] = SpotLight(1.0f, 0.0f, 0.0f, 
-	//	1.0f, 2.0f,
-	//	0.0f, 50.0f, 10.0f,
-	//	0.0f, 0.0f, 10.0f,
-	//	1.0f, 0.01f, 0.001f,
-	//	20.0f);
-	//spotLightCount2++;
+	spotLights[2] = SpotLight(0.0f, 1.0f, 1.0f,
+		3.0f, 5.0f,
+		-2.0f, 12.0f, -5.0f,
+		0.0f, 0.0f, 5.0f,
+		1.0f, 0.01f, 0.001f,
+		15.0f);
+
+
+	spotLightCount++;
+
+
+
+	// Luz vehiculo trasera (rojo) APAGADA
+	spotLights[3] = SpotLight(0.0f, 0.0f, 0.0f,
+		1.0f, 2.0f,
+		0.0f, 50.0f, 10.0f,
+		0.0f, 0.0f, 10.0f,
+		1.0f, 0.01f, 0.001f,
+		20.0f);
+	spotLightCount++;
+
+
+
+
+
+	//SEGUNDO ARREGLO (CUANDO EL AUTO RETROCEDE)
+
+
+
+	// Luz vehiculo delantera (azul) APAGADA
+	spotLights2[0] = SpotLight(0.0f, 0.0f, 0.0f,
+		1.0f, 2.0f,
+		0.0f, 50.0f, -10.0f,
+		0.0f, 0.0f, -10.0f,
+		1.0f, 0.01f, 0.001f,
+		20.0f);
+	spotLightCount2++;
+
+
+
+	// Luz helicoptero
+	spotLights2[1] = SpotLight(1.0f, 1.0f, 0.0f,
+		1.0f, 2.0f,
+		5.0f, 10.0f, 0.0f,
+		0.0f, -5.0f, 0.0f,
+		1.0f, 0.01f, 0.001f,
+		15.0f);
+	spotLightCount2++;
+
+
+	//LUZ SPOTLIGHT QUE ILUMINA PUERTA DE REJA
+
+	spotLights2[2] = SpotLight(0.0f, 1.0f, 1.0f,
+		3.0f, 5.0f,
+		-2.0f, 12.0f, -5.0f,
+		0.0f, 0.0f, 5.0f,
+		1.0f, 0.01f, 0.001f,
+		15.0f);
+	spotLightCount2++;
+
+
+	//luz trasera del auto ENCENDIDA
+
+	spotLights2[3] = SpotLight(1.0f, 0.0f, 0.0f, 
+		1.0f, 2.0f,
+		0.0f, 50.0f, 10.0f,
+		0.0f, 0.0f, 10.0f,
+		1.0f, 0.01f, 0.001f,
+		20.0f);
+	spotLightCount2++;
 
 
 
@@ -740,20 +737,18 @@ int main()
 
 		//	}
 
-<<<<<<< HEAD
+
 		//	else {
 		//		abre = false;
 		//	}
 		//}
 
 		//rotPuerta += movOffset * deltaTime; //esta es la que permite que haya movimiento por que? movOffset hace que vaya m�s lento en lugar de rotPuertaOffset
-=======
-			else {
-				abre = false;
-			}
-		}
-		
->>>>>>> main
+
+			//else {
+				//abre = false;
+			//}
+		//}
 
 
 		//Recibir eventos del usuario
@@ -927,7 +922,7 @@ int main()
 		//spotLights2[3].SetPos(carLightPos);
 
 
-<<<<<<< HEAD
+
 
 
 
@@ -938,11 +933,11 @@ int main()
 
 
 		////color = glm::vec3(1.0f, 0.0f, 0.0f); //capo color magenta
-=======
+
 		//CAP�
 
 		//color = glm::vec3(1.0f, 0.0f, 0.0f); //capo color magenta
->>>>>>> main
+
 
 		///*model = glm::mat4(1.0);*/
 		//model = glm::translate(model, glm::vec3(0.0f, 1.8f, -7.0f));
@@ -1068,8 +1063,9 @@ int main()
 
 		//Modelos Mucha Lucha
 		model = glm::mat4(1.0);
-		model = glm::translate(model, glm::vec3(150.0f, 0.0f, -50.0));
-		model = glm::scale(model, glm::vec3(1.5f, 1.5f, 1.5f));
+		model = glm::translate(model, glm::vec3(-300.0f, -8.0f, -295.0)); //X para ancho del mapa y Z para largo del mapa
+		model = glm::scale(model, glm::vec3(5.0f, 5.0f, 5.0f));
+		model = glm::rotate(model, -270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		Astrodomo.RenderModel();
 
@@ -1078,19 +1074,19 @@ int main()
 
 		
 
-		//Agave �qu� sucede si lo renderizan antes del coche y el helic�ptero?
-		model = glm::mat4(1.0);
-		model = glm::translate(model, glm::vec3(0.0f, 1.0f, -4.0f));
-		model = glm::scale(model, glm::vec3(4.0f, 4.0f, 4.0f));
-		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		////Agave �qu� sucede si lo renderizan antes del coche y el helic�ptero?
+		//model = glm::mat4(1.0);
+		//model = glm::translate(model, glm::vec3(0.0f, 1.0f, -4.0f));
+		//model = glm::scale(model, glm::vec3(4.0f, 4.0f, 4.0f));
+		//glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 
-		//blending: transparencia o traslucidez
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		AgaveTexture.UseTexture();
-		//Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
-		meshList[3]->RenderMesh();
-		glDisable(GL_BLEND);
+		////blending: transparencia o traslucidez
+		//glEnable(GL_BLEND);
+		//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		//AgaveTexture.UseTexture();
+		////Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
+		//meshList[3]->RenderMesh();
+		//glDisable(GL_BLEND);
 
 
 		model = modelaux;
@@ -1109,43 +1105,43 @@ int main()
 
 		//PUERTA MET�LICA CON MARCO PARA LETRERO, PARA PRACTICA 08
 
-		model = glm::mat4(1.0);
-		model = glm::translate(model, glm::vec3(-3.0f, -0.95f, 70.0f));
-		model = glm::scale(model, glm::vec3(14.0f, 14.0f, 14.0f));
-		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-		puerta_marco.RenderModel();
+		//model = glm::mat4(1.0);
+		//model = glm::translate(model, glm::vec3(-3.0f, -0.95f, 70.0f));
+		//model = glm::scale(model, glm::vec3(14.0f, 14.0f, 14.0f));
+		//glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		//puerta_marco.RenderModel();
 
-		model = modelaux;
-
-
-
-
-		//REJA DERECHA
-		model = glm::mat4(1.0);
-		model = glm::translate(model, glm::vec3(-17.5f, 10.25f, 70.0f));
-		model = glm::scale(model, glm::vec3(14.0f, 14.0f, 14.0f));
-		model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
-
-		model = glm::rotate(model,rotPuerta*toRadians, glm::vec3(0.0f, 0.1f, 0.0f));
-
-		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-		reja_der.RenderModel();
-
-		model = modelaux;
+		//model = modelaux;
 
 
 
-		//REJA IZQUIERDA
-		model = glm::mat4(1.0);
-		model = glm::translate(model, glm::vec3(4.5f, -0.95f, 70.0f));
-		model = glm::scale(model, glm::vec3(14.0f, 14.0f, 14.0f));
-		model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+
+		////REJA DERECHA
+		//model = glm::mat4(1.0);
+		//model = glm::translate(model, glm::vec3(-17.5f, 10.25f, 70.0f));
+		//model = glm::scale(model, glm::vec3(14.0f, 14.0f, 14.0f));
+		//model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+
+		//model = glm::rotate(model,rotPuerta*toRadians, glm::vec3(0.0f, 0.1f, 0.0f));
+
+		//glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		//reja_der.RenderModel();
+
+		//model = modelaux;
+
+
+
+		////REJA IZQUIERDA
+		//model = glm::mat4(1.0);
+		//model = glm::translate(model, glm::vec3(4.5f, -0.95f, 70.0f));
+		//model = glm::scale(model, glm::vec3(14.0f, 14.0f, 14.0f));
+		//model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 
 
 		//model = glm::rotate(model, rotPuerta, glm::vec3(0.0f, 1.0f, 0.0f)); //CORREGIR ROTACI�N
 
-		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-		reja_izq.RenderModel();
+		//glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		//reja_izq.RenderModel();
 
 		model = modelaux;
 
@@ -1157,8 +1153,8 @@ int main()
 		//MODELO DE LUMINARIA PARA REPORTE 08
 
 		model = glm::mat4(1.0);
-		model = glm::translate(model, glm::vec3(-70.0f, -0.95f, 65.0f));
-		model = glm::scale(model, glm::vec3(1.7f, 1.7f, 1.7f));
+		model = glm::translate(model, glm::vec3(-90.0f, -0.95f, -100.0f));
+		model = glm::scale(model, glm::vec3(4.0f, 4.0f, 4.0f));
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		luminaria.RenderModel();
 
