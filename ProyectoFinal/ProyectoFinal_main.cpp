@@ -608,16 +608,19 @@ int main()
 
 		//Aquí irán las funciones de las animaciones
 		//ala izquierda
-		if (alaIzq)
+		if (alaIzq && alaDer)
 		{
 			if (anguloAlaIzq >= 0.0f)
 			{
 				anguloAlaIzq -= movAlaOffset * deltaTime;
 				giraAlaIzq += giraAlaOffset * deltaTime;
+				anguloAlaDer -= movAlaOffset * deltaTime;
+				giraAlaDer -= giraAlaOffset * deltaTime;
 			}
 			else
 			{
 				alaIzq = false;
+				alaDer = false;
 			}
 		}
 
@@ -627,39 +630,42 @@ int main()
 			{
 				anguloAlaIzq += movAlaOffset * deltaTime;
 				giraAlaIzq -= giraAlaOffset * deltaTime;
-			}
-			else
-			{
-				alaIzq = true;
-			}
-		}
-
-
-		if (alaDer)
-		{
-			if (anguloAlaDer >= 0.0f)
-			{
-				anguloAlaDer -= movAlaOffset * deltaTime;
-				giraAlaDer -= giraAlaOffset * deltaTime;
-			}
-			else
-			{
-				alaDer = false;
-			}
-		}
-
-		else
-		{
-			if (anguloAlaDer <= 90.0f)
-			{
 				anguloAlaDer += movAlaOffset * deltaTime;
 				giraAlaDer += giraAlaOffset * deltaTime;
 			}
 			else
 			{
+				alaIzq = true;
 				alaDer = true;
 			}
 		}
+
+
+		//if (alaDer)
+		//{
+		//	if (anguloAlaDer >= 0.0f)
+		//	{
+		//		anguloAlaDer -= movAlaOffset * deltaTime;
+		//		giraAlaDer -= giraAlaOffset * deltaTime;
+		//	}
+		//	else
+		//	{
+		//		alaDer = false;
+		//	}
+		//}
+
+		//else
+		//{
+		//	if (anguloAlaDer <= 90.0f)
+		//	{
+		//		anguloAlaDer += movAlaOffset * deltaTime;
+		//		giraAlaDer += giraAlaOffset * deltaTime;
+		//	}
+		//	else
+		//	{
+		//		alaDer = true;
+		//	}
+		//}
 
 
 		//Recibir eventos del usuario
