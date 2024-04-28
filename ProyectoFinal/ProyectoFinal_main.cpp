@@ -53,15 +53,14 @@ using namespace irrklang;
 const float toRadians = 3.14159265f / 180.0f;
 
 //Para animaci�n
-float movCoche;
-float movOffset;
-float rotllanta;
-float rotllantaOffset;
-bool avanza;
-bool abre;
-bool desplaza;
-float rotPuerta;
-float rotPuertaOffset;
+bool alaIzq = true;
+bool alaDer = true;
+float giraAlaIzq;
+float giraAlaDer;
+float anguloAlaIzq;
+float anguloAlaDer;
+float giraAlaOffset;
+float movAlaOffset;
 
 Window mainWindow;
 std::vector<Mesh*> meshList;
@@ -573,16 +572,14 @@ int main()
 	GLuint uniformColor = 0;
 	glm::mat4 projection = glm::perspective(45.0f, (GLfloat)mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 0.1f, 1000.0f);
 
-
-	movCoche = 0.0f;
-	movOffset = 0.8f;
-	rotllanta = 0.0f;
-	rotllantaOffset = 5.0f;
-	rotPuertaOffset = 5.0f;
-	avanza = true;
-	abre = true;
-	rotPuerta = 0.5f;
-
+	alaIzq = true;
+	alaDer = true;
+	giraAlaIzq = 0.0f;
+	giraAlaDer = 0.0f;
+	anguloAlaIzq = 90.0f;
+	anguloAlaDer = 90.0f;
+	giraAlaOffset = 1.0f;
+	movAlaOffset = 1.0f;
 
 	//Sonido ambiental
 	ISoundEngine* Ambiental = createIrrKlangDevice();
@@ -610,6 +607,59 @@ int main()
 		lastTime = now;
 
 		//Aquí irán las funciones de las animaciones
+		//ala izquierda
+		if (alaIzq)
+		{
+			if (anguloAlaIzq >= 0.0f)
+			{
+				anguloAlaIzq -= movAlaOffset * deltaTime;
+				giraAlaIzq += giraAlaOffset * deltaTime;
+			}
+			else
+			{
+				alaIzq = false;
+			}
+		}
+
+		else
+		{
+			if (anguloAlaIzq <= 90.0f)
+			{
+				anguloAlaIzq += movAlaOffset * deltaTime;
+				giraAlaIzq -= giraAlaOffset * deltaTime;
+			}
+			else
+			{
+				alaIzq = true;
+			}
+		}
+
+
+		if (alaDer)
+		{
+			if (anguloAlaDer >= 0.0f)
+			{
+				anguloAlaDer -= movAlaOffset * deltaTime;
+				giraAlaDer -= giraAlaOffset * deltaTime;
+			}
+			else
+			{
+				alaDer = false;
+			}
+		}
+
+		else
+		{
+			if (anguloAlaDer <= 90.0f)
+			{
+				anguloAlaDer += movAlaOffset * deltaTime;
+				giraAlaDer += giraAlaOffset * deltaTime;
+			}
+			else
+			{
+				alaDer = true;
+			}
+		}
 
 
 		//Recibir eventos del usuario
@@ -654,6 +704,7 @@ int main()
 
 		glm::mat4 model(1.0);
 		glm::mat4 modelaux(1.0);
+		glm::mat4 modelaux2(1.0);
 		glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
 
 		model = glm::mat4(1.0);
@@ -699,32 +750,34 @@ int main()
 		model = glm::scale(model, glm::vec3(7.0f, 8.0f, 7.0f));
 		model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		modelaux2 = modelaux = model;
 		angel_independencia.RenderModel();
 
-
-		model = modelaux;
+		model = glm::translate(model, glm::vec3(0.0f, 28.5f, -0.5f));
+		model = glm::rotate(model, giraAlaIzq * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 
 		//Ala del angel 1
-		model = glm::mat4(1.0);
-		model = glm::translate(model, glm::vec3(5.0f, 230.0f, -525.0));
-		model = glm::scale(model, glm::vec3(7.0f, 8.0f, 7.0f));
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0));
+		model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
 		model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		angel_independencia_ala.RenderModel();
 
 
-		model = modelaux;
+		model = modelaux2;
 
+		model = glm::translate(model, glm::vec3(0.0f, 28.5f, -0.5f));
+		model = glm::rotate(model, giraAlaDer * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	
 		//Ala del angel 2
-		model = glm::mat4(1.0);
-		model = glm::translate(model, glm::vec3(5.0f, 230.0f, -525.0));
-		model = glm::scale(model, glm::vec3(7.0f, 8.0f, 7.0f));
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0));
+		model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
 		//model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		angel_independencia_ala.RenderModel();
 
 
-		model = modelaux;
+		
 
 
 		//Edificio BBVA/Pixies
