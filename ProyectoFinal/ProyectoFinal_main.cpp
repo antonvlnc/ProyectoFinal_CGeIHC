@@ -1,7 +1,15 @@
 /*
-Pr�ctica 7: Iluminaci�n 1 
+Proyecto Final: CDMX ISEKAI
+
+Integrantes:
+
+- Francisco Hernandez Arturo
+- Tapia Navarro Rodrigo
+- Toledo Valencia Jesus Antonio
+- Valenzuela Vigil Angel David
 */
-//para cargar imagen
+
+
 #define STB_IMAGE_IMPLEMENTATION
 
 
@@ -17,6 +25,7 @@ Pr�ctica 7: Iluminaci�n 1
 #include <glm.hpp>
 #include <gtc\matrix_transform.hpp>
 #include <gtc\type_ptr.hpp>
+
 //para probar el importer
 //#include<assimp/Importer.hpp>
 
@@ -60,60 +69,63 @@ std::vector<Shader> shaderList;
 
 Camera camera;
 
+
+//Declcaración de texturas
+
 Texture brickTexture;
 Texture dirtTexture;
 Texture plainTexture;
 Texture pisoTexture;
 Texture AgaveTexture;
-Texture reforma_layout;
+Texture reforma_layout; //piso
 Texture AstrodomoTexture;
 
-Model Kitt_M;
-Model Llanta_M;
-Model Blackhawk_M;
-
-Model cuerpo;
-Model capo;
-Model puerta;
-Model trasera_izq;
-Model trasera_der;
-Model delantera_der;
-Model delantera_izq;
-//FRENOS DELANTEROS
-Model freno_del_izq;
-Model freno_del_der;
-//FRENOS TRASEROS
-Model freno_tras_izq;
-Model freno_tras_der;
-Model cofre_text;
 
 
 
-//MODELO DE L�MPARA
-Model desk_lamp;
+
+//DECLARACION DE MODELOS
 
 
-//MODELO DE PUERTA MET�LICA CON CARTEL
-Model puerta_marco;
-Model reja_der;
-Model reja_izq;
-
-
-//MODELO DE NUEVA LUMINARIA PARA REPORTE 08
+//GENERAL
 Model luminaria;
+Model angel_independencia;
+Model angel_independencia_ala;
+Model bbva;
+Model estela_de_luz;
 
-//Model puertaLetrero;
 
-//Modelo Astrodomo
+
+
+//Padrinos Magicos
+Model diana_cazadora;
+Model bus_padrinos;
+Model big_wand;
+Model letrero_dimsdale;
+Model letras_letrero_dimsdale;
+
+//Laboratorio de Dexter
+Model casa_dexter;
+Model dexter_body;
+Model dexter_leg;
+Model dexter_arm;
+
+//Ratatouille
+
+
+//Mucha Lucha
+
 Model Astrodomo;
+Model tienda_donas;
 
+
+
+
+
+
+
+//SKYBOX
 Skybox skybox;
-
-
-
-Texture dado10Caras; //Nueva textura para el dado de 10 caras
-
-Model Dado_M;
 
 
 
@@ -129,14 +141,23 @@ GLfloat deltaTime = 0.0f;
 GLfloat lastTime = 0.0f;
 static double limitFPS = 1.0 / 60.0;
 
+
+
+//Declaración de Luces
+
+
 // luz direccional
 DirectionalLight mainLight;
+
+
 //para declarar varias luces de tipo pointlight
 PointLight pointLights[MAX_POINT_LIGHTS];
 PointLight pointLights2[MAX_POINT_LIGHTS];
 SpotLight spotLights[MAX_SPOT_LIGHTS];
 SpotLight spotLights2[MAX_SPOT_LIGHTS];
 //SpotLight spotLights3[MAX_SPOT_LIGHTS];
+
+
 
 // Vertex Shader
 static const char* vShader = "shaders/shader_light.vert";
@@ -197,7 +218,7 @@ void CreateObjects()
 		1, 2, 3
 	};
 
-	//cambiar los valores para que en lugar de |10| sea directamente 300
+
 
 	GLfloat floorVertices[] = {
 		-1.0f, 0.0f, -1.0f,		0.0f, 0.0f,			0.0f, -1.0f, 0.0f, //0
@@ -263,133 +284,6 @@ void CreateShaders()
 
 
 
-
-
-void CrearDado10C()
-{
-	// clang-format off
-	unsigned int cubo_indices_10[] = {
-		// CARA SUPERIOR 01
-		0, 1, 2,
-
-		// CARA SUPERIOR 02
-		3 ,4, 5,
-
-		// CARA SUPERIOR 03
-		6, 7, 8,
-
-		// CARA SUPERIOR 04
-		9, 10, 11,
-
-		// CARA SUPERIOR 05
-		12, 13, 14,
-
-		// "ABAJO"
-
-		//CARA INFERIOR 01
-		15, 16, 17,
-
-		//CARA INFERIOR 02
-		18, 19 ,20,
-
-		//CARA INFERIOR 03
-		21, 22, 23,
-
-		//CARA INFERIOR 04
-		24, 25, 26,
-
-		//CARA INFERIOR 05
-		27, 28, 29,
-
-	};
-
-	GLfloat cubo_vertices_10[] = {
-		//ARRIBA, DE CENTRO A LA DERECHA
-		//// front
-		////x		y		z		S		T			NX		NY		NZ
-		//0.3f, 0.0f,  0.5f,		0.26f,  0.34f,		0.0f,	0.0f,	-1.0f,	//A
-		//-0.3f, 0.0f,  0.5f,		0.49f,	0.34f,		0.0f,	0.0f,	-1.0f,	//B
-		//0.0f,  0.45f,  1.0f,	0.49f,	0.66f,		0.0f,	0.0f,	-1.0f,	//C
-		//0.45f,  0.6f,  0.5f,	 0.26f,	0.66f,		0.0f,	0.0f,	-1.0f,	//D
-		//// right
-		////x		y		z		S		T
-		//-0.45f, 0.6f,  0.5f,	0.0f,  0.33f,		-1.0f,	0.0f,	0.0f, //E
-		//0.0f, 0.95f,  0.5f,		0.25f,	0.33f,		-1.0f,	0.0f,	0.0f, //F, hasta ac 
-		//0.0f,  0.45f,  0.0f,    0.25f,	0.66f,		-1.0f,	0.0f,	0.0f, //H
-
-
-		//--------------CARAS SUPERIORES------------
-
-		//CARA SUPERIOR 1
-		//x		y		z		S		T			NX		NY		NZ
-		-0.3f, 0.0f,  0.5f,		0.495f,	0.935f,		0.0f,	1.0f,	-0.33f,	//1 (B)
-		0.3f, 0.0f,  0.5f,	   0.28f,  0.87f,		0.0f,	1.0f,	-0.33f,	//0 (A)
-		0.0f,  0.45f,  1.0f,	0.48f,	0.72f,		0.0f,	1.0f,	-0.33f,	//2 (C)
-
-		//CARA SUPERIOR 2
-		//x		y		z		S		T			NX		NY		NZ
-		0.3f, 0.0f,  0.5f,		0.638f,  0.347f,	0.0f,	1.0f,	-0.33f,	//3 (A).383 .284
-		0.45f, 0.6f,  0.5f,		0.49f,	0.478f,		0.0f,	1.0f,	-0.33f,	//4 (D) .63
-		0.0f,  0.45f,  1.0f,	0.383f,	0.284f,		0.0f,	1.0f,	-0.33f,	//5 (C) .49 .478
-
-		//CARA SUPERIOR 3
-		//x		y		z		S		T			NX		NY		NZ
-		0.45f, 0.6f,  0.5f,		0.371f,	0.533f,		0.0f,	1.0f,	-0.5f,	//7 (D)
-		0.0f, 0.95f,  0.5f,		0.602f,  0.528f,	0.0f,	1.0f,	-0.5f,	//6 (F)
-		0.0f,  0.45f,  1.0f,	0.478f,	0.729f,		0.0f,	1.0f,	-0.5f,	//8 (C)
-
-		//CARA SUPERIOR 4
-		//x		y		z		S		T			NX		NY		NZ
-		0.0f, 0.95f,  0.5f,		0.417f,  0.074f,	.0f,	1.0f,	-1.0f,	//9 (F)
-		-0.45f, 0.6f,  0.5f,	0.607f,	0.168f,		0.0f,	1.0f,	-1.0f,	//10 (E)
-		0.0f,  0.45f,  1.0f,	0.383f,	0.284f,		0.0f,	1.0f,	-1.0f,	//11 (C)
-
-		//CARA SUPERIOR 5
-		//x		y		z		S		T			NX		NY		NZ
-		-0.45f, 0.6f,  0.5f,	0.741f,	0.675f,		0.0f,	1.0f,	-0.5f,	//13 (E)
-		-0.3f, 0.0f,  0.5f,		0.695f,  0.852f,	0.0f,	1.0f,	-0.5f,	//12 (B)		
-		0.0f,  0.45f,  1.0f,	0.478f,	0.725f,		0.0f,	1.0f,	-0.5f,	//14 (C)
-
-		//------------------CARAS INFERIORES----------------------
-
-		//CARA INFERIOR 1
-		//x		y		z		S		T			NX		NY		NZ
-		-0.3f, 0.0f,  0.5f,		0.609f,	0.170f,		0.0f,	-1.0f,	-0.33f,	//16 (B)
-		0.3f, 0.0f,  0.5f,		0.639f,  0.345f,	0.0f,	-1.0f,	-0.33f,	//15 (A)
-		0.0f,  0.45f,  0.0f,	0.388f,	0.284f,		0.0f,	-1.0f,	-0.33f,	//17 (H)
-
-		//CARA INFERIOR 2
-		//x		y		z		S		T			NX		NY		NZ
-		0.3f, 0.0f,  0.5f,		0.484f,  0.479f,	0.0f,	-1.0f,	-0.33f,	//18 (A)
-		0.45f, 0.6f,  0.5f,		0.263f,	0.473f,		0.0f,	-1.0f,	-0.33f,	//19 (D)
-		0.0f,  0.45f,  0.0f,	0.383f,	0.291f,		0.0f,	-1.0f,	-0.33f,	//20 (H)
-
-		//CARA INFERIOR 3
-		//x		y		z		S		T			NX		NY		NZ
-		0.45f, 0.6f,  0.5f,		0.695f,	0.853f,		0.0f,	-1.0f,	-0.5f,	//22 (D)
-		0.0f, 0.95f,  0.5f,		0.497f,  0.938f,	0.0f,	-1.0f,	-0.5f,	//21 (F)
-		0.0f,  0.45f,  0.0f,	0.479f,	0.726f,		0.0f,	-1.0f,	-0.5f,	//23 (H)
-
-		//CARA INFERIOR 4
-		//x		y		z		S		T			NX		NY		NZ
-		0.0f, 0.95f,  0.5f,		0.201f,  0.127f,	0.0f,	-1.0f,	-0.33f,	//24 (F)
-		-0.45f, 0.6f,  0.5f,	0.417f,	0.074f,		0.0f,	-1.0f,	-0.33f,	//25 (E)
-		0.0f,  0.45f,  0.0f,	0.382f,	0.284f,		0.0f,	-1.0f,	-0.33f,	//26 (H)
-
-		//CARA INFERIOR 5
-		//x		y		z		S		T			NX		NY		NZ
-		-0.45f, 0.6f,  0.5f,	0.6f,	0.535f,		0.0f,	-1.0f,	-0.5f,	//28 (E)
-		-0.3f, 0.0f,  0.5f,		0.74f,  0.676f,		0.0f,	-1.0f,	-0.5f,	//27 (B)
-		0.0f,  0.45f,  0.0f,	0.48f,	0.725f,		0.0f,	-1.0f,	-0.5f,	//29 (H)
-	};
-
-	Mesh* dado10 = new Mesh();
-	dado10->CreateMesh(cubo_vertices_10, cubo_indices_10, 250, 50); //192,36
-	meshList.push_back(dado10);
-}
-
-
-
 int main()
 {
 	mainWindow = Window(1366, 768); // 1280, 1024 or 1024, 768
@@ -397,9 +291,8 @@ int main()
 
 	CreateObjects();
 	CreateShaders();
-	CrearDado10C();
 
-	camera = Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), -60.0f, 0.0f, 0.8f, 0.5f);
+	camera = Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), -60.0f, 0.0f, 5.5f, 0.5f);
 
 	brickTexture = Texture("Textures/brick.png");
 	brickTexture.LoadTextureA();
@@ -415,81 +308,81 @@ int main()
 	reforma_layout = Texture("Textures/reforma_layout.png");
 	reforma_layout.LoadTextureA();
 
-	Kitt_M = Model();
-	Kitt_M.LoadModel("Models/kitt_optimizado.obj");
-	Llanta_M = Model();
-	Llanta_M.LoadModel("Models/llanta_optimizada.obj");
-	Blackhawk_M = Model();
-	Blackhawk_M.LoadModel("Models/uh60.obj");
 
 
 
-	cuerpo = Model();
-	cuerpo.LoadModel("Models/AUDI_separado/cuerpo.obj");
-
-	/*capo = Model();
-	capo.LoadModel("Models/AUDI_separado/capo.obj");*/
-
-	puerta = Model();
-	puerta.LoadModel("Models/AUDI_separado/puerta.obj");
-
-	trasera_izq = Model();
-	trasera_izq.LoadModel("Models/AUDI_separado/trasera_izq_text.obj");
-
-	trasera_der = Model();
-	trasera_der.LoadModel("Models/AUDI_separado/trasera_der_text.obj");
-
-
-	delantera_izq = Model();
-	delantera_izq.LoadModel("Models/AUDI_separado/delantera_izq_text.obj");
-
-	delantera_der = Model();
-	delantera_der.LoadModel("Models/AUDI_separado/delantera_der_text.obj");
-
-	//puertaLetrero = Model();
-	//puertaLetrero.LoadModel("Models/puerta2.obj");
 
 
 
-	//	NO HE IMPORTADO LOS FRENOS
+
+	//----------Modelos Generales---------------------
+	angel_independencia = Model();
+	angel_independencia.LoadModel("Models/Angel.obj");
+
+	angel_independencia_ala = Model();
+	angel_independencia_ala.LoadModel("Models/AngelAla.obj");
+
+	bbva = Model();
+	bbva.LoadModel("Models/BBVA.obj");
+
+	estela_de_luz = Model();
+	estela_de_luz.LoadModel("Models/Estela.obj");
+
+	diana_cazadora = Model();
+	diana_cazadora.LoadModel("Models/DianaCupido.obj");
 
 
-	//CAP� TEXTURIZADO
-
-	cofre_text = Model();
-	cofre_text.LoadModel("Models/cofre_text.obj");
-
-	//LAMPARA PARA REPORTE 07
-
-	desk_lamp = Model();
-	desk_lamp.LoadModel("Models/lampara_escritorio.obj");
 
 
-	//PUERTA MET�LICA CON PANEL PARA REPORTE 08
-	puerta_marco = Model();
-	puerta_marco.LoadModel("Models/puerta_marco.obj");
 
-	reja_der = Model();
-	reja_der.LoadModel("Models/reja_der.obj");
-
-	reja_izq = Model();
-	reja_izq.LoadModel("Models/reja_izq.obj");
 
 
 	//----------Modelos Mucha Lucha---------------------
 	Astrodomo = Model();
 	Astrodomo.LoadModel("Models/MuchaLucha/Astrodomo.obj");
+
+	tienda_donas = Model();
+	tienda_donas.LoadModel("Models/MuchaLucha/SlamminDonuts.obj");
+
+
+	//----------Modelos Padrinos Magicos---------------------
+	
+	big_wand = Model();
+	big_wand.LoadModel("Models/Padrinos/BigWand.obj");
+
+	bus_padrinos = Model();
+	bus_padrinos.LoadModel("Models/Padrinos/Bus.obj");
+
+
+	//----------Modelos Lab. de Dexter---------------------
+
+	casa_dexter = Model();
+	casa_dexter.LoadModel("Models/DextersLab/CasaDexter.obj");
+
+
+
+	//AVATAR (DEXTER)
+
+	dexter_body = Model();
+	dexter_body.LoadModel("Models/DextersLab/DexterBody.obj");
+
+	dexter_arm = Model();
+	dexter_arm.LoadModel("Models/DextersLab/DexterArm.obj");
+
+	dexter_leg = Model();
+	dexter_leg.LoadModel("Models/DextersLab/DexterLeg.obj");
+	
+
+
+
+	//----------Modelos Ratatouille---------------------
+
  
 
 	//LUMINARIA PARA REPORTE 08
 	luminaria = Model();
 	luminaria.LoadModel("Models/luminaria_text.obj");
 
-
-
-
-	dado10Caras = Texture("Textures/dado10caras.png");
-	dado10Caras.LoadTextureA();
 
 
 	
@@ -506,6 +399,11 @@ int main()
 
 	Material_brillante = Material(4.0f, 256);
 	Material_opaco = Material(0.3f, 4);
+
+
+
+	//APARTADO DE LUCES
+
 
 
 	//luz direccional, s�lo 1 y siempre debe de existir
@@ -711,44 +609,7 @@ int main()
 		deltaTime += (now - lastTime) / limitFPS;
 		lastTime = now;
 
-		//ANIMACION: PUERTA QUE ROTA
-
-		//if (abre) {
-
-
-		//	//rotPuerta > 0.0f && rotPuerta < 145.0f
-		//	if (rotPuerta > -4.0f) //-0.2
-		//	{
-		//		rotPuerta += movOffset * deltaTime; //movOffset en lugar de rotPuertOffset
-		//	}
-
-		//	else  /*if (rotPuerta==25.0f)*//* if (rotPuerta==144.0)*/ {
-		//		/*rotPuerta -= movOffset * deltaTime;*/
-		//		abre = true;
-		//	}
-		//}
-
-		//else {
-		//	if (rotPuerta > 25.0f)
-		//	{
-
-		//		//esperar 2 segundos
-		//		rotPuerta -= movOffset * deltaTime;
-
-		//	}
-
-
-		//	else {
-		//		abre = false;
-		//	}
-		//}
-
-		//rotPuerta += movOffset * deltaTime; //esta es la que permite que haya movimiento por que? movOffset hace que vaya m�s lento en lugar de rotPuertaOffset
-
-			//else {
-				//abre = false;
-			//}
-		//}
+		//Aquí irán las funciones de las animaciones
 
 
 		//Recibir eventos del usuario
@@ -789,54 +650,7 @@ int main()
 
 
 
-
-		////PARA CONTROLAR EL ENCENDIDO DE LAS LUCES PUNTUALES
-
-		//if (mainWindow.getlight() == 0) //si k en 0, 
-		//{
-
-		//	shaderList[0].SetPointLights(pointLights, pointLightCount); //luz 1 = roja
-		//}
-		//else
-		//{
-
-		//	shaderList[0].SetPointLights(pointLights2, pointLightCount2); //luz negra (apagada)
-
-		//}
-
-
-		////PARA CONTROLAR EL ENCENDIDO Y APAGADO DE LA LUZ DELANTERA
-
-		//if (mainWindow.getLuzDel() == 0)
-		//{
-
-		//	shaderList[0].SetSpotLights(spotLights2, spotLightCount2);
-		//}
-		//else
-		//{
-
-		//	shaderList[0].SetSpotLights(spotLights, spotLightCount);
-		//}
-
-
-
-		////PARA CONTROLAR EL ENCENDIDO Y APAGADO DE LA LUZ TRASERA
-
-		//if (mainWindow.getLuzTras() == 0)
-		//{
-
-		//	shaderList[0].SetSpotLights(spotLights, spotLightCount);
-		//}
-		//else
-		//{
-
-		//	shaderList[0].SetSpotLights(spotLights2, spotLightCount2);
-		//}
-
-
-
-
-		//PISO??
+		//PISO
 
 		glm::mat4 model(1.0);
 		glm::mat4 modelaux(1.0);
@@ -844,7 +658,7 @@ int main()
 
 		model = glm::mat4(1.0);
 		model = glm::translate(model, glm::vec3(0.0f, -1.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(450.0f, 1.0f, 700.0f)); //Esto indica que el piso es 300x300? era 30 en las esquinas
+		model = glm::scale(model, glm::vec3(450.0f, 1.0f, 700.0f));
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
 
@@ -852,228 +666,177 @@ int main()
 		Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
 
 		//RENDERIZAMOS EL PISO
-		meshList[2]->RenderMesh(); //Esto creo que es un cubo
+		meshList[2]->RenderMesh(); 
 
 		model = modelaux;
 
 
-		////DADO DE 10 CARAS POR CODIGO
-		//model = glm::mat4(1.0);
-		//model = glm::translate(model, glm::vec3(25.0f, -0.9f, 7.0f)); //4.5,9.5,-2.0
-		//model = glm::rotate(model, 90 * toRadians, glm::vec3(-1.0f, 0.0f, 0.0f)); //inclinaci n
-		//model = glm::scale(model, glm::vec3(0.6f, 0.6f, 0.6f));
-		//glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-		//dado10Caras.UseTexture(); //usamos la textura
-		//meshList[4]->RenderMesh();
 
 
+		//INSTANCIAMIENTO DE LOS MODELOS
+		//X para ancho del mapa y Z para largo del mapa
 
 
 
-		////INICIO DEL DIBUJO DEL AUTO
-		//model = glm::mat4(1.0);
 
-		//model = glm::translate(model, glm::vec3(0.0f, -2.0, 0.0f)); //TRASLACION INICIAL -2.8
+		//Modelos Generales del mundo
 
+		//Diana cazadora
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(0.0f, -1.0f, 175.0));
+		model = glm::scale(model, glm::vec3(4.0f, 5.0f, 4.0f));
+		model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		diana_cazadora.RenderModel();
 
-		//modelaux = model;
 
+		model = modelaux;
 
-		////CUERPO DEL AUTO
-		////color = glm::vec3(0.0f, 0.0f, 0.0f); //modelo de coche de color negro
 
-		///*model = glm::mat4(1.0);*/
-		//model = glm::translate(model, glm::vec3(0.0f, 5.0f, -1.5f)); //traslaci�n inicial para posicionarlo
+		//Angel de la independencia
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(5.0f, -1.0f, -530.0));
+		model = glm::scale(model, glm::vec3(7.0f, 8.0f, 7.0f));
+		model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		angel_independencia.RenderModel();
 
-		////aplicarle escala al auto para que tenga m�s espacio para desplazarse
 
+		model = modelaux;
 
-		//model = glm::translate(model, glm::vec3(0.0f, 0.0f, -mainWindow.getmovimiento_avanza_retrocede()));
+		//Ala del angel 1
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(5.0f, 230.0f, -525.0));
+		model = glm::scale(model, glm::vec3(7.0f, 8.0f, 7.0f));
+		model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		angel_independencia_ala.RenderModel();
 
 
-		//modelaux = model;
+		model = modelaux;
 
+		//Ala del angel 2
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(5.0f, 230.0f, -525.0));
+		model = glm::scale(model, glm::vec3(7.0f, 8.0f, 7.0f));
+		//model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		angel_independencia_ala.RenderModel();
 
-		//model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
 
-		////glUniform3fv(uniformColor, 1, glm::value_ptr(color));
-		//glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		model = modelaux;
 
-		//cuerpo.RenderModel();//modificar por el modelo sin las 4 patas y sin cola
 
-		//model = modelaux;
+		//Edificio BBVA/Pixies
 
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(350.0f, -1.0f, 350.0));
+		model = glm::scale(model, glm::vec3(220.0f, 220.0f, 220.0f));
+		model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		bbva.RenderModel();
 
-		////LUZ
-		//
-		//// Luz vehiculo delantera (azul)
-		//model = modelaux;
-		//glm::vec3 carLightPos = model[3]; //og 3
-		////carLightPos.x += 0.0f;//2.5
-		//carLightPos.z += 3.0f; //3.0
-		//spotLights[0].SetPos(carLightPos);
 
 
-		//// Luz vehiculo trasera (rojo)
-		//model = modelaux;
-		////glm::vec3 carLightPos = model[3]; //og 3
-		////carLightPos.x += 0.0f;//2.5
-		//carLightPos.z -= 3.0f; //3.0
-		//spotLights2[3].SetPos(carLightPos);
 
+		//Estela de Luz
 
 
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(200.0f, -1.0f, 620.0));
+		model = glm::scale(model, glm::vec3(5.0f, 5.0f, 5.0f));
+		//model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		estela_de_luz.RenderModel();
 
 
 
 
-
-
-		////CAP�
-
-
-		////color = glm::vec3(1.0f, 0.0f, 0.0f); //capo color magenta
-
-		//CAP�
-
-		//color = glm::vec3(1.0f, 0.0f, 0.0f); //capo color magenta
-
-
-		///*model = glm::mat4(1.0);*/
-		//model = glm::translate(model, glm::vec3(0.0f, 1.8f, -7.0f));
-		//model = glm::rotate(model, glm::radians(mainWindow.getarticulacion_capo()), glm::vec3(1.0f, 0.0f, 0.0f)); //CORREGIR ROTACI�N
-
-		////modelaux = model;
-
-		//model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
-		////glUniform3fv(uniformColor, 1, glm::value_ptr(color));
-		//glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-		//cofre_text.RenderModel();
-
-
-		//model = modelaux;
-
-
-
-		////PUERTA
-
-		////color = glm::vec3(0.0f, 0.0f, 0.2f); //PUERTA COLOR BLANCO
-
-		///*model = glm::mat4(1.0);*/
-		//model = glm::translate(model, glm::vec3(-5.6f, 0.0f, -6.0f));
-		//model = glm::rotate(model, glm::radians(mainWindow.getarticulacion_puerta()), glm::vec3(0.0f, 1.0f, 0.0f)); //CORREGIR ROTACI�N
-
-		////modelaux = model;
-
-		//model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
-		////glUniform3fv(uniformColor, 1, glm::value_ptr(color));
-		//glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-		//puerta.RenderModel();
-
-		//model = modelaux;
-
-
-
-		////RUEDA DELANTERA IZQUIERDA  mainWindow.getmovimiento_avanza_retrocede()
-
-		////color = glm::vec3(0.0f, 0.0f, 0.0f); //RUEDA COLOR AZUL
-
-		///*model = glm::mat4(1.0);*/
-		//model = glm::translate(model, glm::vec3(-5.2f, -2.0f, -9.5f));
-		//model = glm::rotate(model, glm::radians(mainWindow.getarticulacion_avanza()), glm::vec3(-1.0f, 0.0f, 0.0f)); //CORREGIR ROTACI�N
-
-		////modelaux = model;
-
-		//model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
-		////glUniform3fv(uniformColor, 1, glm::value_ptr(color));
-		//glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-		//delantera_izq.RenderModel();
-
-		//model = modelaux;
-
-
-
-		////RUEDA DELANTERA DERECHA
-		//model = glm::translate(model, glm::vec3(5.2f, -2.0f, -9.5f));
-		//model = glm::rotate(model, glm::radians(mainWindow.getarticulacion_avanza()), glm::vec3(-1.0f, 0.0f, 0.0f));
-
-		////modelaux = model;
-
-		//model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
-		////glUniform3fv(uniformColor, 1, glm::value_ptr(color));
-		//glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-		//delantera_der.RenderModel();
-
-		//model = modelaux;
-
-
-
-
-
-
-		////RUEDA TRASERA DERECHA
-
-		//model = glm::translate(model, glm::vec3(5.2f, -2.0f, 8.5f));
-		//model = glm::rotate(model, glm::radians(mainWindow.getarticulacion_avanza()), glm::vec3(-1.0f, 0.0f, 0.0f)); //CORREGIR 
-
-		//model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
-		////glUniform3fv(uniformColor, 1, glm::value_ptr(color));
-		//glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-		//trasera_der.RenderModel();
-
-		//model = modelaux;
-
-
-
-
-
-
-		////RUEDA TRASERA IZQUIERDA
-
-		//
-		//model = glm::translate(model, glm::vec3(-5.2f, -2.0f, 8.5f));
-		//model = glm::rotate(model, glm::radians(mainWindow.getarticulacion_avanza()), glm::vec3(-1.0f, 0.0f, 0.0f)); //CORREGIR ROTACI�N
-		///*modelaux = model;*/
-		//model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
-		////glUniform3fv(uniformColor, 1, glm::value_ptr(color));
-		//glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-		//trasera_izq.RenderModel();
-
-		//model = modelaux;//puede que lo cambie a modelaux
-
-
-
-
-
-
-		////HELICOPTERO
-
-		//model = glm::mat4(1.0);
-		//model = glm::translate(model, glm::vec3(0.0f, 100.0f, 6.0));
-		//model = glm::translate(model, glm::vec3(-mainWindow.getmovimiento_helicoptero(), 0.0f, 0.0f));
-		//spotLights[1].SetPos(model[3]);
-		//spotLights2[1].SetPos(model[3]);
-		//
-		////model = glm::translate(model, glm::vec3(mainWindow.getmovimiento_helicoptero(), 0.0f, 0.0f));
-		//model = glm::scale(model, glm::vec3(8.5f, 8.5f, 8.5f));
-		//model = glm::rotate(model, -90 * toRadians, glm::vec3(1.0f, 0.0f, 0.0f));
-		//model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
-		//glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-		//Blackhawk_M.RenderModel();
 
 		//Modelos Mucha Lucha
+
+
+		//ASTRODOMO
 		model = glm::mat4(1.0);
-		model = glm::translate(model, glm::vec3(-300.0f, -8.0f, -295.0)); //X para ancho del mapa y Z para largo del mapa
+		model = glm::translate(model, glm::vec3(-335.0f, -2.0f, -320.0)); 
 		model = glm::scale(model, glm::vec3(5.0f, 5.0f, 5.0f));
 		model = glm::rotate(model, -270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		Astrodomo.RenderModel();
-
-
-	
-
 		
 
+		model = modelaux;
+
+
+		//Slammin Donuts
+
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(-300.0f, -6.0f, -10.0));
+		model = glm::scale(model, glm::vec3(1.6f, 1.6f, 1.6f));
+		model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		tienda_donas.RenderModel();
+
+
+		model = modelaux;
+		
+	
+
+		//Modelos - Padrinos Mágicos
+
+		//Big Wand
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(-180.0f, -2.0f, 245.0));
+		model = glm::scale(model, glm::vec3(17.0f, 17.0f, 17.0f));
+		model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		big_wand.RenderModel();
+		model = modelaux;
+
+
+
+		//Bus
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(-35.0f, -2.0f, -380.0));
+		model = glm::scale(model, glm::vec3(15.0f, 15.0f, 15.0f));
+		model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		bus_padrinos.RenderModel();
+		model = modelaux;
+
+
+
+
+
+
+
+
+		//Modelos - Ratatouille
+
+
+
+
+		//Modelos - Laboratorio de Dexter
+
+
+		//Casa de dexter
+
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(370.0f, -2.0f, -40.0));
+		model = glm::scale(model, glm::vec3(52.0f, 52.0f, 52.0f));
+		model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		casa_dexter.RenderModel();
+		model = modelaux;
+		
+
+
+
+
+
+
+		//DEJO COMENTADO EL INSTANCIAMIENTO DEL AGAVE PARA PRUEBAS DE BLENDING
+		
 		////Agave �qu� sucede si lo renderizan antes del coche y el helic�ptero?
 		//model = glm::mat4(1.0);
 		//model = glm::translate(model, glm::vec3(0.0f, 1.0f, -4.0f));
@@ -1090,64 +853,6 @@ int main()
 
 
 		model = modelaux;
-
-
-		////L�MPARA PARA REPORTE 07
-
-		//model = glm::mat4(1.0);
-		//model = glm::translate(model, glm::vec3(25.0f, -0.95f, 5.0f));
-		//model = glm::scale(model, glm::vec3(0.008f,0.008f,0.008f));
-		//glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-		//desk_lamp.RenderModel();
-
-
-		model = modelaux;
-
-		//PUERTA MET�LICA CON MARCO PARA LETRERO, PARA PRACTICA 08
-
-		//model = glm::mat4(1.0);
-		//model = glm::translate(model, glm::vec3(-3.0f, -0.95f, 70.0f));
-		//model = glm::scale(model, glm::vec3(14.0f, 14.0f, 14.0f));
-		//glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-		//puerta_marco.RenderModel();
-
-		//model = modelaux;
-
-
-
-
-		////REJA DERECHA
-		//model = glm::mat4(1.0);
-		//model = glm::translate(model, glm::vec3(-17.5f, 10.25f, 70.0f));
-		//model = glm::scale(model, glm::vec3(14.0f, 14.0f, 14.0f));
-		//model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
-
-		//model = glm::rotate(model,rotPuerta*toRadians, glm::vec3(0.0f, 0.1f, 0.0f));
-
-		//glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-		//reja_der.RenderModel();
-
-		//model = modelaux;
-
-
-
-		////REJA IZQUIERDA
-		//model = glm::mat4(1.0);
-		//model = glm::translate(model, glm::vec3(4.5f, -0.95f, 70.0f));
-		//model = glm::scale(model, glm::vec3(14.0f, 14.0f, 14.0f));
-		//model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
-
-
-		//model = glm::rotate(model, rotPuerta, glm::vec3(0.0f, 1.0f, 0.0f)); //CORREGIR ROTACI�N
-
-		//glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-		//reja_izq.RenderModel();
-
-		model = modelaux;
-
-
-
-
 
 
 		//MODELO DE LUMINARIA PARA REPORTE 08

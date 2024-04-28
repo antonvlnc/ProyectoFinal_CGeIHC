@@ -6,13 +6,20 @@ C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFi
 C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\Window.h(13,37): warning C4244: 'return': conversión de 'GLint' a 'GLfloat'; posible pérdida de datos
   (compilando archivo de origen "ProyectoFinal_main.cpp")
   
-<<<<<<< HEAD
-C:\Users\Arturo\Documents\Visual Studio 2022\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(700,15): warning C4244: 'inicializando': conversión de 'double' a 'GLfloat'; posible pérdida de datos
-C:\Users\Arturo\Documents\Visual Studio 2022\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(702,33): warning C4244: '+=': conversión de 'double' a 'GLfloat'; posible pérdida de datos
-  LINK : no se encontró C:\Users\Arturo\Documents\Visual Studio 2022\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\Debug\Proyecto_Final.exe o no lo generó el último vínculo incremental; ejecutando vínculo completo
-=======
-C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(709,15): warning C4244: 'inicializando': conversión de 'double' a 'GLfloat'; posible pérdida de datos
-C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(711,33): warning C4244: '+=': conversión de 'double' a 'GLfloat'; posible pérdida de datos
->>>>>>> 9d400184cc5230ea9683eb33cedd3c3faffe3e5c
+C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(607,15): warning C4244: 'inicializando': conversión de 'double' a 'GLfloat'; posible pérdida de datos
+C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(609,33): warning C4244: '+=': conversión de 'double' a 'GLfloat'; posible pérdida de datos
 LINK : warning LNK4098: la biblioteca predeterminada'MSVCRT' entra en conflicto con otras bibliotecas; use la biblioteca /NODEFAULTLIB:biblioteca
+Skybox.obj : warning LNK4020: un registro de tipo de 'c:\users\anton\onedrive\documentos\labcgeihc_toledovalencia\labcgeihc\proyectofinal_cgeihc\proyectofinal\debug\vc143.pdb' está dañado; puede que algunos símbolos y tipos no sean accesibles desde el depurador
+Shader_light.obj : warning LNK4020: un registro de tipo de 'c:\users\anton\onedrive\documentos\labcgeihc_toledovalencia\labcgeihc\proyectofinal_cgeihc\proyectofinal\debug\vc143.pdb' está dañado; puede que algunos símbolos y tipos no sean accesibles desde el depurador
+Camera.obj : warning LNK4020: un registro de tipo de 'c:\users\anton\onedrive\documentos\labcgeihc_toledovalencia\labcgeihc\proyectofinal_cgeihc\proyectofinal\debug\vc143.pdb' está dañado; puede que algunos símbolos y tipos no sean accesibles desde el depurador
+user32.lib(USER32.dll) : warning LNK4020: un registro de tipo de 'c:\users\anton\onedrive\documentos\labcgeihc_toledovalencia\labcgeihc\proyectofinal_cgeihc\proyectofinal\debug\vc143.pdb' está dañado; puede que algunos símbolos y tipos no sean accesibles desde el depurador
+user32.lib(USER32.dll) : warning LNK4020: un registro de tipo de 'c:\users\anton\onedrive\documentos\labcgeihc_toledovalencia\labcgeihc\proyectofinal_cgeihc\proyectofinal\debug\vc143.pdb' está dañado; puede que algunos símbolos y tipos no sean accesibles desde el depurador
+shell32.lib(SHELL32.dll) : warning LNK4020: un registro de tipo de 'c:\users\anton\onedrive\documentos\labcgeihc_toledovalencia\labcgeihc\proyectofinal_cgeihc\proyectofinal\debug\vc143.pdb' está dañado; puede que algunos símbolos y tipos no sean accesibles desde el depurador
+glew32.lib(glew32.dll) : warning LNK4020: un registro de tipo de 'c:\users\anton\onedrive\documentos\labcgeihc_toledovalencia\labcgeihc\proyectofinal_cgeihc\proyectofinal\debug\vc143.pdb' está dañado; puede que algunos símbolos y tipos no sean accesibles desde el depurador
+glew32.lib(glew32.dll) : warning LNK4020: un registro de tipo de 'c:\users\anton\onedrive\documentos\labcgeihc_toledovalencia\labcgeihc\proyectofinal_cgeihc\proyectofinal\debug\vc143.pdb' está dañado; puede que algunos símbolos y tipos no sean accesibles desde el depurador
+MSVCRTD.lib(init.obj) : warning LNK4020: un registro de tipo de 'c:\users\anton\onedrive\documentos\labcgeihc_toledovalencia\labcgeihc\proyectofinal_cgeihc\proyectofinal\debug\vc143.pdb' está dañado; puede que algunos símbolos y tipos no sean accesibles desde el depurador
+ucrtd.lib(ucrtbased.dll) : warning LNK4020: un registro de tipo de 'c:\users\anton\onedrive\documentos\labcgeihc_toledovalencia\labcgeihc\proyectofinal_cgeihc\proyectofinal\debug\vc143.pdb' está dañado; puede que algunos símbolos y tipos no sean accesibles desde el depurador
+LINK : warning LNK4020: un registro de tipo de 'c:\users\anton\onedrive\documentos\labcgeihc_toledovalencia\labcgeihc\proyectofinal_cgeihc\proyectofinal\debug\vc143.pdb' está dañado; puede que algunos símbolos y tipos no sean accesibles desde el depurador
+LINK : warning LNK4020: un registro de tipo de 'c:\users\anton\onedrive\documentos\labcgeihc_toledovalencia\labcgeihc\proyectofinal_cgeihc\proyectofinal\debug\vc143.pdb' está dañado; puede que algunos símbolos y tipos no sean accesibles desde el depurador
+LINK : warning LNK4020: un registro de tipo de 'c:\users\anton\onedrive\documentos\labcgeihc_toledovalencia\labcgeihc\proyectofinal_cgeihc\proyectofinal\debug\vc143.pdb' está dañado; puede que algunos símbolos y tipos no sean accesibles desde el depurador
   P08_2-421124433.vcxproj -> C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\Debug\Proyecto_Final.exe
