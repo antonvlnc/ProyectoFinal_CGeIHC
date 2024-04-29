@@ -29,11 +29,19 @@ Window::Window(GLint windowWidth, GLint windowHeight)
 	avanza_retrocede = 0.0f;
 
 	avanza_retrocede_helicoptero = 0.0f;
-	/*articulacion_avanza_helicoptero = 0.0f;*/
 
 	MusicaSi = true;
 
 	muevex = 2.0f;
+
+	//Movimiento Avatar
+
+	banderaCaminata = true;
+	movimientoAvatar = 0.0f;
+	rotAvatar = 0.0f;
+	rotBrazoPiernas = 0.0f;
+	banderaRand = false;
+
 	for (size_t i = 0; i < 1024; i++)
 	{
 		keys[i] = 0;
@@ -124,13 +132,62 @@ void Window::ManejaTeclado(GLFWwindow* window, int key, int code, int action, in
 	{
 		glfwSetWindowShouldClose(window, GL_TRUE);
 	}
-	if (key == GLFW_KEY_Y)
+	//Movimiento AVatar: Y -> avanzar hacia adelante, U -> rotar Avatar
+	if (key == GLFW_KEY_V)
 	{
-		theWindow-> muevex += 1.0;
+		if (action == GLFW_PRESS) {
+			theWindow->movimientoAvatar = 0.1f;
+			theWindow->banderaRand = true;
+		}
+		if (action == GLFW_RELEASE) {
+			theWindow->rotBrazoPiernas = 0.0;
+			theWindow->banderaCaminata = true;
+			theWindow->movimientoAvatar = 0.0f;
+			theWindow->banderaRand = false;
+		}
+		if (theWindow->banderaRand) {
+			if (theWindow->banderaCaminata) {
+				if (theWindow->rotBrazoPiernas <= 30.0) {
+					theWindow->rotBrazoPiernas += 5.0f;
+
+				}
+				else {
+					theWindow->banderaCaminata = !theWindow->banderaCaminata;
+				}
+			}
+			else {
+				if (theWindow->rotBrazoPiernas >= -30.0) {
+					theWindow->rotBrazoPiernas -= 5.0f;
+				}
+				else {
+					theWindow->banderaCaminata = !theWindow->banderaCaminata;
+				}
+
+			}
+
+		}
 	}
-	if (key == GLFW_KEY_U)
+	if (key == GLFW_KEY_B)
 	{
-		theWindow-> muevex -= 1.0;
+		if (action == GLFW_RELEASE) {
+			theWindow->rotAvatar = 0.0;
+		}
+		else {
+			theWindow->rotAvatar = -5.0;
+		}
+
+
+	}
+	if (key == GLFW_KEY_C)
+	{
+		if (action == GLFW_RELEASE) {
+			theWindow->rotAvatar = 0.0;
+		}
+		else {
+			theWindow->rotAvatar = 5.0;
+		}
+
+
 	}
 
 
