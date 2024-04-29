@@ -2,11 +2,7 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
-<<<<<<< HEAD
       <FullPath>C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\Debug\Proyecto_Final.exe</FullPath>
-=======
-      <FullPath>C:\Users\Arturo\Documents\Visual Studio 2022\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\Debug\Proyecto_Final.exe</FullPath>
->>>>>>> main
     </ProjectOutput>
   </ProjectOutputs>
   <ContentFiles />
