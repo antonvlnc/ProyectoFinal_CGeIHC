@@ -158,8 +158,7 @@ static double limitFPS = 1.0 / 60.0;
 
 
 
-//DECLARACION DE LAS LUCES
-
+//DECLARACION DE LAS LUCEs
 // luz direccional
 DirectionalLight mainLight;
 PointLight pointLights[MAX_POINT_LIGHTS];
