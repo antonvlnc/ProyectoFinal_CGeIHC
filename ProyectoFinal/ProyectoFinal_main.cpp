@@ -38,6 +38,9 @@ Integrantes:
 #include "Sphere.h"
 #include"Model.h"
 #include "Skybox.h"
+#include "MainAvatar.h"
+#include "Edificio.h"
+#include "Lampara.h"
 
 //para iluminaci�n
 #include "CommonValues.h"
@@ -50,23 +53,43 @@ Integrantes:
 #include <irrklang.h>
 using namespace irrklang;
 
+//VARIABLES Y CONSTANTES
 const float toRadians = 3.14159265f / 180.0f;
 
 //Para animaci�n
-float movCoche;
-float movOffset;
-float rotllanta;
-float rotllantaOffset;
-bool avanza;
-bool abre;
-bool desplaza;
-float rotPuerta;
-float rotPuertaOffset;
+bool alaIzq = true;
+bool alaDer = true;
+float giraAlaIzq;
+float giraAlaDer;
+float anguloAlaIzq;
+float anguloAlaDer;
+float giraAlaOffset;
+float movAlaOffset;
 
+
+
+//para luces
+unsigned int pointLightCount = 0;
+unsigned int pointLightCount2 = 0;
+unsigned int spotLightCount = 0; //ARREGLO 0 -> TODAS LAS LUCES ENCENDIDAS
+unsigned int spotLightCount2 = 0;
+
+//Uniforms
+
+GLuint uniformProjection;
+GLuint uniformModel;
+GLuint uniformView;
+GLuint uniformEyePosition;
+GLuint uniformSpecularIntensity;
+GLuint uniformShininess;
+GLuint uniformColor;
+
+//VENTANAS
 Window mainWindow;
 std::vector<Mesh*> meshList;
 std::vector<Shader> shaderList;
 
+//CAMARAS
 Camera camera;
 
 
@@ -81,24 +104,27 @@ Texture reforma_layout; //piso
 Texture AstrodomoTexture;
 
 
-
-
-
 //DECLARACION DE MODELOS
 
+//Dexter
+MainAvatar dexter;
+Edificio dianaCazadora;
+Edificio BBVA_Pixies;
+Edificio estelaDeLuz;
+Edificio astrodomo;
+Edificio slamminDonuts;
+Edificio bigWand;
+Edificio casaDexter;
+Edificio CasaTimmy;
+
+Lampara luminariaP8;
 
 //GENERAL
 Model luminaria;
 Model angel_independencia;
 Model angel_independencia_ala;
-Model bbva;
-Model estela_de_luz;
-
-
-
 
 //Padrinos Magicos
-Model diana_cazadora;
 Model bus_padrinos;
 Model big_wand;
 Model letrero_dimsdale;
@@ -112,26 +138,15 @@ Model dexter_arm;
 
 //Ratatouille
 
-
 //Mucha Lucha
-
-Model Astrodomo;
 Model tienda_donas;
-
-
-
-
-
 
 
 //SKYBOX
 Skybox skybox;
 
 
-
-
-
-//materiales
+//MATERIALES
 Material Material_brillante;
 Material Material_opaco;
 
@@ -143,30 +158,220 @@ static double limitFPS = 1.0 / 60.0;
 
 
 
-//Declaración de Luces
-
+//DECLARACION DE LAS LUCES
 
 // luz direccional
 DirectionalLight mainLight;
-
-
-//para declarar varias luces de tipo pointlight
 PointLight pointLights[MAX_POINT_LIGHTS];
 PointLight pointLights2[MAX_POINT_LIGHTS];
 SpotLight spotLights[MAX_SPOT_LIGHTS];
 SpotLight spotLights2[MAX_SPOT_LIGHTS];
-//SpotLight spotLights3[MAX_SPOT_LIGHTS];
 
 
-
+//SHADERS
 // Vertex Shader
 static const char* vShader = "shaders/shader_light.vert";
-
 // Fragment Shader
 static const char* fShader = "shaders/shader_light.frag";
 
+//DECLARACION DE FUNCIONES. La implementación se encuentra al final del código
 
-//funci�n de calculo de normales por promedio de v�rtices 
+void calcAverageNormals(unsigned int* indices, unsigned int indiceCount, GLfloat* vertices, unsigned int verticeCount,
+	unsigned int vLength, unsigned int normalOffset);
+void CreateObjects();
+void CreateShaders();
+void InitializeModels();
+void InitializeTextures();
+void InitializeLights();
+void renderAngelIndependencia();
+void renderTimmyBus();
+
+
+int main()
+{
+	mainWindow = Window(1366, 768); // 1280, 1024 or 1024, 768
+	mainWindow.Initialise();
+
+	CreateObjects();
+	CreateShaders();
+	InitializeModels();
+	InitializeTextures();
+	InitializeLights();
+
+	//CAMARAS
+	camera = Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), -60.0f, 0.0f, 5.5f, 0.5f);
+
+
+	glm::mat4 model(1.0);
+	glm::mat4 modelaux(1.0); //PARA EL CHASIS
+	glm::mat4 modelaux2(1.0);
+	glm::mat4 projection = glm::perspective(45.0f, (GLfloat)mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 0.1f, 1000.0f);
+	uniformProjection = 0;
+	uniformModel = 0;
+	uniformView = 0;
+	uniformEyePosition = 0;
+	uniformSpecularIntensity = 0;
+	uniformShininess = 0;
+	uniformColor = 0;
+
+	//Animaciones
+	alaIzq = true;
+	alaDer = true;
+	giraAlaIzq = 0.0f;
+	giraAlaDer = 0.0f;
+	anguloAlaIzq = 90.0f;
+	anguloAlaDer = 90.0f;
+	giraAlaOffset = 1.0f;
+	movAlaOffset = 1.0f;
+
+	//------------------SONIDO-----------------------
+	//Sonido ambiental
+	ISoundEngine* Ambiental = createIrrKlangDevice();
+	Ambiental->play2D("Sound/Ambiental.wav", true);
+	Ambiental->setSoundVolume(0.2f);
+
+	//Pista de fondo
+	ISoundEngine* Intro = createIrrKlangDevice();
+	Intro->play2D("Sound/Lab_Dexter.wav", true);
+	Intro->setSoundVolume(0.15f);
+
+	////Sonido con teclado (Pendiente)
+	/*ISoundEngine* AstrodomoSound = createIrrKlangDevice();
+	AstrodomoSound->play2D("Sound/Mucha_Lucha.wav", true);
+	AstrodomoSound->setSoundVolume(0.1f);*/
+
+
+	////Loop mientras no se cierra la ventana
+	while (!mainWindow.getShouldClose())
+	{
+		GLfloat now = glfwGetTime();
+		deltaTime = now - lastTime;
+		deltaTime += (now - lastTime) / limitFPS;
+		lastTime = now;
+
+		//----------------ANIMACIONES-------------- Aquí irán las funciones de las animaciones
+
+
+		//Recibir eventos del usuario
+		glfwPollEvents();
+		camera.keyControl(mainWindow.getsKeys(), deltaTime);
+		camera.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
+
+		// Clear the window
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		skybox.DrawSkybox(camera.calculateViewMatrix(), projection);
+		shaderList[0].UseShader();
+
+		//---------INICIACILIZACION DE VARIABLES UNIFORM-------------
+		uniformModel = shaderList[0].GetModelLocation();
+		uniformProjection = shaderList[0].GetProjectionLocation();
+		uniformView = shaderList[0].GetViewLocation();
+		uniformEyePosition = shaderList[0].GetEyePositionLocation();
+		uniformColor = shaderList[0].getColorLocation();
+
+		//informaci�n en el shader de intensidad especular y brillo
+		uniformSpecularIntensity = shaderList[0].GetSpecularIntensityLocation();
+		uniformShininess = shaderList[0].GetShininessLocation();
+
+		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
+		glUniform3f(uniformEyePosition, camera.getCameraPosition().x, camera.getCameraPosition().y, camera.getCameraPosition().z);
+
+		//----------------LUCES-----------
+		// luz ligada a la c�mara de tipo flash
+		//sirve para que en tiempo de ejecuci�n (dentro del while) se cambien propiedades de la luz
+		glm::vec3 lowerLight = camera.getCameraPosition();
+		lowerLight.y -= 0.3f;
+		//spotLights[0].SetFlash(lowerLight, camera.getCameraDirection());
+
+		//informaci�n al shader de fuentes de iluminaci�n
+		shaderList[0].SetDirectionalLight(&mainLight);
+		/*shaderList[0].SetPointLights(pointLights, pointLightCount);
+		shaderList[0].SetSpotLights(spotLights, spotLightCount);*/
+
+
+		//PISO
+		glm::mat4 model(1.0);
+		glm::mat4 modelaux(1.0);
+		glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
+
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(0.0f, -1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(450.0f, 1.0f, 700.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
+
+		reforma_layout.UseTexture();
+		Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
+		//RENDERIZAMOS EL PISO
+		meshList[2]->RenderMesh();
+
+
+		//INSTANCIAMIENTO DE LOS MODELOS
+		//X para ancho del mapa y Z para largo del mapa
+
+
+		//Modelos Generales del mundo
+
+		//Diana cazadora
+		dianaCazadora.renderModel();
+
+		//Edificio BBVA/Pixies
+		BBVA_Pixies.renderModel();
+
+
+		//Estela de Luz
+		estelaDeLuz.renderModel();
+
+		//angel de la independencia
+		renderAngelIndependencia();
+
+
+		//Modelos Mucha Lucha
+
+		//ASTRODOMO
+		astrodomo.renderModel();
+
+		//Slammin Donuts
+		slamminDonuts.renderModel();
+
+		//Modelos - Padrinos Mágicos
+
+		//Big Wand
+		bigWand.renderModel();
+
+
+		//Bus
+		renderTimmyBus();
+
+		//Modelos - Ratatouille
+
+
+
+		//Modelos - Laboratorio de Dexter
+		dexter.setUniformModel(uniformModel);
+		dexter.setMovimiento(mainWindow.getMovimientoAvatar(), mainWindow.getRotacionAvatar(), mainWindow.getrotBrazoPiernas());
+		dexter.renderMainAvatar();
+
+		//Casa de dexter
+		casaDexter.renderModel();
+
+		//casa timmy
+		CasaTimmy.renderModel();
+
+
+		//MODELO DE LUMINARIA PARA REPORTE 08
+		luminariaP8.renderModel();
+
+		glUseProgram(0);
+		mainWindow.swapBuffers();
+	}
+
+	return 0;
+}
+
+
 void calcAverageNormals(unsigned int* indices, unsigned int indiceCount, GLfloat* vertices, unsigned int verticeCount,
 	unsigned int vLength, unsigned int normalOffset)
 {
@@ -194,7 +399,6 @@ void calcAverageNormals(unsigned int* indices, unsigned int indiceCount, GLfloat
 		vertices[nOffset] = vec.x; vertices[nOffset + 1] = vec.y; vertices[nOffset + 2] = vec.z;
 	}
 }
-
 
 void CreateObjects()
 {
@@ -247,18 +451,18 @@ void CreateObjects()
 
 
 	};
-	
-	Mesh *obj1 = new Mesh();
+
+	Mesh* obj1 = new Mesh();
 	obj1->CreateMesh(vertices, indices, 32, 12);
 	meshList.push_back(obj1); //meshlist0
 
-	Mesh *obj2 = new Mesh();
+	Mesh* obj2 = new Mesh();
 	obj2->CreateMesh(vertices, indices, 32, 12);
 	meshList.push_back(obj2); //mesh list 1
 
 
 	//PISO
-	Mesh *obj3 = new Mesh();
+	Mesh* obj3 = new Mesh();
 	obj3->CreateMesh(floorVertices, floorIndices, 32, 6);
 	meshList.push_back(obj3); //mesh list 2
 
@@ -273,27 +477,73 @@ void CreateObjects()
 
 }
 
-
 void CreateShaders()
 {
-	Shader *shader1 = new Shader();
+	Shader* shader1 = new Shader();
 	shader1->CreateFromFiles(vShader, fShader);
 	shaderList.push_back(*shader1);
 }
 
+void InitializeModels() {
+	//----------Modelos Generales---------------------
+	angel_independencia = Model();
+	angel_independencia.LoadModel("Models/Angel.obj");
+
+	angel_independencia_ala = Model();
+	angel_independencia_ala.LoadModel("Models/AngelAla.obj");
+
+	BBVA_Pixies = Edificio("Models/BBVA.obj", &uniformModel, glm::vec3(350.0f, -1.0f, 350.0f), glm::vec3(220.0f));
+	BBVA_Pixies.setRotY(270.0f);
+
+	estelaDeLuz = Edificio("Models/Estela.obj", &uniformModel, glm::vec3(200.0f, -1.0f, 620.0f), glm::vec3(5.0f));
+
+
+	//----------Modelos Mucha Lucha---------------------
+
+	astrodomo = Edificio("Models/MuchaLucha/Astrodomo.obj", &uniformModel, glm::vec3(-355.0f, -2.0f, -320.0f), glm::vec3(5.0f));
+	astrodomo.setRotY(-270.0f);
+
+	slamminDonuts = Edificio("Models/MuchaLucha/SlamminDonuts.obj", &uniformModel, glm::vec3(-300.0f, -6.0f, -10.0), glm::vec3(1.6f));
+	slamminDonuts.setRotY(90.0f);
+
+	//----------Modelos Padrinos Magicos---------------------
+
+
+	bus_padrinos = Model();
+	bus_padrinos.LoadModel("Models/Padrinos/Bus.obj");
+
+	dianaCazadora = Edificio("Models/DianaCupido.obj", &uniformModel, glm::vec3(0.0f, -1.0f, 175.0f), glm::vec3(4.0f, 5.0f, 4.0f));
+	dianaCazadora.setRotY(-180.0f);
+
+	bigWand = Edificio("Models/Padrinos/BigWand.obj", &uniformModel, glm::vec3(-180.0f, -2.0f, 245.0), glm::vec3(17.0f));
+	bigWand.setRotY(90.0f);
+
+	CasaTimmy = Edificio("Models/Padrinos/TimmyH_Tex2.obj", &uniformModel, glm::vec3(-350.0f, 0.0f, 340.0), glm::vec3(30.0f));
+	CasaTimmy.setRotY(90.0f);
+
+
+	//----------Modelos Lab. de Dexter---------------------
+
+	casaDexter = Edificio("Models/DextersLab/CasaDexter.obj", &uniformModel, glm::vec3(370.0f, -2.0f, -40.0), glm::vec3(52.0f));
+	casaDexter.setRotY(270.0f);
+
+	//AVATAR (DEXTER)
+
+	dexter = MainAvatar(glm::vec3(250.0f, 0.5f, 350.0f), 15.0f, glm::vec3(3.0f, 3.0f, 3.0f));
+
+
+	//----------Modelos Ratatouille---------------------
 
 
 
-int main()
-{
-	mainWindow = Window(1366, 768); // 1280, 1024 or 1024, 768
-	mainWindow.Initialise();
+	//LUMINARIA PARA REPORTE 08
 
-	CreateObjects();
-	CreateShaders();
+	luminariaP8 = Lampara("Models/luminaria_text.obj", &uniformModel, glm::vec3(-90.0f, -0.95f, -100.0f), glm::vec3(4.0f));
 
-	camera = Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), -60.0f, 0.0f, 5.5f, 0.5f);
 
+}
+
+void InitializeTextures() { //Texturas y skybox
 	brickTexture = Texture("Textures/brick.png");
 	brickTexture.LoadTextureA();
 	dirtTexture = Texture("Textures/dirt.png");
@@ -308,85 +558,6 @@ int main()
 	reforma_layout = Texture("Textures/reforma_layout.png");
 	reforma_layout.LoadTextureA();
 
-
-
-
-
-
-
-
-	//----------Modelos Generales---------------------
-	angel_independencia = Model();
-	angel_independencia.LoadModel("Models/Angel.obj");
-
-	angel_independencia_ala = Model();
-	angel_independencia_ala.LoadModel("Models/AngelAla.obj");
-
-	bbva = Model();
-	bbva.LoadModel("Models/BBVA.obj");
-
-	estela_de_luz = Model();
-	estela_de_luz.LoadModel("Models/Estela.obj");
-
-	diana_cazadora = Model();
-	diana_cazadora.LoadModel("Models/DianaCupido.obj");
-
-
-
-
-
-
-
-	//----------Modelos Mucha Lucha---------------------
-	Astrodomo = Model();
-	Astrodomo.LoadModel("Models/MuchaLucha/Astrodomo.obj");
-
-	tienda_donas = Model();
-	tienda_donas.LoadModel("Models/MuchaLucha/SlamminDonuts.obj");
-
-
-	//----------Modelos Padrinos Magicos---------------------
-	
-	big_wand = Model();
-	big_wand.LoadModel("Models/Padrinos/BigWand.obj");
-
-	bus_padrinos = Model();
-	bus_padrinos.LoadModel("Models/Padrinos/Bus.obj");
-
-
-	//----------Modelos Lab. de Dexter---------------------
-
-	casa_dexter = Model();
-	casa_dexter.LoadModel("Models/DextersLab/CasaDexter.obj");
-
-
-
-	//AVATAR (DEXTER)
-
-	dexter_body = Model();
-	dexter_body.LoadModel("Models/DextersLab/DexterBody.obj");
-
-	dexter_arm = Model();
-	dexter_arm.LoadModel("Models/DextersLab/DexterArm.obj");
-
-	dexter_leg = Model();
-	dexter_leg.LoadModel("Models/DextersLab/DexterLeg.obj");
-	
-
-
-
-	//----------Modelos Ratatouille---------------------
-
- 
-
-	//LUMINARIA PARA REPORTE 08
-	luminaria = Model();
-	luminaria.LoadModel("Models/luminaria_text.obj");
-
-
-
-	
-	//SKYBOX
 	std::vector<std::string> skyboxFaces;
 	skyboxFaces.push_back("Textures/Skybox/sky-right.jpg");
 	skyboxFaces.push_back("Textures/Skybox/sky-left.jpg");
@@ -397,26 +568,109 @@ int main()
 
 	skybox = Skybox(skyboxFaces);
 
+	//SKYBOX
+
 	Material_brillante = Material(4.0f, 256);
 	Material_opaco = Material(0.3f, 4);
 
+}
+
+void renderAngelIndependencia() {
+
+	if (alaIzq)
+	{
+		if (anguloAlaIzq >= 0.0f)
+		{
+			anguloAlaIzq -= movAlaOffset * deltaTime;
+			giraAlaIzq += giraAlaOffset * deltaTime;
+		}
+		else
+		{
+			alaIzq = false;
+		}
+	}
+
+	else
+	{
+		if (anguloAlaIzq <= 90.0f)
+		{
+			anguloAlaIzq += movAlaOffset * deltaTime;
+			giraAlaIzq -= giraAlaOffset * deltaTime;
+		}
+		else
+		{
+			alaIzq = true;
+		}
+	}
 
 
+	if (alaDer)
+	{
+		if (anguloAlaDer >= 0.0f)
+		{
+			anguloAlaDer -= movAlaOffset * deltaTime;
+			giraAlaDer -= giraAlaOffset * deltaTime;
+		}
+		else
+		{
+			alaDer = false;
+		}
+	}
+
+	else
+	{
+		if (anguloAlaDer <= 90.0f)
+		{
+			anguloAlaDer += movAlaOffset * deltaTime;
+			giraAlaDer += giraAlaOffset * deltaTime;
+		}
+		else
+		{
+			alaDer = true;
+		}
+	}
+	//Angel de la independencia
+	glm::mat4 model, modelaux2;
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(5.0f, -1.0f, -530.0));
+	model = glm::scale(model, glm::vec3(7.0f, 8.0f, 7.0f));
+	model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	modelaux2 = model;
+	angel_independencia.RenderModel();
+
+	model = glm::translate(model, glm::vec3(0.0f, 28.5f, -0.5f));
+	model = glm::rotate(model, giraAlaIzq * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+
+	//Ala del angel 1
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0));
+	model = glm::scale(model, glm::vec3(-1.0f, 1.0f, 1.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	angel_independencia_ala.RenderModel();
+
+
+	model = modelaux2;
+
+	model = glm::translate(model, glm::vec3(0.0f, 28.5f, -0.5f));
+	model = glm::rotate(model, giraAlaDer * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+
+	//Ala del angel 2
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0));
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	angel_independencia_ala.RenderModel();
+
+}
+
+void InitializeLights() {
 	//APARTADO DE LUCES
-
-
-
-	//luz direccional, s�lo 1 y siempre debe de existir
+//luz direccional, s�lo 1 y siempre debe de existir
 	mainLight = DirectionalLight(1.0f, 1.0f, 1.0f,
 		0.3f, 0.3f,
 		0.0f, 0.0f, -1.0f);
 
-
 	//contador de luces puntuales
-
-	unsigned int pointLightCount = 0;
-	unsigned int pointLightCount2 = 0;
-	/*unsigned int pointLightCount3 = 0;*/
 
 
 	//Declaraci�n de primer luz puntual (magenta) | PARA LUMINARIA
@@ -426,19 +680,12 @@ int main()
 		1.0f, 0.045f, 0.0075f);
 	pointLightCount++;
 
-
-
-
 	//LUZ PUNTUAL PARA LA DESK LAMP
 	pointLights[1] = PointLight(1.0f, 1.0f, 1.0f,
 		0.0f, 3.0f,
 		25.0f, 2.5f, 7.0f,
 		1.0f, 0.14f, 0.07f);
 	pointLightCount++;
-
-
-
-
 
 	//LUZ NEGRA PARA APAGAR (ARREGLO 2 DE POINTLIGHTS)
 	pointLights2[0] = PointLight(0.0f, 0.0f, 0.0f,
@@ -447,21 +694,10 @@ int main()
 		0.3f, 0.2f, 0.1f);
 	pointLightCount2++;
 
-
-
-
-
-	unsigned int spotLightCount = 0; //ARREGLO 0 -> TODAS LAS LUCES ENCENDIDAS
-	unsigned int spotLightCount2 = 0; //ARREGLO 1 -> CUANDO EL AUTO AVANZA
-	//unsigned int spotLightCount3 = 0; //ARREGLO 2 -> CUANDO EL AUTO RETROCEDE
-
-
-
-	//PRIMER ARREGLO DE SPOTLIGHTS (TODAS LAS SPOTLIGHTS ENCENDIDAS)
-
-
-
-	// Luz vehiculo delantera (azul)
+	//ARREGLO 1 -> CUANDO EL AUTO AVANZA
+	   //unsigned int spotLightCount3 = 0; //ARREGLO 2 -> CUANDO EL AUTO RETROCEDE
+	   //PRIMER ARREGLO DE SPOTLIGHTS (TODAS LAS SPOTLIGHTS ENCENDIDAS)
+	   // Luz vehiculo delantera (azul)
 	spotLights[0] = SpotLight(0.0f, 0.0f, 1.0f,
 		1.0f, 2.0f,
 		0.0f, 50.0f, -10.0f,
@@ -469,7 +705,7 @@ int main()
 		1.0f, 0.01f, 0.001f,
 		20.0f);
 	spotLightCount++;
-	
+
 
 	// Luz helicoptero
 	spotLights[1] = SpotLight(1.0f, 1.0f, 0.0f,
@@ -478,21 +714,15 @@ int main()
 		0.0f, -5.0f, 0.0f,
 		1.0f, 0.01f, 0.001f,
 		15.0f);
-
-
 	spotLightCount++;
 
-
 	//LUZ SPOTLIGHT QUE ILUMINA PUERTA DE REJA
-
 	spotLights[2] = SpotLight(0.0f, 1.0f, 1.0f,
 		3.0f, 5.0f,
 		-2.0f, 12.0f, -5.0f,
 		0.0f, 0.0f, 5.0f,
 		1.0f, 0.01f, 0.001f,
 		15.0f);
-
-
 	spotLightCount++;
 
 
@@ -505,15 +735,7 @@ int main()
 		1.0f, 0.01f, 0.001f,
 		20.0f);
 	spotLightCount++;
-
-
-
-
-
 	//SEGUNDO ARREGLO (CUANDO EL AUTO RETROCEDE)
-
-
-
 	// Luz vehiculo delantera (azul) APAGADA
 	spotLights2[0] = SpotLight(0.0f, 0.0f, 0.0f,
 		1.0f, 2.0f,
@@ -522,9 +744,6 @@ int main()
 		1.0f, 0.01f, 0.001f,
 		20.0f);
 	spotLightCount2++;
-
-
-
 	// Luz helicoptero
 	spotLights2[1] = SpotLight(1.0f, 1.0f, 0.0f,
 		1.0f, 2.0f,
@@ -534,9 +753,7 @@ int main()
 		15.0f);
 	spotLightCount2++;
 
-
 	//LUZ SPOTLIGHT QUE ILUMINA PUERTA DE REJA
-
 	spotLights2[2] = SpotLight(0.0f, 1.0f, 1.0f,
 		3.0f, 5.0f,
 		-2.0f, 12.0f, -5.0f,
@@ -546,32 +763,31 @@ int main()
 	spotLightCount2++;
 
 
-	//luz trasera del auto ENCENDIDA
-
-	spotLights2[3] = SpotLight(1.0f, 0.0f, 0.0f, 
+	//Luz trasera del auto ENCENDIDA
+	spotLights2[3] = SpotLight(1.0f, 0.0f, 0.0f,
 		1.0f, 2.0f,
 		0.0f, 50.0f, 10.0f,
 		0.0f, 0.0f, 10.0f,
 		1.0f, 0.01f, 0.001f,
 		20.0f);
 	spotLightCount2++;
+}
 
+void renderTimmyBus() {
 
+	glm::mat4 model;
 
-	//se crean mas luces puntuales y spotlight 
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-35.0f, -2.0f, -380.0));
+	model = glm::scale(model, glm::vec3(15.0f, 15.0f, 15.0f));
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	bus_padrinos.RenderModel();
 
+}
 
-
-	glm::mat4 model(1.0);
-	glm::mat4 modelaux(1.0); //PARA EL CHASIS
-	glm::mat4 modelaux2(1.0);
-
-
-
-	GLuint uniformProjection = 0, uniformModel = 0, uniformView = 0, uniformEyePosition = 0,
-		uniformSpecularIntensity = 0, uniformShininess = 0;
-	GLuint uniformColor = 0;
-	glm::mat4 projection = glm::perspective(45.0f, (GLfloat)mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 0.1f, 1000.0f);
+/*
+Código retirado del main que no sé si se va a necesitar en algun momento;
 
 
 	movCoche = 0.0f;
@@ -583,260 +799,8 @@ int main()
 	abre = true;
 	rotPuerta = 0.5f;
 
+	//DEJO COMENTADO EL INSTANCIAMIENTO DEL AGAVE PARA PRUEBAS DE BLENDING
 
-	//Sonido ambiental
-	ISoundEngine* Ambiental = createIrrKlangDevice();
-	Ambiental->play2D("Sound/Ambiental.wav", true);
-	Ambiental->setSoundVolume(0.2f);
-
-	//Pista de fondo
-	ISoundEngine* Intro = createIrrKlangDevice();
-	Intro->play2D("Sound/Lab_Dexter.wav", true);
-	Intro->setSoundVolume(0.15f);
-
-	////Sonido con teclado (Pendiente)
-	/*ISoundEngine* AstrodomoSound = createIrrKlangDevice();
-	AstrodomoSound->play2D("Sound/Mucha_Lucha.wav", true);
-	AstrodomoSound->setSoundVolume(0.1f);*/
-	//
-
-	
-	////Loop mientras no se cierra la ventana
-	while (!mainWindow.getShouldClose())
-	{
-		GLfloat now = glfwGetTime();
-		deltaTime = now - lastTime;
-		deltaTime += (now - lastTime) / limitFPS;
-		lastTime = now;
-
-		//Aquí irán las funciones de las animaciones
-
-
-		//Recibir eventos del usuario
-		glfwPollEvents();
-		camera.keyControl(mainWindow.getsKeys(), deltaTime);
-		camera.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
-
-		// Clear the window
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		skybox.DrawSkybox(camera.calculateViewMatrix(), projection);
-		shaderList[0].UseShader();
-		uniformModel = shaderList[0].GetModelLocation();
-		uniformProjection = shaderList[0].GetProjectionLocation();
-		uniformView = shaderList[0].GetViewLocation();
-		uniformEyePosition = shaderList[0].GetEyePositionLocation();
-		uniformColor = shaderList[0].getColorLocation();
-		
-		//informaci�n en el shader de intensidad especular y brillo
-		uniformSpecularIntensity = shaderList[0].GetSpecularIntensityLocation();
-		uniformShininess = shaderList[0].GetShininessLocation();
-
-		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
-		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
-		glUniform3f(uniformEyePosition, camera.getCameraPosition().x, camera.getCameraPosition().y, camera.getCameraPosition().z);
-
-		// luz ligada a la c�mara de tipo flash
-		//sirve para que en tiempo de ejecuci�n (dentro del while) se cambien propiedades de la luz
-		glm::vec3 lowerLight = camera.getCameraPosition();
-		lowerLight.y -= 0.3f;
-		//spotLights[0].SetFlash(lowerLight, camera.getCameraDirection());
-
-		//informaci�n al shader de fuentes de iluminaci�n
-		shaderList[0].SetDirectionalLight(&mainLight);
-		/*shaderList[0].SetPointLights(pointLights, pointLightCount);
-		shaderList[0].SetSpotLights(spotLights, spotLightCount);*/
-
-
-
-
-		//PISO
-
-		glm::mat4 model(1.0);
-		glm::mat4 modelaux(1.0);
-		glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
-
-		model = glm::mat4(1.0);
-		model = glm::translate(model, glm::vec3(0.0f, -1.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(450.0f, 1.0f, 700.0f));
-		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
-
-		reforma_layout.UseTexture();
-		Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
-
-		//RENDERIZAMOS EL PISO
-		meshList[2]->RenderMesh(); 
-
-		model = modelaux;
-
-
-
-
-		//INSTANCIAMIENTO DE LOS MODELOS
-		//X para ancho del mapa y Z para largo del mapa
-
-
-
-
-		//Modelos Generales del mundo
-
-		//Diana cazadora
-		model = glm::mat4(1.0);
-		model = glm::translate(model, glm::vec3(0.0f, -1.0f, 175.0));
-		model = glm::scale(model, glm::vec3(4.0f, 5.0f, 4.0f));
-		model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
-		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-		diana_cazadora.RenderModel();
-
-
-		model = modelaux;
-
-
-		//Angel de la independencia
-		model = glm::mat4(1.0);
-		model = glm::translate(model, glm::vec3(5.0f, -1.0f, -530.0));
-		model = glm::scale(model, glm::vec3(7.0f, 8.0f, 7.0f));
-		model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
-		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-		angel_independencia.RenderModel();
-
-
-		model = modelaux;
-
-		//Ala del angel 1
-		model = glm::mat4(1.0);
-		model = glm::translate(model, glm::vec3(5.0f, 230.0f, -525.0));
-		model = glm::scale(model, glm::vec3(7.0f, 8.0f, 7.0f));
-		model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
-		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-		angel_independencia_ala.RenderModel();
-
-
-		model = modelaux;
-
-		//Ala del angel 2
-		model = glm::mat4(1.0);
-		model = glm::translate(model, glm::vec3(5.0f, 230.0f, -525.0));
-		model = glm::scale(model, glm::vec3(7.0f, 8.0f, 7.0f));
-		//model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
-		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-		angel_independencia_ala.RenderModel();
-
-
-		model = modelaux;
-
-
-		//Edificio BBVA/Pixies
-
-		model = glm::mat4(1.0);
-		model = glm::translate(model, glm::vec3(350.0f, -1.0f, 350.0));
-		model = glm::scale(model, glm::vec3(220.0f, 220.0f, 220.0f));
-		model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
-		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-		bbva.RenderModel();
-
-
-
-
-		//Estela de Luz
-
-
-		model = glm::mat4(1.0);
-		model = glm::translate(model, glm::vec3(200.0f, -1.0f, 620.0));
-		model = glm::scale(model, glm::vec3(5.0f, 5.0f, 5.0f));
-		//model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
-		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-		estela_de_luz.RenderModel();
-
-
-
-
-
-		//Modelos Mucha Lucha
-
-
-		//ASTRODOMO
-		model = glm::mat4(1.0);
-		model = glm::translate(model, glm::vec3(-335.0f, -2.0f, -320.0)); 
-		model = glm::scale(model, glm::vec3(5.0f, 5.0f, 5.0f));
-		model = glm::rotate(model, -270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
-		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-		Astrodomo.RenderModel();
-		
-
-		model = modelaux;
-
-
-		//Slammin Donuts
-
-		model = glm::mat4(1.0);
-		model = glm::translate(model, glm::vec3(-300.0f, -6.0f, -10.0));
-		model = glm::scale(model, glm::vec3(1.6f, 1.6f, 1.6f));
-		model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
-		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-		tienda_donas.RenderModel();
-
-
-		model = modelaux;
-		
-	
-
-		//Modelos - Padrinos Mágicos
-
-		//Big Wand
-		model = glm::mat4(1.0);
-		model = glm::translate(model, glm::vec3(-180.0f, -2.0f, 245.0));
-		model = glm::scale(model, glm::vec3(17.0f, 17.0f, 17.0f));
-		model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
-		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-		big_wand.RenderModel();
-		model = modelaux;
-
-
-
-		//Bus
-		model = glm::mat4(1.0);
-		model = glm::translate(model, glm::vec3(-35.0f, -2.0f, -380.0));
-		model = glm::scale(model, glm::vec3(15.0f, 15.0f, 15.0f));
-		model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
-		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-		bus_padrinos.RenderModel();
-		model = modelaux;
-
-
-
-
-
-
-
-
-		//Modelos - Ratatouille
-
-
-
-
-		//Modelos - Laboratorio de Dexter
-
-
-		//Casa de dexter
-
-		model = glm::mat4(1.0);
-		model = glm::translate(model, glm::vec3(370.0f, -2.0f, -40.0));
-		model = glm::scale(model, glm::vec3(52.0f, 52.0f, 52.0f));
-		model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
-		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-		casa_dexter.RenderModel();
-		model = modelaux;
-		
-
-
-
-
-
-
-		//DEJO COMENTADO EL INSTANCIAMIENTO DEL AGAVE PARA PRUEBAS DE BLENDING
-		
 		////Agave �qu� sucede si lo renderizan antes del coche y el helic�ptero?
 		//model = glm::mat4(1.0);
 		//model = glm::translate(model, glm::vec3(0.0f, 1.0f, -4.0f));
@@ -852,26 +816,4 @@ int main()
 		//glDisable(GL_BLEND);
 
 
-		model = modelaux;
-
-
-		//MODELO DE LUMINARIA PARA REPORTE 08
-
-		model = glm::mat4(1.0);
-		model = glm::translate(model, glm::vec3(-90.0f, -0.95f, -100.0f));
-		model = glm::scale(model, glm::vec3(4.0f, 4.0f, 4.0f));
-		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-		luminaria.RenderModel();
-
-		model = modelaux;
-
-
-
-
-		glUseProgram(0);
-
-		mainWindow.swapBuffers();
-	}
-
-	return 0;
-}
+*/
