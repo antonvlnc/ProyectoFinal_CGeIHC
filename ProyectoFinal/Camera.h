@@ -20,6 +20,10 @@ public:
 	glm::vec3 getCameraDirection();
 	glm::mat4 calculateViewMatrix();
 
+	void setPosicionX(float posicionX) { position.x = posicionX; }
+	void setPosicionY(float posicionY) { position.y = posicionY; }
+	void setPosicionZ(float posicionZ) { position.z = posicionZ; }
+
 	~Camera();
 
 private:

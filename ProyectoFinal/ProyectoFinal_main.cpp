@@ -12,7 +12,7 @@ Integrantes:
 
 #define STB_IMAGE_IMPLEMENTATION
 
-
+#include <time.h>
 #include <stdio.h>
 #include <string.h>
 #include <cmath>
@@ -62,6 +62,17 @@ float anguloAlaDer;
 float giraAlaOffset;
 float movAlaOffset;
 
+//Para la animación del helicoptero
+bool avanzaHelicoptero, avanzaHelicoptero2, avanzaHelicoptero3, avanzaHelicoptero4, avanzaHelicoptero5, avanzaHelicoptero6, avanzaHelicoptero7, avanzaHelicoptero8, avanzaHelicoptero9, avanzaHelicoptero10;
+bool controlDeltaTimeDesborde;
+float movHelice;
+float giraHeliceOffset;
+float rotacionHelicopteroOffset;
+float movHelicopteroX, movHelicopteroY, movHelicopteroZ, movHelicopteroOffset;
+float inclinacion, rotacionHelicopteroY;
+clock_t tiempoInicial;
+float tiempoTranscurrido;
+
 Window mainWindow;
 std::vector<Mesh*> meshList;
 std::vector<Shader> shaderList;
@@ -92,7 +103,8 @@ Model angel_independencia;
 Model angel_independencia_ala;
 Model bbva;
 Model estela_de_luz;
-
+Model helicoptero_base;
+Model helicoptero_helice;
 
 
 
@@ -291,7 +303,7 @@ int main()
 	CreateObjects();
 	CreateShaders();
 
-	camera = Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), -60.0f, 0.0f, 5.5f, 0.5f);
+	camera = Camera(glm::vec3(370.0f, 712.0f, 285.0), glm::vec3(0.0f, 1.0f, 0.0f), -60.0f, 0.0f, 5.5f, 0.5f);
 
 	brickTexture = Texture("Textures/brick.png");
 	brickTexture.LoadTextureA();
@@ -330,9 +342,11 @@ int main()
 	diana_cazadora = Model();
 	diana_cazadora.LoadModel("Models/DianaCupido.obj");
 
+	helicoptero_base = Model();
+	helicoptero_base.LoadModel("Models/Helicoptero_Base.obj");
 
-
-
+	helicoptero_helice = Model();
+	helicoptero_helice.LoadModel("Models/Helicoptero_Helice.obj");
 
 
 
@@ -572,6 +586,7 @@ int main()
 	GLuint uniformColor = 0;
 	glm::mat4 projection = glm::perspective(45.0f, (GLfloat)mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 0.1f, 1000.0f);
 
+	//--------------------Alas Angel-------------
 	alaIzq = true;
 	alaDer = true;
 	giraAlaIzq = 0.0f;
@@ -581,22 +596,32 @@ int main()
 	giraAlaOffset = 1.0f;
 	movAlaOffset = 1.0f;
 
-	//Sonido ambiental
-	ISoundEngine* Ambiental = createIrrKlangDevice();
-	Ambiental->play2D("Sound/Ambiental.wav", true);
-	Ambiental->setSoundVolume(0.2f);
+	//Inicializar animacion del helicoptero
+	avanzaHelicoptero = controlDeltaTimeDesborde = true;
+	avanzaHelicoptero2 = avanzaHelicoptero3 = avanzaHelicoptero4 = avanzaHelicoptero5 = avanzaHelicoptero6 = avanzaHelicoptero7 = avanzaHelicoptero8 = avanzaHelicoptero9 = avanzaHelicoptero10 = false;
+	movHelice = 0.0f;
+	giraHeliceOffset = 20.0f;
+	movHelicopteroX = movHelicopteroY = movHelicopteroZ = 0.0f;
+	movHelicopteroOffset = 3.1f;
+	inclinacion = rotacionHelicopteroY = 0.0;
+	rotacionHelicopteroOffset = 1.0f;
+	
+	////Sonido ambiental
+	//ISoundEngine* Ambiental = createIrrKlangDevice();
+	//Ambiental->play2D("Sound/Ambiental.wav", true);
+	//Ambiental->setSoundVolume(0.2f);
 
-	//Pista de fondo
-	ISoundEngine* Intro = createIrrKlangDevice();
-	Intro->play2D("Sound/Lab_Dexter.wav", true);
-	Intro->setSoundVolume(0.15f);
+	////Pista de fondo
+	//ISoundEngine* Intro = createIrrKlangDevice();
+	//Intro->play2D("Sound/Lab_Dexter.wav", true);
+	//Intro->setSoundVolume(0.15f);
 
 	////Sonido con teclado (Pendiente)
 	/*ISoundEngine* AstrodomoSound = createIrrKlangDevice();
 	AstrodomoSound->play2D("Sound/Mucha_Lucha.wav", true);
 	AstrodomoSound->setSoundVolume(0.1f);*/
 	//
-
+	
 	
 	////Loop mientras no se cierra la ventana
 	while (!mainWindow.getShouldClose())
@@ -607,7 +632,8 @@ int main()
 		lastTime = now;
 
 		//Aquí irán las funciones de las animaciones
-		//ala izquierda
+		
+		//Alas Angel
 		if (alaIzq && alaDer)
 		{
 			if (anguloAlaIzq >= 0.0f)
@@ -640,33 +666,107 @@ int main()
 			}
 		}
 
+		//Helicoptero
+		movHelice += giraHeliceOffset * deltaTime;
 
-		//if (alaDer)
-		//{
-		//	if (anguloAlaDer >= 0.0f)
-		//	{
-		//		anguloAlaDer -= movAlaOffset * deltaTime;
-		//		giraAlaDer -= giraAlaOffset * deltaTime;
-		//	}
-		//	else
-		//	{
-		//		alaDer = false;
-		//	}
-		//}
+		// INICIALIZA LA ANIMACIÓN DEL RECORRIDO DEL HELICOPTERO
+		if (avanzaHelicoptero) {
+			//movHelicopteroX -= movHelicopteroOffset * deltaTime;
+			if (movHelicopteroY < 5.0f) {
+				movHelicopteroY += movHelicopteroOffset * deltaTime;
+				if (controlDeltaTimeDesborde) {
+					movHelicopteroY = 0.0f;
+					controlDeltaTimeDesborde = false;
+				}
+			}
+			else {
+				avanzaHelicoptero = false;
+				avanzaHelicoptero2 = true;
+			}
+		}
+		if (avanzaHelicoptero2) {
+			if (movHelicopteroX > -300.0f) {
+				inclinacion = 0.4f;
+				movHelicopteroX -= movHelicopteroOffset * deltaTime;
+				if (movHelicopteroX < -50.0f) {
+					movHelicopteroY -= movHelicopteroOffset * deltaTime;
+				}
+				
+			}
+			else {
+				avanzaHelicoptero2 = false;
+				avanzaHelicoptero3 = true;
+			}
+		}
 
-		//else
-		//{
-		//	if (anguloAlaDer <= 90.0f)
-		//	{
-		//		anguloAlaDer += movAlaOffset * deltaTime;
-		//		giraAlaDer += giraAlaOffset * deltaTime;
-		//	}
-		//	else
-		//	{
-		//		alaDer = true;
-		//	}
-		//}
+		if (avanzaHelicoptero3){
+			if (movHelicopteroZ > -850.0f) {
+				if (rotacionHelicopteroY > 90.0f) {
+					movHelicopteroZ -= movHelicopteroOffset * deltaTime;
+				}
+				else {
+					rotacionHelicopteroY += rotacionHelicopteroOffset * deltaTime;
+				}
+			}
+			else {
+				avanzaHelicoptero3 = false;
+				avanzaHelicoptero4 = true;
+			}
+		}
 
+		if (avanzaHelicoptero4) {
+			if (movHelicopteroZ < 0.0f){
+				if (rotacionHelicopteroY > 270.0f) {
+					movHelicopteroZ += movHelicopteroOffset * deltaTime;
+				}
+				else {
+					rotacionHelicopteroY += rotacionHelicopteroOffset * deltaTime;
+				}
+			}
+			else {
+				avanzaHelicoptero4 = false;
+				avanzaHelicoptero5 = true;
+			}
+		}
+
+		if (avanzaHelicoptero5) {
+			if (movHelicopteroX < 0.0f) {
+				if (rotacionHelicopteroY > 180.0f) {
+					rotacionHelicopteroY -= rotacionHelicopteroOffset * deltaTime;
+				}
+				else {
+					movHelicopteroX += movHelicopteroOffset * deltaTime;
+					if (movHelicopteroX < -50.0f) {
+						movHelicopteroY += movHelicopteroOffset * deltaTime;
+					}
+				}
+			}
+			else {
+				if (rotacionHelicopteroY > 0.0f) {
+					if (inclinacion > 0.0f)
+						inclinacion -= 0.01 * deltaTime;
+					rotacionHelicopteroY -= rotacionHelicopteroOffset * deltaTime;
+				}
+				else {
+					avanzaHelicoptero5 = false;
+					avanzaHelicoptero6 = true;
+				}
+			}
+		}
+		
+		if (avanzaHelicoptero6) {
+			if (movHelicopteroY > 0.0f) {
+				movHelicopteroY -= movHelicopteroOffset * deltaTime;
+				tiempoInicial = clock();
+			}
+			else {
+				tiempoTranscurrido = (double)(clock() - tiempoInicial) / CLOCKS_PER_SEC;
+				if (tiempoTranscurrido > 5.0f) {
+					avanzaHelicoptero6 = false;
+					avanzaHelicoptero = true;
+				}
+			}
+		}
 
 		//Recibir eventos del usuario
 		glfwPollEvents();
@@ -711,6 +811,7 @@ int main()
 		glm::mat4 model(1.0);
 		glm::mat4 modelaux(1.0);
 		glm::mat4 modelaux2(1.0);
+		glm::mat4 modelauxHeli(1.0);
 		glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
 
 		model = glm::mat4(1.0);
@@ -795,7 +896,30 @@ int main()
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		bbva.RenderModel();
 
+		//Helicoptero
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(350.0f + movHelicopteroX, 702.0f + movHelicopteroY, 285.0 + movHelicopteroZ));
+		model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+		model = glm::rotate(model, -rotacionHelicopteroY * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::rotate(model, inclinacion, glm::vec3(0.0f, 0.0f, 01.0f));
+		//model = glm::rotate(model, -15.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		modelauxHeli = model;
+		helicoptero_base.RenderModel();
+		
+		//Mousequeherramienta misteriosa que nos servirá para despues
+		/*camera.setPosicionX(350.0f + movHelicopteroX);
+		camera.setPosicionY(702.0f + movHelicopteroY);
+		camera.setPosicionZ(285.0 + movHelicopteroZ);*/
 
+		model = glm::translate(model, glm::vec3(0.5f, 23.5f, 0.0f));
+		model = glm::rotate(model, movHelice * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+		model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		helicoptero_helice.RenderModel();
 
 
 		//Estela de Luz
