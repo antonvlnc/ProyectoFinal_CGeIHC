@@ -26,6 +26,12 @@ public:
 	
 	GLfloat getanguK() { return anguK; }
 
+	//Movimiento Avatar
+	GLfloat getDireccionCaminata() { return banderaCaminata; }
+	GLfloat getMovimientoAvatar() { return movimientoAvatar; }
+	GLfloat getRotacionAvatar() { return rotAvatar; }
+	GLfloat getrotBrazoPiernas() { return rotBrazoPiernas; }
+
 
 	GLint getlight() { return K; }
 
@@ -62,6 +68,8 @@ private:
 	GLfloat muevex, articulacion_capo, articulacion_puerta, articulacion_avanza, articulacion_reversa, articulacion_gira_der, articulacion_gira_izq, avanza_retrocede, avanza_retrocede_helicoptero, avanza_helicoptero, retrocede_helicoptero;
 	bool mouseFirstMoved;
 	GLboolean MusicaSi;
+	GLfloat movimientoAvatar, rotAvatar, rotBrazoPiernas;
+	GLboolean banderaCaminata, banderaRand;
 	static void ManejaTeclado(GLFWwindow* window, int key, int code, int action, int mode);
 	static void ManejaMouse(GLFWwindow* window, double xPos, double yPos);
 
