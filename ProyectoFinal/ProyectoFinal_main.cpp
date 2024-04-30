@@ -67,7 +67,7 @@ float giraAlaOffset;
 float movAlaOffset;
 
 //Para la animación del helicoptero
-bool avanzaHelicoptero, avanzaHelicoptero2, avanzaHelicoptero3, avanzaHelicoptero4, avanzaHelicoptero5, avanzaHelicoptero6, avanzaHelicoptero7, avanzaHelicoptero8, avanzaHelicoptero9, avanzaHelicoptero10;
+bool avanzaHelicoptero, avanzaHelicoptero2, avanzaHelicoptero3, avanzaHelicoptero4, avanzaHelicoptero5, avanzaHelicoptero6;
 bool controlDeltaTimeDesborde;
 float movHelice;
 float giraHeliceOffset;
@@ -205,7 +205,7 @@ void renderAngelIndependencia();
 void renderTimmyBus();
 void renderVespa();
 void renderHelicoptero();
-1
+
 int main()
 {
 	mainWindow = Window(1366, 768); // 1280, 1024 or 1024, 768
@@ -245,7 +245,7 @@ int main()
 
 	//Animacion helicoptero
 	avanzaHelicoptero = controlDeltaTimeDesborde = true;
-	avanzaHelicoptero2 = avanzaHelicoptero3 = avanzaHelicoptero4 = avanzaHelicoptero5 = avanzaHelicoptero6 = avanzaHelicoptero7 = avanzaHelicoptero8 = avanzaHelicoptero9 = avanzaHelicoptero10 = false;
+	avanzaHelicoptero2 = avanzaHelicoptero3 = avanzaHelicoptero4 = avanzaHelicoptero5 = avanzaHelicoptero6 = false;
 	movHelice = 0.0f;
 	giraHeliceOffset = 20.0f;
 	movHelicopteroX = movHelicopteroY = movHelicopteroZ = 0.0f;
@@ -619,16 +619,19 @@ void InitializeTextures() { //Texturas y skybox
 
 void renderAngelIndependencia() {
 
-	if (alaIzq)
+	if (alaIzq && alaDer)
 	{
 		if (anguloAlaIzq >= 0.0f)
 		{
 			anguloAlaIzq -= movAlaOffset * deltaTime;
 			giraAlaIzq += giraAlaOffset * deltaTime;
+			anguloAlaDer -= movAlaOffset * deltaTime;
+			giraAlaDer -= giraAlaOffset * deltaTime;
 		}
 		else
 		{
 			alaIzq = false;
+			alaDer = false;
 		}
 	}
 
@@ -638,39 +641,16 @@ void renderAngelIndependencia() {
 		{
 			anguloAlaIzq += movAlaOffset * deltaTime;
 			giraAlaIzq -= giraAlaOffset * deltaTime;
-		}
-		else
-		{
-			alaIzq = true;
-		}
-	}
-
-
-	if (alaDer)
-	{
-		if (anguloAlaDer >= 0.0f)
-		{
-			anguloAlaDer -= movAlaOffset * deltaTime;
-			giraAlaDer -= giraAlaOffset * deltaTime;
-		}
-		else
-		{
-			alaDer = false;
-		}
-	}
-
-	else
-	{
-		if (anguloAlaDer <= 90.0f)
-		{
 			anguloAlaDer += movAlaOffset * deltaTime;
 			giraAlaDer += giraAlaOffset * deltaTime;
 		}
 		else
 		{
+			alaIzq = true;
 			alaDer = true;
 		}
 	}
+
 	//Angel de la independencia
 	glm::mat4 model, modelaux2;
 
@@ -948,9 +928,10 @@ void renderHelicoptero(){
 		helicoptero_base.RenderModel();
 		
 		//Mousequeherramienta misteriosa que nos servirá para despues
-		/*camera.setPosicionX(350.0f + movHelicopteroX);
+		//Previo prueba cambio de perspectiva
+		camera.setPosicionX(350.0f + movHelicopteroX);
 		camera.setPosicionY(702.0f + movHelicopteroY);
-		camera.setPosicionZ(285.0 + movHelicopteroZ);*/
+		camera.setPosicionZ(285.0 + movHelicopteroZ);
 
 		model = glm::translate(model, glm::vec3(0.5f, 23.5f, 0.0f));
 		model = glm::rotate(model, movHelice * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
