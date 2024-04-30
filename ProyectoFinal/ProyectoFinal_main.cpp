@@ -137,6 +137,7 @@ Model dexter_leg;
 Model dexter_arm;
 
 //Ratatouille
+Model vespa;
 
 //Mucha Lucha
 Model tienda_donas;
@@ -185,6 +186,7 @@ void InitializeTextures();
 void InitializeLights();
 void renderAngelIndependencia();
 void renderTimmyBus();
+void renderVespa();
 
 
 int main()
@@ -346,6 +348,7 @@ int main()
 		renderTimmyBus();
 
 		//Modelos - Ratatouille
+		renderVespa();
 
 
 
@@ -524,7 +527,7 @@ void InitializeModels() {
 
 	//----------Modelos Lab. de Dexter---------------------
 
-	casaDexter = Edificio("Models/DextersLab/CasaDexter.obj", &uniformModel, glm::vec3(370.0f, -2.0f, -40.0), glm::vec3(52.0f));
+	casaDexter = Edificio("Models/DextersLab/CasaDexter.obj", &uniformModel, glm::vec3(370.0f, -2.0f, -40.0), glm::vec3(40.0f));
 	casaDexter.setRotY(270.0f);
 
 	//AVATAR (DEXTER)
@@ -533,6 +536,8 @@ void InitializeModels() {
 
 
 	//----------Modelos Ratatouille---------------------
+	vespa = Model();
+	vespa.LoadModel("Models/Ratatouille/vespa.obj");
 
 
 
@@ -773,14 +778,32 @@ void InitializeLights() {
 	spotLightCount2++;
 }
 
+
+
+
+void renderVespa() {
+
+	glm::mat4 model;
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-35.0f, -0.5f, -300.0));
+	model = glm::scale(model, glm::vec3(15.0f, 15.0f, 15.0f));
+	//model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	vespa.RenderModel();
+
+}
+
+
+
 void renderTimmyBus() {
 
 	glm::mat4 model;
 
 	model = glm::mat4(1.0);
-	model = glm::translate(model, glm::vec3(-35.0f, -2.0f, -380.0));
+	model = glm::translate(model, glm::vec3(-35.0f, -0.5f, -380.0));
 	model = glm::scale(model, glm::vec3(15.0f, 15.0f, 15.0f));
-	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	bus_padrinos.RenderModel();
 
