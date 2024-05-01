@@ -32,6 +32,9 @@ public:
 	GLfloat getRotacionAvatar() { return rotAvatar; }
 	GLfloat getrotBrazoPiernas() { return rotBrazoPiernas; }
 
+	//Camara
+	GLint getTipoCamara() { return tipoCamara; }
+
 
 	GLint getlight() { return K; }
 
@@ -68,8 +71,11 @@ private:
 	GLfloat muevex, articulacion_capo, articulacion_puerta, articulacion_avanza, articulacion_reversa, articulacion_gira_der, articulacion_gira_izq, avanza_retrocede, avanza_retrocede_helicoptero, avanza_helicoptero, retrocede_helicoptero;
 	bool mouseFirstMoved;
 	GLboolean MusicaSi;
+	//Avatar
 	GLfloat movimientoAvatar, rotAvatar, rotBrazoPiernas;
 	GLboolean banderaCaminata, banderaRand;
+	//Camara
+	GLint tipoCamara ; //1- camara ligada al avatar, 2 camara aerea, 3 la camara que hemos utilizado para las prácticas 
 	static void ManejaTeclado(GLFWwindow* window, int key, int code, int action, int mode);
 	static void ManejaMouse(GLFWwindow* window, double xPos, double yPos);
 

@@ -55,6 +55,7 @@ using namespace irrklang;
 
 //VARIABLES Y CONSTANTES
 const float toRadians = 3.14159265f / 180.0f;
+const float maxAngle = 180.0f;
 
 //Para animaci�n
 bool alaIzq = true;
@@ -65,6 +66,9 @@ float anguloAlaIzq;
 float anguloAlaDer;
 float giraAlaOffset;
 float movAlaOffset;
+
+
+
 
 //Para la animación del helicoptero
 bool avanzaHelicoptero, avanzaHelicoptero2, avanzaHelicoptero3, avanzaHelicoptero4, avanzaHelicoptero5, avanzaHelicoptero6;
@@ -85,6 +89,13 @@ unsigned int pointLightCount2 = 0;
 unsigned int spotLightCount = 0; //ARREGLO 0 -> TODAS LAS LUCES ENCENDIDAS
 unsigned int spotLightCount2 = 0;
 
+GLfloat duracionCicloDiayNoche = 60.0; //cantidad de segundos que va a durar el ciclo de dia y de noche
+//GLfloat lightDirectionIncrement = 0.5f;
+GLfloat lightDirectionIncrement = maxAngle/duracionCicloDiayNoche;
+GLboolean esDeDia = true;
+GLfloat anguloLuz = -10.0f;
+
+
 //Uniforms
 
 GLuint uniformProjection;
@@ -102,6 +113,9 @@ std::vector<Shader> shaderList;
 
 //CAMARAS
 Camera camera;
+Camera camaraAvatar;
+Camera camaraAerea;
+Camera currentCamera;
 
 
 //Declcaración de texturas
@@ -204,6 +218,8 @@ void renderAngelIndependencia();
 void renderTimmyBus();
 void renderVespa();
 void renderHelicoptero();
+DirectionalLight calcSunlight();
+Camera setCamera(int tipoCamara);
 
 int main()
 {
@@ -217,13 +233,16 @@ int main()
 	InitializeLights();
 
 	//CAMARAS
-	camera = Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), -60.0f, 0.0f, 5.5f, 0.5f);
+	camera = Camera(glm::vec3(0.0f, 30.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.0f, 0.0f, 5.5f, 0.5f);
+	camaraAerea = Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), -60.0f, 0.0f, 5.5f, 0.5f);
+	camaraAvatar = Camera(glm::vec3(0.0f, 10.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.0f, 0.0f, 5.5f, 0.1f);
 
 
 	glm::mat4 model(1.0);
 	glm::mat4 modelaux(1.0); //PARA EL CHASIS
 	glm::mat4 modelaux2(1.0);
 	glm::mat4 projection = glm::perspective(45.0f, (GLfloat)mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 0.1f, 1000.0f);
+
 	uniformProjection = 0;
 	uniformModel = 0;
 	uniformView = 0;
@@ -269,6 +288,8 @@ int main()
 	AstrodomoSound->play2D("Sound/Mucha_Lucha.wav", true);
 	AstrodomoSound->setSoundVolume(0.1f);*/
 
+	GLfloat tiempoTranscurrido = glfwGetTime();
+	//mainLight = calcSunlight();
 
 	////Loop mientras no se cierra la ventana
 	while (!mainWindow.getShouldClose())
@@ -279,13 +300,15 @@ int main()
 		lastTime = now;
 
 		//----------------ANIMACIONES-------------- Aquí irán las funciones de las animaciones
-
-
+		if ((now - tiempoTranscurrido) >= 0.5f) {
+			tiempoTranscurrido = now;
+			mainLight = calcSunlight();
+		}
+		//mainLight = calcSunlight();
 		//Recibir eventos del usuario
 		glfwPollEvents();
-		camera.keyControl(mainWindow.getsKeys(), deltaTime);
-		camera.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
-
+		
+		currentCamera = setCamera(3);
 		// Clear the window
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -304,13 +327,14 @@ int main()
 		uniformShininess = shaderList[0].GetShininessLocation();
 
 		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
-		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
-		glUniform3f(uniformEyePosition, camera.getCameraPosition().x, camera.getCameraPosition().y, camera.getCameraPosition().z);
+		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(currentCamera.calculateViewMatrix()));
+		glUniform3f(uniformEyePosition, currentCamera.getCameraPosition().x, currentCamera.getCameraPosition().y, currentCamera.getCameraPosition().z);
 
 		//----------------LUCES-----------
 		// luz ligada a la c�mara de tipo flash
 		//sirve para que en tiempo de ejecuci�n (dentro del while) se cambien propiedades de la luz
-		glm::vec3 lowerLight = camera.getCameraPosition();
+
+		glm::vec3 lowerLight = currentCamera.getCameraPosition();
 		lowerLight.y -= 0.3f;
 		//spotLights[0].SetFlash(lowerLight, camera.getCameraDirection());
 
@@ -688,7 +712,7 @@ void InitializeLights() {
 	//APARTADO DE LUCES
 //luz direccional, s�lo 1 y siempre debe de existir
 	mainLight = DirectionalLight(1.0f, 1.0f, 1.0f,
-		0.3f, 0.3f,
+		1.0f, 0.3f,
 		0.0f, 0.0f, -1.0f);
 
 	//contador de luces puntuales
@@ -794,8 +818,75 @@ void InitializeLights() {
 	spotLightCount2++;
 }
 
+DirectionalLight calcSunlight() {
+	
+	GLfloat intensity = 0.5f;
+	GLfloat xDir, yDir, red, green, blue;
+	xDir = 0.0f;
+	yDir = 0.0f;
+	red = green = blue = 1.0f;
 
 
+	
+
+	if (anguloLuz >= 190.0) {
+		anguloLuz = -10.0f;
+		esDeDia = !esDeDia;
+	}
+	else {
+		//anguloLuz += lightDirectionIncrement * deltaTime;
+		anguloLuz += lightDirectionIncrement;
+	}
+
+	xDir = cos(glm::radians(anguloLuz));
+	yDir = (-1.0) * sin(glm::radians(anguloLuz));
+
+	if (esDeDia) {
+		red = 1.0;
+		green = 1.0;
+		blue = 1.0;
+		intensity = 0.8f;
+	}
+	else {
+		red = 0.5;
+		green = 0.5;
+		blue = 1.0;
+		intensity = 0.2f;
+	}
+	//if (!medioDia) {
+	//	xDir = cos(glm::radians(anguloLuz));
+
+	//}
+	//intensity += 0.5 * sin(anguloLuz);
+
+	
+	DirectionalLight sol = DirectionalLight(red, green, blue,
+			intensity,  0.5f,
+			xDir, yDir, 0.0f);
+
+	/*if (!medioDia) {
+		if (anguloLuz <= 90.0) {
+			anguloLuz += lightDirectionIncrement * deltaTime;
+		}
+		else {
+			medioDia = !medioDia;
+		}
+		xDir = cos(glm::radians(anguloLuz));
+		yDir = (-1.0)* sin(glm::radians(anguloLuz));
+	}
+	else {
+		if (anguloLuz >= 0.0) {
+			anguloLuz -= lightDirectionIncrement * deltaTime;
+		}
+		else {
+			medioDia = !medioDia;
+		}
+		xDir = (-1.0) * cos(glm::radians(anguloLuz));
+		yDir = (-1.0) * sin(glm::radians(anguloLuz));
+	}*/
+	
+	return sol;
+}
 
 void renderVespa() {
 
@@ -928,9 +1019,9 @@ void renderHelicoptero(){
 		
 		//Mousequeherramienta misteriosa que nos servirá para despues
 		//Previo prueba cambio de perspectiva
-		camera.setPosicionX(350.0f + movHelicopteroX);
+		/*camera.setPosicionX(350.0f + movHelicopteroX);
 		camera.setPosicionY(702.0f + movHelicopteroY);
-		camera.setPosicionZ(285.0 + movHelicopteroZ);
+		camera.setPosicionZ(285.0 + movHelicopteroZ);*/
 
 		model = glm::translate(model, glm::vec3(0.5f, 23.5f, 0.0f));
 		model = glm::rotate(model, movHelice * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -941,8 +1032,6 @@ void renderHelicoptero(){
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		helicoptero_helice.RenderModel();
 }
-
-
 
 void renderTimmyBus() {
 
@@ -955,6 +1044,38 @@ void renderTimmyBus() {
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	bus_padrinos.RenderModel();
 
+}
+
+Camera setCamera(GLint tipoCamara) {
+
+	switch (tipoCamara)
+	{
+	case 1:
+
+		camera.keyControl(mainWindow.getsKeys(), deltaTime);
+		camera.setPosicionX(dexter.getPos().x - 10.0);
+		camera.setPosicionY(dexter.getPos().y + 2.0);
+		camera.setPosicionZ(dexter.getPos().z);
+		camera.mouseControl(0.0, 0.0);
+		return camera;
+
+		break;
+	case 2:
+		camera.keyControl(mainWindow.getsKeys(), deltaTime);
+		camera.mouseControl(0.0f, 0.0f);
+		return camera;
+		break;
+	case 3:
+		camera.keyControl(mainWindow.getsKeys(), deltaTime);
+		camera.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
+		return camera;
+		break;
+	default:
+		camera.keyControl(mainWindow.getsKeys(), deltaTime);
+		camera.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
+		return camera;
+		break;
+	}
 }
 
 /*
