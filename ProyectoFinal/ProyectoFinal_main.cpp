@@ -140,6 +140,7 @@ Model bbva;
 Model estela_de_luz;
 Model helicoptero_base;
 Model helicoptero_helice;
+Model camellon;
 
 
 
@@ -150,6 +151,9 @@ Model letrero_dimsdale;
 Model letras_letrero_dimsdale;
 Edificio dimmadome;
 Model taxi;
+Edificio letras_dimmsdale;
+Edificio letrero_dimmsdale;
+
 //Laboratorio de Dexter
 Model casa_dexter;
 Model dexter_body;
@@ -165,6 +169,8 @@ Model vespa;
 Model tienda_donas;
 Edificio tokyo_tree;
 Edificio academy;
+Edificio poster1;
+Edificio poster2;
 
 
 //SKYBOX
@@ -214,6 +220,7 @@ void renderVespa();
 void renderHelicoptero();
 void renderTaxi();
 void renderNaveDexter();
+void renderCamellon();
 
 int main()
 {
@@ -266,12 +273,12 @@ int main()
 	//------------------SONIDO-----------------------
 	//Sonido ambiental
 	ISoundEngine* Ambiental = createIrrKlangDevice();
-	Ambiental->play2D("Sound/Ambiental.wav", true);
+	Ambiental->play2D("Sound/Ambiental.wav", true); 
 	Ambiental->setSoundVolume(0.2f);
 
 	//Pista de fondo
 	ISoundEngine* Intro = createIrrKlangDevice();
-	Intro->play2D("Sound/Lab_Dexter.wav", true);
+	Intro->play2D("Sound/Lab_Dexter.wav", true); //cambiar a cancion en loop sin la voz
 	Intro->setSoundVolume(0.15f);
 
 	////Sonido con teclado (Pendiente)
@@ -372,6 +379,9 @@ int main()
 		renderAngelIndependencia();
 
 
+		//camellon por piezas
+		renderCamellon();
+
 		//-------------Modelos Mucha Lucha------------------
 
 		//ASTRODOMO
@@ -382,6 +392,12 @@ int main()
 
 		//Academy
 		academy.renderModel();
+
+		//Poster 1
+		poster1.renderModel();
+
+		//Poster 2
+		poster2.renderModel();
 
 		//--------------Modelos - Padrinos Mágicos------------
 
@@ -400,6 +416,13 @@ int main()
 
 		//casa timmy
 		CasaTimmy.renderModel();
+
+		//letras dimmsdale
+		letras_dimmsdale.renderModel();
+		
+		//letrero dimmsdale
+		letrero_dimmsdale.renderModel();
+		//
 
 		//------------------Modelos - Ratatouille------------
 		renderVespa();
@@ -565,6 +588,16 @@ void InitializeModels() {
 	helicoptero_helice = Model();
 	helicoptero_helice.LoadModel("Models/Helicoptero_Helice.obj");
 
+	//camellon por piezas
+
+	camellon = Model();
+	camellon.LoadModel("Models/Camellon.obj");
+
+
+	/*camellon = Edificio("Models/Camellon.obj", &uniformModel, glm::vec3(-3.0f, -1.0f, -337.0), glm::vec3(10.0f, 10.0f, 7.0f));
+	camellon.setRotY(90.0f);*/
+
+
 	//----------Modelos Mucha Lucha---------------------
 
 	astrodomo = Edificio("Models/MuchaLucha/Astrodomo.obj", &uniformModel, glm::vec3(-295.0f, -2.0f, -50.0f), glm::vec3(5.0f));
@@ -579,6 +612,15 @@ void InitializeModels() {
 
 	academy = Edificio("Models/MuchaLucha/Academy.obj", &uniformModel, glm::vec3(-320.0f, 0.0f, -360.0), glm::vec3(12.0f));
 	academy.setRotY(90.0f);
+
+	poster1 = Edificio("Models/MuchaLucha/Poster1.obj", &uniformModel, glm::vec3(-246.0f, 100.0f, -290.0), glm::vec3(12.0f));
+	poster1.setRotY(90.0f);
+
+	poster2 = Edificio("Models/MuchaLucha/Poster2.obj", &uniformModel, glm::vec3(-246.0f, 100.0f, -430.0), glm::vec3(12.0f));
+	poster2.setRotY(90.0f);
+
+
+
 
 
 	//----------Modelos Padrinos Magicos---------------------
@@ -601,6 +643,12 @@ void InitializeModels() {
 
 	taxi = Model();
 	taxi.LoadModel("Models/Padrinos/Taxi.obj");
+
+	letras_dimmsdale = Edificio("Models/Padrinos/Dimmsdale.obj", &uniformModel, glm::vec3(180.0f, 1.0f, -300.0), glm::vec3(95.0f));
+	letras_dimmsdale.setRotY(270.0f);
+
+	letrero_dimmsdale = Edificio("Models/Padrinos/DimsdaleSign.obj", &uniformModel, glm::vec3(0.0f, 1.0f, 665.0), glm::vec3(2.75f));
+	letrero_dimmsdale.setRotY(180.0f);
 
 
 
@@ -1054,6 +1102,197 @@ void renderNaveDexter() {
 
 
 }
+
+
+
+void renderCamellon() {
+
+
+	/*camellon = Edificio("Models/Camellon.obj", &uniformModel, glm::vec3(-3.0f, -1.0f, -337.0), glm::vec3(10.0f, 10.0f, 7.0f));
+	camellon.setRotY(90.0f);*/
+
+
+	glm::mat4 model, modelaux;
+
+	
+
+	model = glm::mat4(1.0);
+	modelaux = model;
+
+	model = glm::translate(model, glm::vec3(-3.0f, -1.0f, -337.0));
+	model = glm::scale(model, glm::vec3(6.0f, 10.0f, 10.0f));
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	//modelaux = model;
+	/*glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);*/
+	camellon.RenderModel();
+
+	model = modelaux;
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-3.0f, -1.0f, -297.0));
+	model = glm::scale(model, glm::vec3(6.0f, 10.0f, 10.0f));
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	//modelaux = model;
+	/*glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);*/
+	camellon.RenderModel();
+
+	model = modelaux;
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-3.0f, -1.0f, -257.0));
+	model = glm::scale(model, glm::vec3(6.0f, 10.0f, 10.0f));
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	camellon.RenderModel();
+
+	model = modelaux;
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-3.0f, -1.0f, -217.0));
+	model = glm::scale(model, glm::vec3(6.0f, 10.0f, 10.0f));
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	camellon.RenderModel();
+
+	model = modelaux;
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-3.0f, -1.0f, -177.0));
+	model = glm::scale(model, glm::vec3(6.0f, 10.0f, 10.0f));
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	camellon.RenderModel();
+
+	model = modelaux;
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-3.0f, -1.0f, -137.0));
+	model = glm::scale(model, glm::vec3(6.0f, 10.0f, 10.0f));
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	camellon.RenderModel();
+
+	model = modelaux;
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-3.0f, -1.0f, -97.0));
+	model = glm::scale(model, glm::vec3(6.0f, 10.0f, 10.0f));
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	camellon.RenderModel();
+
+	model = modelaux;
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-3.0f, -1.0f, -57.0));
+	model = glm::scale(model, glm::vec3(6.0f, 10.0f, 10.0f));
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	camellon.RenderModel();
+
+	model = modelaux;
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-3.0f, -1.0f, -17.0));
+	model = glm::scale(model, glm::vec3(6.0f, 10.0f, 10.0f));
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	camellon.RenderModel();
+
+	model = modelaux;
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-3.0f, -1.0f, 23.0));
+	model = glm::scale(model, glm::vec3(6.0f, 10.0f, 10.0f));
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	camellon.RenderModel();
+
+
+	//Despues de la diana cazadora
+
+	model = modelaux;
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-3.0f, -1.0f, 325.0));
+	model = glm::scale(model, glm::vec3(6.0f, 10.0f, 10.0f));
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	camellon.RenderModel();
+
+	model = modelaux;
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-3.0f, -1.0f, 365.0));
+	model = glm::scale(model, glm::vec3(6.0f, 10.0f, 10.0f));
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	camellon.RenderModel();
+
+	model = modelaux;
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-3.0f, -1.0f, 405.0));
+	model = glm::scale(model, glm::vec3(6.0f, 10.0f, 10.0f));
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	camellon.RenderModel();
+
+
+	model = modelaux;
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-3.0f, -1.0f, 445.0));
+	model = glm::scale(model, glm::vec3(6.0f, 10.0f, 10.0f));
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	camellon.RenderModel();
+
+	model = modelaux;
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-3.0f, -1.0f, 485.0));
+	model = glm::scale(model, glm::vec3(6.0f, 10.0f, 10.0f));
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	camellon.RenderModel();
+
+	model = modelaux;
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-3.0f, -1.0f, 525.0));
+	model = glm::scale(model, glm::vec3(6.0f, 10.0f, 10.0f));
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	camellon.RenderModel();
+
+	model = modelaux;
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-3.0f, -1.0f, 565.0));
+	model = glm::scale(model, glm::vec3(6.0f, 10.0f, 10.0f));
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	camellon.RenderModel();
+
+	model = modelaux;
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-3.0f, -1.0f, 605.0));
+	model = glm::scale(model, glm::vec3(6.0f, 10.0f, 10.0f));
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	camellon.RenderModel();
+}
+
+
+
+
+
 
 /*
 Código retirado del main que no sé si se va a necesitar en algun momento;
