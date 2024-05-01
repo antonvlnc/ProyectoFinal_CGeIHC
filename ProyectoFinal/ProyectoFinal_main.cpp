@@ -158,7 +158,7 @@ Model vespa;
 
 //Mucha Lucha
 Model tienda_donas;
-
+Model laPulga;
 
 //SKYBOX
 Skybox skybox;
@@ -205,6 +205,7 @@ void renderAngelIndependencia();
 void renderTimmyBus();
 void renderVespa();
 void renderHelicoptero();
+void renderLaPulga();
 
 int main()
 {
@@ -365,6 +366,9 @@ int main()
 
 		//ASTRODOMO
 		astrodomo.renderModel();
+
+		//La pulga
+		renderLaPulga();
 
 		//Slammin Donuts
 		slamminDonuts.renderModel();
@@ -545,6 +549,8 @@ void InitializeModels() {
 	slamminDonuts = Edificio("Models/MuchaLucha/SlamminDonuts.obj", &uniformModel, glm::vec3(-300.0f, -6.0f, -10.0), glm::vec3(1.6f));
 	slamminDonuts.setRotY(90.0f);
 
+	laPulga = Model();
+	laPulga.LoadModel("Models/MuchaLucha/La_Pulga.obj");
 	//----------Modelos Padrinos Magicos---------------------
 
 
@@ -929,9 +935,9 @@ void renderHelicoptero(){
 		
 		//Mousequeherramienta misteriosa que nos servirá para despues
 		//Previo prueba cambio de perspectiva
-		camera.setPosicionX(350.0f + movHelicopteroX);
+		/*camera.setPosicionX(350.0f + movHelicopteroX);
 		camera.setPosicionY(702.0f + movHelicopteroY);
-		camera.setPosicionZ(285.0 + movHelicopteroZ);
+		camera.setPosicionZ(285.0 + movHelicopteroZ);*/
 
 		model = glm::translate(model, glm::vec3(0.5f, 23.5f, 0.0f));
 		model = glm::rotate(model, movHelice * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -958,6 +964,16 @@ void renderTimmyBus() {
 
 }
 
+void renderLaPulga() {
+	glm::mat4 model;
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-80.0f, 0.0f, -300.0));
+	model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
+	//model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	laPulga.RenderModel();
+}
 /*
 Código retirado del main que no sé si se va a necesitar en algun momento;
 
