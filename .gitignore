@@ -1,9 +1,2 @@
-*.ipch
-ProyectoFinal/Debug
-ProyectoFinal/.vs
+ProyectoFinal/.vs/
 ProyectoFinal/Debug/
-#Esto es un comentario
-#*.txt esto excluye a todos los archivos .txt
-/ProyectoFinal/.vs
-/ProyectoFinal/Debug
-/ProyectoFinal/NMNM

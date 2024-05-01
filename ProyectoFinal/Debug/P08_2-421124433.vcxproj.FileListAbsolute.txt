@@ -2,3 +2,4 @@ C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\P08_2-421124433\Debu
 C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\Debug\Proyecto_Final.exe
 C:\Users\Arturo\Documents\Visual Studio 2022\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\Debug\Proyecto_Final.exe
 C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\Debug\Proyecto_Final.exe
+C:\Users\Arturo\Desktop\ProyectoFinal_CGeIHC\ProyectoFinal\Debug\Proyecto_Final.exe
