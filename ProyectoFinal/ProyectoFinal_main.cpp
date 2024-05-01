@@ -89,9 +89,9 @@ unsigned int pointLightCount2 = 0;
 unsigned int spotLightCount = 0; //ARREGLO 0 -> TODAS LAS LUCES ENCENDIDAS
 unsigned int spotLightCount2 = 0;
 
-GLfloat duracionCicloDiayNoche = 60.0; //cantidad de segundos que va a durar el ciclo de dia y de noche
+GLfloat duracionCicloDiayNoche = 20.0; //cantidad de segundos que va a durar el ciclo de dia y de noche
 //GLfloat lightDirectionIncrement = 0.5f;
-GLfloat lightDirectionIncrement = maxAngle/duracionCicloDiayNoche;
+GLfloat lightDirectionIncrement = maxAngle/(duracionCicloDiayNoche*60.0);
 GLboolean esDeDia = true;
 GLfloat anguloLuz = -10.0f;
 
@@ -231,14 +231,14 @@ void renderAngelIndependencia();
 void renderTimmyBus();
 void renderVespa();
 void renderHelicoptero();
-<<<<<<< HEAD
+/// HEAD
 DirectionalLight calcSunlight();
 Camera setCamera(int tipoCamara);
-=======
+//=======
 void renderTaxi();
 void renderNaveDexter();
 void renderCamellon();
->>>>>>> main
+//>>>>>>> main
 
 int main()
 {
@@ -319,11 +319,11 @@ int main()
 		lastTime = now;
 
 		//----------------ANIMACIONES-------------- Aquí irán las funciones de las animaciones
-		if ((now - tiempoTranscurrido) >= 0.5f) {
+		/*f ((now - tiempoTranscurrido) >= 0.5f) {
 			tiempoTranscurrido = now;
 			mainLight = calcSunlight();
-		}
-		//mainLight = calcSunlight();
+		}*/
+		mainLight = calcSunlight();
 		//Recibir eventos del usuario
 		glfwPollEvents();
 		
@@ -925,70 +925,48 @@ void InitializeLights() {
 
 DirectionalLight calcSunlight() {
 	
-	GLfloat intensity = 0.5f;
+	GLfloat intensity = 0.4f;
 	GLfloat xDir, yDir, red, green, blue;
 	xDir = 0.0f;
 	yDir = 0.0f;
-	red = green = blue = 1.0f;
-
+	red =  1.0f;
+	green = 0.8f;
+	blue = 0.5f;
 
 	
 
-	if (anguloLuz >= 190.0) {
-		anguloLuz = -10.0f;
+	if (anguloLuz >= 180.0){
+		anguloLuz = 0.0f;
+		//blue = 0.5f;
 		esDeDia = !esDeDia;
 	}
 	else {
-		//anguloLuz += lightDirectionIncrement * deltaTime;
-		anguloLuz += lightDirectionIncrement;
+		anguloLuz += lightDirectionIncrement * deltaTime;
+		//anguloLuz += lightDirectionIncrement;
 	}
 
 	xDir = cos(glm::radians(anguloLuz));
 	yDir = (-1.0) * sin(glm::radians(anguloLuz));
 
 	if (esDeDia) {
-		red = 1.0;
-		green = 1.0;
-		blue = 1.0;
-		intensity = 0.8f;
+		red = 0.8f;
+		green = 0.4 + 0.4 * sin(glm::radians(anguloLuz));
+		blue += 0.1 + 0.2 * sin(glm::radians(anguloLuz));
+		intensity =  0.6f;
 	}
 	else {
-		red = 0.5;
-		green = 0.5;
-		blue = 1.0;
-		intensity = 0.2f;
+		red = 0.8 - 0.2 * sin(glm::radians(anguloLuz));
+		green = 0.4  - 0.2 * sin(glm::radians(anguloLuz));
+		blue = 0.5 + (0.3 * sin(glm::radians(anguloLuz)));
+		intensity = 0.3f;
 	}
-	//if (!medioDia) {
-	//	xDir = cos(glm::radians(anguloLuz));
 
-	//}
-	//intensity += 0.5 * sin(anguloLuz);
 
 	
 	DirectionalLight sol = DirectionalLight(red, green, blue,
 			intensity,  0.5f,
 			xDir, yDir, 0.0f);
 
-	/*if (!medioDia) {
-		if (anguloLuz <= 90.0) {
-			anguloLuz += lightDirectionIncrement * deltaTime;
-		}
-		else {
-			medioDia = !medioDia;
-		}
-		xDir = cos(glm::radians(anguloLuz));
-		yDir = (-1.0)* sin(glm::radians(anguloLuz));
-	}
-	else {
-		if (anguloLuz >= 0.0) {
-			anguloLuz -= lightDirectionIncrement * deltaTime;
-		}
-		else {
-			medioDia = !medioDia;
-		}
-		xDir = (-1.0) * cos(glm::radians(anguloLuz));
-		yDir = (-1.0) * sin(glm::radians(anguloLuz));
-	}*/
 	
 	return sol;
 }
@@ -1151,7 +1129,7 @@ void renderTimmyBus() {
 
 }
 
-<<<<<<< HEAD
+// HEAD
 Camera setCamera(GLint tipoCamara) {
 
 	switch (tipoCamara)
@@ -1184,7 +1162,6 @@ Camera setCamera(GLint tipoCamara) {
 	}
 }
 
-=======
 
 void renderTaxi() {
 
@@ -1415,11 +1392,6 @@ void renderCamellon() {
 }
 
 
-
-
-
-
->>>>>>> main
 /*
 Código retirado del main que no sé si se va a necesitar en algun momento;
 
