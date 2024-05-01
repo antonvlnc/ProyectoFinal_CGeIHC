@@ -77,7 +77,16 @@ float inclinacion, rotacionHelicopteroY;
 clock_t tiempoInicial;
 float tiempoTranscurrido;
 
-
+//Animacion de la nave de Dexter
+float movBaseNave;
+float giraBaseOffset;
+bool movNave;
+float movNaveZ, movNaveX;
+float avanzaNave;
+bool avanzaNave2, avanzaNave3, avanzaNave4, avanzaNave5, avanzaNave6;
+float rotacionNave, inclinacionNave;
+float rotacionNaveOffset;
+float movNaveOffset;
 
 //para luces
 unsigned int pointLightCount = 0;
@@ -167,15 +176,12 @@ Model vespa;
 
 //Mucha Lucha
 Model tienda_donas;
-<<<<<<< HEAD
 Model laPulga;
-=======
 Edificio tokyo_tree;
 Edificio academy;
 Edificio poster1;
 Edificio poster2;
 
->>>>>>> 980c921dfa824b11314c30bec8a99f7d91126cda
 
 //SKYBOX
 Skybox skybox;
@@ -222,13 +228,10 @@ void renderAngelIndependencia();
 void renderTimmyBus();
 void renderVespa();
 void renderHelicoptero();
-<<<<<<< HEAD
 void renderLaPulga();
-=======
 void renderTaxi();
 void renderNaveDexter();
 void renderCamellon();
->>>>>>> 980c921dfa824b11314c30bec8a99f7d91126cda
 
 int main()
 {
@@ -276,7 +279,18 @@ int main()
 	movHelicopteroOffset = 3.1f;
 	inclinacion = rotacionHelicopteroY = 0.0;
 	rotacionHelicopteroOffset = 1.0f;
-	
+
+	//Animacion nave Dexter
+	movBaseNave = 0.0f;
+	giraBaseOffset = 2.0f;
+	movNave, avanzaNave = true;
+	giraBaseOffset = 5.0f;
+	movNaveZ, movNaveX = 0.0f;
+	avanzaNave2, avanzaNave3, avanzaNave4, avanzaNave5, avanzaNave6 = false;
+	rotacionNave = 90.0f;
+	inclinacionNave = 20.0f;
+	rotacionNaveOffset = 1.0f;
+	movNaveOffset = 2.0f;
 
 	//------------------SONIDO-----------------------
 	//Sonido ambiental
@@ -617,10 +631,8 @@ void InitializeModels() {
 	slamminDonuts = Edificio("Models/MuchaLucha/SlamminDonuts.obj", &uniformModel, glm::vec3(-275.0f, 0.5f, -580.0), glm::vec3(1.6f));
 	slamminDonuts.setRotY(90.0f);
 
-<<<<<<< HEAD
 	laPulga = Model();
 	laPulga.LoadModel("Models/MuchaLucha/La_Pulga.obj");
-=======
 
 	tokyo_tree = Edificio("Models/MuchaLucha/TokyoTree.obj", &uniformModel, glm::vec3(-180.0f, 0.0f, -225.0), glm::vec3(5.0f));
 	tokyo_tree.setRotY(90.0f);
@@ -638,7 +650,6 @@ void InitializeModels() {
 
 
 
->>>>>>> 980c921dfa824b11314c30bec8a99f7d91126cda
 	//----------Modelos Padrinos Magicos---------------------
 
 
@@ -1076,7 +1087,6 @@ void renderTimmyBus() {
 
 }
 
-<<<<<<< HEAD
 void renderLaPulga() {
 	glm::mat4 model;
 
@@ -1087,7 +1097,6 @@ void renderLaPulga() {
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	laPulga.RenderModel();
 }
-=======
 
 void renderTaxi() {
 
@@ -1105,27 +1114,82 @@ void renderTaxi() {
 
 void renderNaveDexter() {
 
-	glm::mat4 model,modelaux;
+	movBaseNave += giraBaseOffset * deltaTime;
+	//tiempoInicial = clock();
+	
+	if (avanzaNave) {
+		if (movNaveZ > -1275.0f) {
+			movNaveZ -= movNaveOffset * deltaTime;
+			printf("ValorZ1: %f \n", movNaveZ);
+			if (controlDeltaTimeDesborde) {
+				movNaveZ = 0.0f;
+				controlDeltaTimeDesborde = false;
+			}
+		}
+		else {
+			avanzaNave = false;
+			rotacionNave = 180.0f;
+			avanzaNave2 = true;
+
+		}
+	}
+
+	if (avanzaNave2) {
+		if (movNaveX > -240) {
+			movNaveX -= movNaveOffset * deltaTime;
+			//printf("ValorX1: %f \n", movNaveX);
+		}
+		else {
+			avanzaNave2 = false;
+			rotacionNave = 270.0f;
+			avanzaNave3 = true;
+		}
+	}
+
+	if (avanzaNave3) {
+		if (movNaveZ < 0.0f) {
+			movNaveZ += movNaveOffset * deltaTime;
+		}
+		else {
+			avanzaNave3 = false;
+			rotacionNave = 360.0f;
+			avanzaNave4 = true;
+		}
+	}
+
+	if (avanzaNave4) {
+		if (movNaveX < 0.0f) {
+			movNaveX += movNaveOffset * deltaTime;
+			//printf("ValorX: %f \n", movNaveX);
+		}
+		else {
+			avanzaNave4 = false;
+			rotacionNave = 90.0f;
+			avanzaNave = true;
+		}
+	}
+
+	glm::mat4 model,modelauxNave;
 
 	model = glm::mat4(1.0);
-	model = glm::translate(model, glm::vec3(195.0f, 100.0f, 375.0));
+	model = glm::translate(model, glm::vec3(120.0f + movNaveX, 100.0f, 600.0 + movNaveZ));
 	model = glm::scale(model, glm::vec3(18.0f, 18.0f, 18.0f));
-	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, rotacionNave * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, -inclinacionNave * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	modelaux=model;
-
+	modelauxNave = model;
 	/*glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);*/
 	nave_cabina.RenderModel();
 
-	model = modelaux;
 
-	model = glm::mat4(1.0);
-	model = glm::translate(model, glm::vec3(195.0f, 100.0f, 375.0));
-	model = glm::scale(model, glm::vec3(18.0f, 18.0f, 18.0f));
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+	model = glm::rotate(model, movBaseNave * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0));
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
 	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	modelaux = model;
 	nave_extra.RenderModel();
 
 
@@ -1322,7 +1386,6 @@ void renderCamellon() {
 
 
 
->>>>>>> 980c921dfa824b11314c30bec8a99f7d91126cda
 /*
 Código retirado del main que no sé si se va a necesitar en algun momento;
 
