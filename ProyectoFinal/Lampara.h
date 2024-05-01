@@ -8,6 +8,8 @@
 #include <stdio.h>
 #include <string.h>
 
+
+
 class Lampara
 {
 public:
@@ -16,6 +18,7 @@ public:
 	void setUniform(GLuint* uniform);
 	glm::vec3 getPos() { return posicion; };
 	//void changeModel(std::string fileName); // La luces de las Lamparas van a ser cocinadas, con esta funcion se cambia el modelo
+	// 
 	//setters
 	void setPos(glm::vec3 pos);
 	void setNonUniformScale(GLfloat xScale, GLfloat yScale, GLfloat zScale);

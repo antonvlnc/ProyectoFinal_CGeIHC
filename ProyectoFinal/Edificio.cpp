@@ -1,6 +1,7 @@
 #include "Edificio.h"
 
 //Para edificios que no tengan ningun tipo de jerarquia. Se puede agregar un segundo modelos con luces cocinadas y agregar la lógica de programacion aquí mismo
+//Interfaces P/ las clases
 Edificio::Edificio() {
 
 }
