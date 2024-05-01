@@ -55,6 +55,7 @@ using namespace irrklang;
 
 //VARIABLES Y CONSTANTES
 const float toRadians = 3.14159265f / 180.0f;
+const float maxAngle = 180.0f;
 
 //Para animaci�n
 bool alaIzq = true;
@@ -75,7 +76,6 @@ float rotacionHelicopteroOffset;
 float movHelicopteroX, movHelicopteroY, movHelicopteroZ, movHelicopteroOffset;
 float inclinacion, rotacionHelicopteroY;
 clock_t tiempoInicial;
-float tiempoTranscurrido;
 
 //Animacion de la nave de Dexter
 float movBaseNave;
@@ -93,6 +93,13 @@ unsigned int pointLightCount = 0;
 unsigned int pointLightCount2 = 0;
 unsigned int spotLightCount = 0; //ARREGLO 0 -> TODAS LAS LUCES ENCENDIDAS
 unsigned int spotLightCount2 = 0;
+float tiempoTranscurrido;
+GLfloat duracionCicloDiayNoche = 20.0; //cantidad de segundos que va a durar el ciclo de dia y de noche
+//GLfloat lightDirectionIncrement = 0.5f;
+GLfloat lightDirectionIncrement = maxAngle / (duracionCicloDiayNoche * 60.0);
+GLboolean esDeDia = true;
+GLfloat anguloLuz = -10.0f;
+
 
 //Uniforms
 
@@ -224,6 +231,7 @@ void CreateShaders();
 void InitializeModels();
 void InitializeTextures();
 void InitializeLights();
+DirectionalLight calcSunlight();
 void renderAngelIndependencia();
 void renderTimmyBus();
 void renderVespa();
@@ -318,6 +326,7 @@ int main()
 		lastTime = now;
 
 		//----------------ANIMACIONES-------------- Aquí irán las funciones de las animaciones
+		mainLight = calcSunlight();
 
 
 		//Recibir eventos del usuario
@@ -924,7 +933,51 @@ void InitializeLights() {
 	spotLightCount2++;
 }
 
+DirectionalLight calcSunlight() {
+	GLfloat intensity = 0.4f;
+	GLfloat xDir, yDir, red, green, blue;
+	xDir = 0.0f;
+	yDir = 0.0f;
+	red = 1.0f;
+	green = 0.8f;
+	blue = 0.5f;
 
+
+
+	if (anguloLuz >= 180.0) {
+		anguloLuz = 0.0f;
+		//blue = 0.5f;
+		esDeDia = !esDeDia;
+	}
+	else {
+		anguloLuz += lightDirectionIncrement * deltaTime;
+		//anguloLuz += lightDirectionIncrement;
+	}
+
+	xDir = cos(glm::radians(anguloLuz));
+	yDir = (-1.0) * sin(glm::radians(anguloLuz));
+
+	if (esDeDia) {
+		red = 0.8f;
+		green = 0.4 + 0.4 * sin(glm::radians(anguloLuz));
+		blue += 0.1 + 0.2 * sin(glm::radians(anguloLuz));
+		intensity = 0.6f;
+	}
+	else {
+		red = 0.8 - 0.2 * sin(glm::radians(anguloLuz));
+		green = 0.4 - 0.2 * sin(glm::radians(anguloLuz));
+		blue = 0.5 + (0.3 * sin(glm::radians(anguloLuz)));
+		intensity = 0.3f;
+	}
+
+
+
+	DirectionalLight sol = DirectionalLight(red, green, blue,
+		intensity, 0.5f,
+		xDir, yDir, 0.0f);
+
+	return sol;
+}
 
 
 void renderVespa() {
