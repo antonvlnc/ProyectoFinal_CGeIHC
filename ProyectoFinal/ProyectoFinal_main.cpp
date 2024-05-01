@@ -128,6 +128,8 @@ Edificio bigWand;
 Edificio casaDexter;
 Edificio CasaTimmy;
 
+
+
 Lampara luminariaP8;
 
 //GENERAL
@@ -146,18 +148,23 @@ Model bus_padrinos;
 Model big_wand;
 Model letrero_dimsdale;
 Model letras_letrero_dimsdale;
-
+Edificio dimmadome;
+Model taxi;
 //Laboratorio de Dexter
 Model casa_dexter;
 Model dexter_body;
 Model dexter_leg;
 Model dexter_arm;
+Model nave_cabina;
+Model nave_extra;
 
 //Ratatouille
 Model vespa;
 
 //Mucha Lucha
 Model tienda_donas;
+Edificio tokyo_tree;
+Edificio academy;
 
 
 //SKYBOX
@@ -205,6 +212,8 @@ void renderAngelIndependencia();
 void renderTimmyBus();
 void renderVespa();
 void renderHelicoptero();
+void renderTaxi();
+void renderNaveDexter();
 
 int main()
 {
@@ -334,6 +343,8 @@ int main()
 
 		reforma_layout.UseTexture();
 		Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
+
+
 		//RENDERIZAMOS EL PISO
 		meshList[2]->RenderMesh();
 
@@ -342,7 +353,7 @@ int main()
 		//X para ancho del mapa y Z para largo del mapa
 
 
-		//Modelos Generales del mundo
+		//--------------------Modelos Generales del mundo-------------------
 
 		//Diana cazadora
 		dianaCazadora.renderModel();
@@ -361,7 +372,7 @@ int main()
 		renderAngelIndependencia();
 
 
-		//Modelos Mucha Lucha
+		//-------------Modelos Mucha Lucha------------------
 
 		//ASTRODOMO
 		astrodomo.renderModel();
@@ -369,7 +380,10 @@ int main()
 		//Slammin Donuts
 		slamminDonuts.renderModel();
 
-		//Modelos - Padrinos Mágicos
+		//Academy
+		academy.renderModel();
+
+		//--------------Modelos - Padrinos Mágicos------------
 
 		//Big Wand
 		bigWand.renderModel();
@@ -378,21 +392,35 @@ int main()
 		//Bus
 		renderTimmyBus();
 
-		//Modelos - Ratatouille
+		//Dimmadome
+		dimmadome.renderModel();
+
+		//Taxi
+		renderTaxi();
+
+		//casa timmy
+		CasaTimmy.renderModel();
+
+		//------------------Modelos - Ratatouille------------
 		renderVespa();
 
 
 
-		//Modelos - Laboratorio de Dexter
+		//-------------------Modelos - Laboratorio de Dexter---------------------
 		dexter.setUniformModel(uniformModel);
 		dexter.setMovimiento(mainWindow.getMovimientoAvatar(), mainWindow.getRotacionAvatar(), mainWindow.getrotBrazoPiernas());
 		dexter.renderMainAvatar();
+		
 
 		//Casa de dexter
 		casaDexter.renderModel();
 
-		//casa timmy
-		CasaTimmy.renderModel();
+
+		//tokyo tree
+		tokyo_tree.renderModel();
+
+		//nave dexter
+		renderNaveDexter();
 
 
 		//MODELO DE LUMINARIA PARA REPORTE 08
@@ -539,11 +567,19 @@ void InitializeModels() {
 
 	//----------Modelos Mucha Lucha---------------------
 
-	astrodomo = Edificio("Models/MuchaLucha/Astrodomo.obj", &uniformModel, glm::vec3(-355.0f, -2.0f, -320.0f), glm::vec3(5.0f));
+	astrodomo = Edificio("Models/MuchaLucha/Astrodomo.obj", &uniformModel, glm::vec3(-295.0f, -2.0f, -50.0f), glm::vec3(5.0f));
 	astrodomo.setRotY(-270.0f);
 
-	slamminDonuts = Edificio("Models/MuchaLucha/SlamminDonuts.obj", &uniformModel, glm::vec3(-300.0f, -6.0f, -10.0), glm::vec3(1.6f));
+	slamminDonuts = Edificio("Models/MuchaLucha/SlamminDonuts.obj", &uniformModel, glm::vec3(-275.0f, 0.5f, -580.0), glm::vec3(1.6f));
 	slamminDonuts.setRotY(90.0f);
+
+
+	tokyo_tree = Edificio("Models/MuchaLucha/TokyoTree.obj", &uniformModel, glm::vec3(-180.0f, 0.0f, -225.0), glm::vec3(5.0f));
+	tokyo_tree.setRotY(90.0f);
+
+	academy = Edificio("Models/MuchaLucha/Academy.obj", &uniformModel, glm::vec3(-320.0f, 0.0f, -360.0), glm::vec3(12.0f));
+	academy.setRotY(90.0f);
+
 
 	//----------Modelos Padrinos Magicos---------------------
 
@@ -554,17 +590,33 @@ void InitializeModels() {
 	dianaCazadora = Edificio("Models/DianaCupido.obj", &uniformModel, glm::vec3(0.0f, -1.0f, 175.0f), glm::vec3(4.0f, 5.0f, 4.0f));
 	dianaCazadora.setRotY(-180.0f);
 
-	bigWand = Edificio("Models/Padrinos/BigWand.obj", &uniformModel, glm::vec3(-180.0f, -2.0f, 245.0), glm::vec3(17.0f));
-	bigWand.setRotY(90.0f);
+	bigWand = Edificio("Models/Padrinos/BigWand.obj", &uniformModel, glm::vec3(-180.0f, -0.5f, 650.0), glm::vec3(17.0f));
+	//bigWand.setRotY(90.0f);
 
-	CasaTimmy = Edificio("Models/Padrinos/TimmyH_Tex2.obj", &uniformModel, glm::vec3(-350.0f, 0.0f, 340.0), glm::vec3(30.0f));
-	CasaTimmy.setRotY(90.0f);
+	CasaTimmy = Edificio("Models/Padrinos/TimmyH_Tex2.obj", &uniformModel, glm::vec3(370.0f, 1.0f, 600.0), glm::vec3(34.0f));
+	CasaTimmy.setRotY(270.0f);
+
+	dimmadome= Edificio("Models/Padrinos/Dimmadome.obj", &uniformModel, glm::vec3(325.0f, 1.0f, -300.0), glm::vec3(18.0f));
+	dimmadome.setRotY(270.0f);
+
+	taxi = Model();
+	taxi.LoadModel("Models/Padrinos/Taxi.obj");
+
+
 
 
 	//----------Modelos Lab. de Dexter---------------------
 
-	casaDexter = Edificio("Models/DextersLab/CasaDexter.obj", &uniformModel, glm::vec3(370.0f, -2.0f, -40.0), glm::vec3(40.0f));
-	casaDexter.setRotY(270.0f);
+	casaDexter = Edificio("Models/DextersLab/CasaDexter.obj", &uniformModel, glm::vec3(-380.0f, -0.5f, 370.0), glm::vec3(40.0f));
+	casaDexter.setRotY(90.0f);
+
+	nave_cabina = Model();
+	nave_cabina.LoadModel("Models/DextersLab/NaveDomo.obj");
+
+	nave_extra = Model();
+	nave_extra.LoadModel("Models/DextersLab/NaveCierra.obj");
+
+
 
 	//AVATAR (DEXTER)
 
@@ -599,6 +651,8 @@ void InitializeTextures() { //Texturas y skybox
 
 	reforma_layout = Texture("Textures/reforma_layout.png");
 	reforma_layout.LoadTextureA();
+
+
 
 	std::vector<std::string> skyboxFaces;
 	skyboxFaces.push_back("Textures/Skybox/sky-right.jpg");
@@ -929,9 +983,9 @@ void renderHelicoptero(){
 		
 		//Mousequeherramienta misteriosa que nos servirá para despues
 		//Previo prueba cambio de perspectiva
-		camera.setPosicionX(350.0f + movHelicopteroX);
+		/*camera.setPosicionX(350.0f + movHelicopteroX);
 		camera.setPosicionY(702.0f + movHelicopteroY);
-		camera.setPosicionZ(285.0 + movHelicopteroZ);
+		camera.setPosicionZ(285.0 + movHelicopteroZ);*/
 
 		model = glm::translate(model, glm::vec3(0.5f, 23.5f, 0.0f));
 		model = glm::rotate(model, movHelice * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -955,6 +1009,49 @@ void renderTimmyBus() {
 	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	bus_padrinos.RenderModel();
+
+}
+
+
+void renderTaxi() {
+
+	glm::mat4 model;
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(35.0f, -0.5f, 375.0));
+	model = glm::scale(model, glm::vec3(10.0f, 10.0f, 10.0f));
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	taxi.RenderModel();
+
+}
+
+
+void renderNaveDexter() {
+
+	glm::mat4 model,modelaux;
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(195.0f, 100.0f, 375.0));
+	model = glm::scale(model, glm::vec3(18.0f, 18.0f, 18.0f));
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	modelaux=model;
+
+	/*glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);*/
+	nave_cabina.RenderModel();
+
+	model = modelaux;
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(195.0f, 100.0f, 375.0));
+	model = glm::scale(model, glm::vec3(18.0f, 18.0f, 18.0f));
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	modelaux = model;
+	nave_extra.RenderModel();
+
 
 }
 
