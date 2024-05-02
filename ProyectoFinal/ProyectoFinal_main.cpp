@@ -159,6 +159,12 @@ Model helicoptero_base;
 Model helicoptero_helice;
 Model camellon;
 Model metrobus;
+Model metrobus_llanta_izq;
+Model metrobus_llanta_der;
+Model puerta_reja;
+Model reja_izq;
+Model reja_der;
+
 
 
 
@@ -183,6 +189,7 @@ Model nave_extra;
 //Ratatouille
 Model vespa;
 Edificio gusteaus;
+Edificio gusteau_sign;
 
 //Mucha Lucha
 Model tienda_donas;
@@ -191,6 +198,8 @@ Edificio tokyo_tree;
 Edificio academy;
 Edificio poster1;
 Edificio poster2;
+Edificio cactus;
+Edificio ring;
 
 
 //SKYBOX
@@ -244,6 +253,7 @@ void renderTaxi();
 void renderNaveDexter();
 void renderCamellon();
 void renderMetrobus();
+void renderPuertaReja();
 
 int main()
 {
@@ -372,7 +382,7 @@ int main()
 		shaderList[0].SetSpotLights(spotLights, spotLightCount);*/
 
 
-		//PISO
+		//-------------------------PISO-----------------------------
 		glm::mat4 model(1.0);
 		glm::mat4 modelaux(1.0);
 		glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -408,6 +418,21 @@ int main()
 		Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
 		meshList[2]->RenderMesh();
 
+
+		//Piso 3
+
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(0.0f, -1.0f, -850.0f));
+		model = glm::scale(model, glm::vec3(450.0f, 1.0f, 150.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
+
+		grass.UseTexture();
+		Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
+		meshList[2]->RenderMesh();
+
+
+
 		//INSTANCIAMIENTO DE LOS MODELOS
 		//X para ancho del mapa y Z para largo del mapa
 
@@ -437,6 +462,9 @@ int main()
 		//Metrobus
 		renderMetrobus();
 
+		//Puerta con reja
+		renderPuertaReja();
+
 		//-------------Modelos Mucha Lucha------------------
 
 		//ASTRODOMO
@@ -456,6 +484,12 @@ int main()
 
 		//Poster 2
 		poster2.renderModel();
+
+		//Cactus
+		cactus.renderModel();
+
+		//Ring
+		ring.renderModel();
 
 		//--------------Modelos - Padrinos Mágicos------------
 
@@ -483,8 +517,15 @@ int main()
 		//
 
 		//------------------Modelos - Ratatouille------------
+		
+		//Vespa
 		renderVespa();
+
+		//Restaurante Gusteau
 		gusteaus.renderModel();
+
+		//Gusteau Sign
+		gusteau_sign.renderModel();
 
 
 
@@ -664,9 +705,31 @@ void InitializeModels() {
 	metrobus = Model();
 	metrobus.LoadModel("Models/Metrobus.obj");
 
+	//Metrobus - Llanta Izquierda
+	metrobus_llanta_izq = Model();
+	metrobus_llanta_izq.LoadModel("Models/MetrobusLlantaIzq.obj");
+
+	//Metrobus - Llanta Derecha
+	metrobus_llanta_der = Model();
+	metrobus_llanta_der.LoadModel("Models/MetrobusLlantaDer.obj");
+
+
 	//LUMINARIA PARA REPORTE 08
 
 	luminariaP8 = Lampara("Models/luminaria_text.obj", &uniformModel, glm::vec3(-90.0f, -0.95f, -100.0f), glm::vec3(4.0f));
+
+	//Puerta con reja
+	puerta_reja = Model();
+	puerta_reja.LoadModel("Models/PuertaReja.obj");
+
+	reja_der = Model();
+	reja_der.LoadModel("Models/RejaDer.obj");
+
+	reja_izq = Model();
+	reja_izq.LoadModel("Models/RejaIzq.obj");
+
+
+
 
 
 	//----------Modelos Mucha Lucha---------------------
@@ -691,6 +754,13 @@ void InitializeModels() {
 
 	poster2 = Edificio("Models/MuchaLucha/Poster2.obj", &uniformModel, glm::vec3(-246.0f, 100.0f, -430.0), glm::vec3(12.0f));
 	poster2.setRotY(90.0f);
+
+	cactus = Edificio("Models/MuchaLucha/Cactus.obj", &uniformModel, glm::vec3(185.0f, 3.5f, 270.0), glm::vec3(8.0f));
+	cactus.setRotY(90.0f);
+
+	ring = Edificio("Models/MuchaLucha/Ring.obj", &uniformModel, glm::vec3(220.0f, 1.0f, -30.0), glm::vec3(40.0f));
+	ring.setRotY(270.0f);
+
 
 
 
@@ -717,7 +787,7 @@ void InitializeModels() {
 	taxi = Model();
 	taxi.LoadModel("Models/Padrinos/Taxi.obj");
 
-	letras_dimmsdale = Edificio("Models/Padrinos/Dimmsdale.obj", &uniformModel, glm::vec3(0.0f, 1.0f, 815.0), glm::vec3(155.0f));
+	letras_dimmsdale = Edificio("Models/Padrinos/Dimmsdale.obj", &uniformModel, glm::vec3(0.0f, 1.0f, 845.0), glm::vec3(25.0f));
 	letras_dimmsdale.setRotY(180.0f);
 
 	letrero_dimmsdale = Edificio("Models/Padrinos/DimsdaleSign.obj", &uniformModel, glm::vec3(230.0f, 1.0f, -620.0), glm::vec3(1.9f));
@@ -754,6 +824,11 @@ void InitializeModels() {
 
 	gusteaus = Edificio("Models/Ratatouille/gusteaus.obj", &uniformModel, glm::vec3(-265.0f, 1.0f, 575.0), glm::vec3(13.0f));
 	gusteaus.setRotY(90.0f);
+
+	//Anuncio Gusteau's
+
+	gusteau_sign = Edificio("Models/Ratatouille/GusteauSign.obj", &uniformModel, glm::vec3(-255.0f, 145.0f, 575.0), glm::vec3(35.0f));
+	gusteau_sign.setRotY(90.0f);
 
 
 
@@ -1042,14 +1117,81 @@ void renderVespa() {
 
 void renderMetrobus() {
 
-	glm::mat4 model;
+	glm::mat4 model,modelaux;
 
 	model = glm::mat4(1.0);
+
 	model = glm::translate(model, glm::vec3(-55.0f, 2.5f, 395.0));
-	model = glm::scale(model, glm::vec3(12.0f));
+	modelaux = model;
+	model = glm::scale(model, glm::vec3(12.0f));	
 	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	metrobus.RenderModel();
+
+	model = modelaux;
+
+	//Llantas izquierdas
+
+	//delantera
+	model = glm::translate(model, glm::vec3(10.0f, 6.0f, 25.0));
+	model = glm::scale(model, glm::vec3(12.0f));
+	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	metrobus_llanta_izq.RenderModel();
+
+	model = modelaux;
+
+
+	//media
+	model = glm::translate(model, glm::vec3(10.0f, 6.0f, -26.5));
+	model = glm::scale(model, glm::vec3(12.0f));
+	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	metrobus_llanta_izq.RenderModel();
+
+	model = modelaux;
+
+
+	//trasera
+	model = glm::translate(model, glm::vec3(10.0f, 6.0f, -42.0));
+	model = glm::scale(model, glm::vec3(12.0f));
+	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	metrobus_llanta_izq.RenderModel();
+
+	model = modelaux;
+
+
+
+	//Llantas derechas
+	
+	//delantera
+	model = glm::translate(model, glm::vec3(-10.0f, 6.0f, 25.0));
+	model = glm::scale(model, glm::vec3(12.0f));
+	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	metrobus_llanta_der.RenderModel();
+
+	model = modelaux;
+
+	//media
+	model = glm::translate(model, glm::vec3(-10.0f, 6.0f, -26.5));
+	model = glm::scale(model, glm::vec3(12.0f));
+	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	metrobus_llanta_izq.RenderModel();
+
+	model = modelaux;
+
+	//trasera
+	model = glm::translate(model, glm::vec3(-10.0f, 6.0f, -42.0));
+	model = glm::scale(model, glm::vec3(12.0f));
+	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	metrobus_llanta_izq.RenderModel();
+
+	model = modelaux;
+
 
 }
 
@@ -1208,9 +1350,9 @@ void renderLaPulga() {
 	glm::mat4 model;
 
 	model = glm::mat4(1.0);
-	model = glm::translate(model, glm::vec3(-170.0f, 0.0f, -170.0));
+	model = glm::translate(model, glm::vec3(170.0f, 0.0f, -85.0));
 	model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
-	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	laPulga.RenderModel();
 }
@@ -1313,6 +1455,44 @@ void renderNaveDexter() {
 
 }
 
+
+void renderPuertaReja() {
+	//PUERTA METÁLICA CON MARCO PARA LETRERO, PARA PRACTICA 08
+	glm::mat4 model, modelaux;
+
+
+	model = glm::mat4(1.0);
+	modelaux = model;
+
+	model = glm::translate(model, glm::vec3(-3.0f, -0.95f, -815.0f));
+	modelaux = model;
+	model = glm::scale(model, glm::vec3(65.0f));	
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	puerta_reja.RenderModel();
+	
+	model = modelaux;
+
+	//REJA DERECHA (esta es la que rotaba)
+	model = glm::translate(model, glm::vec3(-65.5f, 52.6f, 0.0f)); //52.5 en y antes, 65.0 en x
+	model = glm::scale(model, glm::vec3(65.0f));
+	model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	reja_der.RenderModel();
+
+	model = modelaux;
+
+
+
+	//REJA IZQUIERDA
+	model = glm::translate(model, glm::vec3(36.5f, 1.0f, 0.0f)); //40 en x antes
+	model = glm::scale(model, glm::vec3(65.0f));
+	model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	reja_izq.RenderModel();
+
+	model = modelaux;
+
+}
 
 
 void renderCamellon() {
