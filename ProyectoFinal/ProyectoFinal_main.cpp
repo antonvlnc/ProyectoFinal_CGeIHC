@@ -1003,15 +1003,15 @@ DirectionalLight calcSunlight() {
 	yDir = (-1.0) * sin(glm::radians(anguloLuz));
 
 	if (esDeDia) {
-		red = 0.8f;
-		green = 0.4 + 0.4 * sin(glm::radians(anguloLuz));
-		blue += 0.1 + 0.2 * sin(glm::radians(anguloLuz));
+		red = 0.8f + 0.2 * sin(glm::radians(anguloLuz));
+		green = 0.6f + 0.4 * sin(glm::radians(anguloLuz));
+		blue = 0.6f + 0.4 * sin(glm::radians(anguloLuz));
 		intensity = 0.6f;
 	}
 	else {
-		red = 0.8 - 0.2 * sin(glm::radians(anguloLuz));
-		green = 0.4 - 0.2 * sin(glm::radians(anguloLuz));
-		blue = 0.5 + (0.3 * sin(glm::radians(anguloLuz)));
+		red = 0.6f - 0.1 * sin(glm::radians(anguloLuz));
+		green = 0.6f - 0.1 * sin(glm::radians(anguloLuz));
+		blue = 0.6f + (0.4 * sin(glm::radians(anguloLuz)));
 		intensity = 0.3f;
 	}
 
