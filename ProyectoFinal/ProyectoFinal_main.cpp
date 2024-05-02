@@ -129,6 +129,7 @@ Texture pisoTexture;
 Texture AgaveTexture;
 Texture reforma_layout; //piso
 Texture AstrodomoTexture;
+Texture grass;
 
 
 //DECLARACION DE MODELOS
@@ -157,6 +158,7 @@ Model estela_de_luz;
 Model helicoptero_base;
 Model helicoptero_helice;
 Model camellon;
+Model metrobus;
 
 
 
@@ -180,6 +182,7 @@ Model nave_extra;
 
 //Ratatouille
 Model vespa;
+Edificio gusteaus;
 
 //Mucha Lucha
 Model tienda_donas;
@@ -240,6 +243,7 @@ void renderLaPulga();
 void renderTaxi();
 void renderNaveDexter();
 void renderCamellon();
+void renderMetrobus();
 
 int main()
 {
@@ -386,6 +390,23 @@ int main()
 		//RENDERIZAMOS EL PISO
 		meshList[2]->RenderMesh();
 
+		model = modelaux;
+
+		//PISO 2
+
+		//Más piso para el letrero y letras de Dimmsdale
+
+		/*glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);*/
+
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(0.0f, -1.0f, 850.0f));
+		model = glm::scale(model, glm::vec3(450.0f, 1.0f, 150.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
+
+		grass.UseTexture();
+		Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
+		meshList[2]->RenderMesh();
 
 		//INSTANCIAMIENTO DE LOS MODELOS
 		//X para ancho del mapa y Z para largo del mapa
@@ -412,6 +433,9 @@ int main()
 
 		//camellon por piezas
 		renderCamellon();
+
+		//Metrobus
+		renderMetrobus();
 
 		//-------------Modelos Mucha Lucha------------------
 
@@ -460,6 +484,7 @@ int main()
 
 		//------------------Modelos - Ratatouille------------
 		renderVespa();
+		gusteaus.renderModel();
 
 
 
@@ -605,20 +630,27 @@ void CreateShaders()
 
 void InitializeModels() {
 	//----------Modelos Generales---------------------
+
+	//Angel de la independencia
 	angel_independencia = Model();
 	angel_independencia.LoadModel("Models/Angel.obj");
 
+	//Alas del angel de la independencia
 	angel_independencia_ala = Model();
 	angel_independencia_ala.LoadModel("Models/AngelAla.obj");
 
+	//Edificio BBVA
 	BBVA_Pixies = Edificio("Models/BBVA.obj", &uniformModel, glm::vec3(350.0f, -1.0f, 350.0f), glm::vec3(220.0f));
 	BBVA_Pixies.setRotY(270.0f);
 
-	estelaDeLuz = Edificio("Models/Estela.obj", &uniformModel, glm::vec3(200.0f, -1.0f, 620.0f), glm::vec3(5.0f));
+	//Estela de luz
+	estelaDeLuz = Edificio("Models/Estela.obj", &uniformModel, glm::vec3(315.0f, -1.0f, 805.0f), glm::vec3(5.0f));
 
+	//Cuerpo del helicoptero
 	helicoptero_base = Model();
 	helicoptero_base.LoadModel("Models/Helicoptero_Base.obj");
 
+	//helice del helicoptero
 	helicoptero_helice = Model();
 	helicoptero_helice.LoadModel("Models/Helicoptero_Helice.obj");
 
@@ -627,9 +659,14 @@ void InitializeModels() {
 	camellon = Model();
 	camellon.LoadModel("Models/Camellon.obj");
 
+	//Metrobus
 
-	/*camellon = Edificio("Models/Camellon.obj", &uniformModel, glm::vec3(-3.0f, -1.0f, -337.0), glm::vec3(10.0f, 10.0f, 7.0f));
-	camellon.setRotY(90.0f);*/
+	metrobus = Model();
+	metrobus.LoadModel("Models/Metrobus.obj");
+
+	//LUMINARIA PARA REPORTE 08
+
+	luminariaP8 = Lampara("Models/luminaria_text.obj", &uniformModel, glm::vec3(-90.0f, -0.95f, -100.0f), glm::vec3(4.0f));
 
 
 	//----------Modelos Mucha Lucha---------------------
@@ -668,22 +705,22 @@ void InitializeModels() {
 	dianaCazadora = Edificio("Models/DianaCupido.obj", &uniformModel, glm::vec3(0.0f, -1.0f, 175.0f), glm::vec3(4.0f, 5.0f, 4.0f));
 	dianaCazadora.setRotY(-180.0f);
 
-	bigWand = Edificio("Models/Padrinos/BigWand.obj", &uniformModel, glm::vec3(-180.0f, -0.5f, 650.0), glm::vec3(17.0f));
+	bigWand = Edificio("Models/Padrinos/BigWand.obj", &uniformModel, glm::vec3(-315.0f, -0.5f, 805.0), glm::vec3(20.0f));
 	//bigWand.setRotY(90.0f);
 
 	CasaTimmy = Edificio("Models/Padrinos/TimmyH_Tex2.obj", &uniformModel, glm::vec3(370.0f, 1.0f, 600.0), glm::vec3(34.0f));
 	CasaTimmy.setRotY(270.0f);
 
-	dimmadome= Edificio("Models/Padrinos/Dimmadome.obj", &uniformModel, glm::vec3(325.0f, 1.0f, -300.0), glm::vec3(18.0f));
+	dimmadome= Edificio("Models/Padrinos/Dimmadome.obj", &uniformModel, glm::vec3(310.0f, 1.0f, -300.0), glm::vec3(18.0f));
 	dimmadome.setRotY(270.0f);
 
 	taxi = Model();
 	taxi.LoadModel("Models/Padrinos/Taxi.obj");
 
-	letras_dimmsdale = Edificio("Models/Padrinos/Dimmsdale.obj", &uniformModel, glm::vec3(180.0f, 1.0f, -300.0), glm::vec3(95.0f));
-	letras_dimmsdale.setRotY(270.0f);
+	letras_dimmsdale = Edificio("Models/Padrinos/Dimmsdale.obj", &uniformModel, glm::vec3(0.0f, 1.0f, 815.0), glm::vec3(155.0f));
+	letras_dimmsdale.setRotY(180.0f);
 
-	letrero_dimmsdale = Edificio("Models/Padrinos/DimsdaleSign.obj", &uniformModel, glm::vec3(0.0f, 1.0f, 665.0), glm::vec3(2.75f));
+	letrero_dimmsdale = Edificio("Models/Padrinos/DimsdaleSign.obj", &uniformModel, glm::vec3(230.0f, 1.0f, -620.0), glm::vec3(1.9f));
 	letrero_dimmsdale.setRotY(180.0f);
 
 
@@ -704,18 +741,24 @@ void InitializeModels() {
 
 	//AVATAR (DEXTER)
 
-	dexter = MainAvatar(glm::vec3(250.0f, 0.5f, 350.0f), 15.0f, glm::vec3(3.0f, 3.0f, 3.0f));
+	dexter = MainAvatar(glm::vec3(0.0f, 0.5f, -650.0f), 15.0f, glm::vec3(3.0f, 3.0f, 3.0f));
 
 
-	//----------Modelos Ratatouille---------------------
+	//-------------------------Modelos Ratatouille-----------------------------------------
+
+	//moto del chef chaparro
 	vespa = Model();
 	vespa.LoadModel("Models/Ratatouille/vespa.obj");
 
+	//Gusteau's
+
+	gusteaus = Edificio("Models/Ratatouille/gusteaus.obj", &uniformModel, glm::vec3(-265.0f, 1.0f, 575.0), glm::vec3(13.0f));
+	gusteaus.setRotY(90.0f);
 
 
-	//LUMINARIA PARA REPORTE 08
 
-	luminariaP8 = Lampara("Models/luminaria_text.obj", &uniformModel, glm::vec3(-90.0f, -0.95f, -100.0f), glm::vec3(4.0f));
+
+	
 
 	//camera = Camera(glm::vec3(370.0f, 712.0f, 285.0), glm::vec3(0.0f, 1.0f, 0.0f), -60.0f, 0.0f, 5.5f, 0.5f);
 
@@ -736,6 +779,8 @@ void InitializeTextures() { //Texturas y skybox
 	reforma_layout = Texture("Textures/reforma_layout.png");
 	reforma_layout.LoadTextureA();
 
+	grass = Texture("Textures/grass.png");
+	grass.LoadTextureA();
 
 
 	std::vector<std::string> skyboxFaces;
@@ -985,13 +1030,32 @@ void renderVespa() {
 	glm::mat4 model;
 
 	model = glm::mat4(1.0);
-	model = glm::translate(model, glm::vec3(-35.0f, -0.5f, -300.0));
+	model = glm::translate(model, glm::vec3(45.0f, -0.5f, -300.0));
 	model = glm::scale(model, glm::vec3(15.0f, 15.0f, 15.0f));
-	//model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	vespa.RenderModel();
 
 }
+
+
+
+void renderMetrobus() {
+
+	glm::mat4 model;
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-55.0f, 2.5f, 395.0));
+	model = glm::scale(model, glm::vec3(12.0f));
+	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	metrobus.RenderModel();
+
+}
+
+
+
+
 
 void renderHelicoptero(){
 
@@ -1132,7 +1196,7 @@ void renderTimmyBus() {
 	glm::mat4 model;
 
 	model = glm::mat4(1.0);
-	model = glm::translate(model, glm::vec3(-35.0f, -0.5f, -380.0));
+	model = glm::translate(model, glm::vec3(-35.0f, -0.5f, -260.0));
 	model = glm::scale(model, glm::vec3(15.0f, 15.0f, 15.0f));
 	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
@@ -1144,9 +1208,9 @@ void renderLaPulga() {
 	glm::mat4 model;
 
 	model = glm::mat4(1.0);
-	model = glm::translate(model, glm::vec3(-80.0f, 0.0f, -300.0));
+	model = glm::translate(model, glm::vec3(-170.0f, 0.0f, -170.0));
 	model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
-	//model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	laPulga.RenderModel();
 }
@@ -1231,8 +1295,8 @@ void renderNaveDexter() {
 	model = glm::rotate(model, -inclinacionNave * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	modelauxNave = model;
-	/*glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);*/
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	nave_cabina.RenderModel();
 
 
@@ -1245,17 +1309,13 @@ void renderNaveDexter() {
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	nave_extra.RenderModel();
 
+	model = modelauxNave;
 
 }
 
 
 
 void renderCamellon() {
-
-
-	/*camellon = Edificio("Models/Camellon.obj", &uniformModel, glm::vec3(-3.0f, -1.0f, -337.0), glm::vec3(10.0f, 10.0f, 7.0f));
-	camellon.setRotY(90.0f);*/
-
 
 	glm::mat4 model, modelaux;
 
@@ -1268,9 +1328,6 @@ void renderCamellon() {
 	model = glm::scale(model, glm::vec3(6.0f, 10.0f, 10.0f));
 	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	//modelaux = model;
-	/*glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);*/
 	camellon.RenderModel();
 
 	model = modelaux;
@@ -1280,9 +1337,6 @@ void renderCamellon() {
 	model = glm::scale(model, glm::vec3(6.0f, 10.0f, 10.0f));
 	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	//modelaux = model;
-	/*glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);*/
 	camellon.RenderModel();
 
 	model = modelaux;
