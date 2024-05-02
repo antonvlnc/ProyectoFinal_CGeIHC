@@ -138,7 +138,7 @@ Texture grass;
 MainAvatar dexter;
 Edificio dianaCazadora;
 Edificio BBVA_Pixies;
-Edificio estelaDeLuz;
+//Edificio estelaDeLuz;
 Edificio astrodomo;
 Edificio slamminDonuts;
 Edificio bigWand;
@@ -254,6 +254,7 @@ void renderNaveDexter();
 void renderCamellon();
 void renderMetrobus();
 void renderPuertaReja();
+void renderEstela(); //prueba para textura con iluminacion cocinada
 
 int main()
 {
@@ -339,8 +340,26 @@ int main()
 		deltaTime += (now - lastTime) / limitFPS;
 		lastTime = now;
 
+
+
+
+		//MAINLIGHT PARA PRUEBAS DE NOCHE (ANTONIO) NO BORRAR, COMENTAR SI ES NECESARIO
+
+		mainLight = DirectionalLight(0.5f, 0.5f, 1.0f,
+			0.3f, 0.3f,
+			0.0f, 0.0f, -1.0f);
+
+
+		/*mainLight = calcSunlight();*/ //Comenté el sol de momento
+
+
+
+
 		//----------------ANIMACIONES-------------- Aquí irán las funciones de las animaciones
-		mainLight = calcSunlight();
+
+
+
+		
 
 
 		//Recibir eventos del usuario
@@ -378,8 +397,13 @@ int main()
 
 		//informaci�n al shader de fuentes de iluminaci�n
 		shaderList[0].SetDirectionalLight(&mainLight);
-		/*shaderList[0].SetPointLights(pointLights, pointLightCount);
-		shaderList[0].SetSpotLights(spotLights, spotLightCount);*/
+		//shaderList[0].SetPointLights(pointLights, pointLightCount);
+		shaderList[0].SetSpotLights(spotLights, spotLightCount); 
+
+
+		//tipo spotlight (para pruebas de cocinado de luces - Antonio)
+
+
 
 
 		//-------------------------PISO-----------------------------
@@ -449,7 +473,8 @@ int main()
 		renderHelicoptero();
 
 		//Estela de Luz
-		estelaDeLuz.renderModel();
+		/*estelaDeLuz.renderModel();*/
+		renderEstela();
 
 
 		//angel de la independencia
@@ -685,7 +710,9 @@ void InitializeModels() {
 	BBVA_Pixies.setRotY(270.0f);
 
 	//Estela de luz
-	estelaDeLuz = Edificio("Models/Estela.obj", &uniformModel, glm::vec3(315.0f, -1.0f, 805.0f), glm::vec3(5.0f));
+	/*estelaDeLuz = Edificio("Models/Estela.obj", &uniformModel, glm::vec3(315.0f, -1.0f, 805.0f), glm::vec3(5.0f));*/
+	estela_de_luz = Model();
+	estela_de_luz.LoadModel("Models/Estela.obj");
 
 	//Cuerpo del helicoptero
 	helicoptero_base = Model();
@@ -960,7 +987,7 @@ void InitializeLights() {
 		1.0f, 0.045f, 0.0075f);
 	pointLightCount++;
 
-	//LUZ PUNTUAL PARA LA DESK LAMP
+	//LUZ PUNTUAL PARA LA DESK LAMP (BLANCA)
 	pointLights[1] = PointLight(1.0f, 1.0f, 1.0f,
 		0.0f, 3.0f,
 		25.0f, 2.5f, 7.0f,
@@ -968,89 +995,23 @@ void InitializeLights() {
 	pointLightCount++;
 
 	//LUZ NEGRA PARA APAGAR (ARREGLO 2 DE POINTLIGHTS)
-	pointLights2[0] = PointLight(0.0f, 0.0f, 0.0f,
-		0.0f, 24.0f,
-		4.0f, 9.0f, 12.0f,
-		0.3f, 0.2f, 0.1f);
-	pointLightCount2++;
+	//pointLights2[0] = PointLight(0.0f, 0.0f, 0.0f,
+	//	0.0f, 24.0f,
+	//	4.0f, 9.0f, 12.0f,
+	//	0.3f, 0.2f, 0.1f);
+	//pointLightCount2++;
 
-	//ARREGLO 1 -> CUANDO EL AUTO AVANZA
-	   //unsigned int spotLightCount3 = 0; //ARREGLO 2 -> CUANDO EL AUTO RETROCEDE
-	   //PRIMER ARREGLO DE SPOTLIGHTS (TODAS LAS SPOTLIGHTS ENCENDIDAS)
-	   // Luz vehiculo delantera (azul)
-	spotLights[0] = SpotLight(0.0f, 0.0f, 1.0f,
-		1.0f, 2.0f,
-		0.0f, 50.0f, -10.0f,
-		0.0f, 0.0f, -10.0f,
-		1.0f, 0.01f, 0.001f,
-		20.0f);
+	//ARREGLO 1 
+
+	//Luz AMARILLA de tipo SPOTLIGHT para prueba de cocinado de luces (Antonio)
+	spotLights[0] = SpotLight(1.0f, 1.0f, 0.0f,
+		2.0f, 4.0f, //1,2 || 5 y 12 está más grande pero se ve demasiado brillante
+		-69.0f, 79.0f, -100.0f, //posición de la primera luminaria de prueba
+		0.0f, -1.0f, 0.0f, //apunta hacia abajo (-y)
+		1.0f, 0.01f, 0.001f, //valores estándar
+		50.0f); //20 || esto aumenta la difuminación de los bordes del circulo
 	spotLightCount++;
 
-
-	// Luz helicoptero
-	spotLights[1] = SpotLight(1.0f, 1.0f, 0.0f,
-		1.0f, 2.0f,
-		5.0f, 10.0f, 0.0f,
-		0.0f, -5.0f, 0.0f,
-		1.0f, 0.01f, 0.001f,
-		15.0f);
-	spotLightCount++;
-
-	//LUZ SPOTLIGHT QUE ILUMINA PUERTA DE REJA
-	spotLights[2] = SpotLight(0.0f, 1.0f, 1.0f,
-		3.0f, 5.0f,
-		-2.0f, 12.0f, -5.0f,
-		0.0f, 0.0f, 5.0f,
-		1.0f, 0.01f, 0.001f,
-		15.0f);
-	spotLightCount++;
-
-
-
-	// Luz vehiculo trasera (rojo) APAGADA
-	spotLights[3] = SpotLight(0.0f, 0.0f, 0.0f,
-		1.0f, 2.0f,
-		0.0f, 50.0f, 10.0f,
-		0.0f, 0.0f, 10.0f,
-		1.0f, 0.01f, 0.001f,
-		20.0f);
-	spotLightCount++;
-	//SEGUNDO ARREGLO (CUANDO EL AUTO RETROCEDE)
-	// Luz vehiculo delantera (azul) APAGADA
-	spotLights2[0] = SpotLight(0.0f, 0.0f, 0.0f,
-		1.0f, 2.0f,
-		0.0f, 50.0f, -10.0f,
-		0.0f, 0.0f, -10.0f,
-		1.0f, 0.01f, 0.001f,
-		20.0f);
-	spotLightCount2++;
-	// Luz helicoptero
-	spotLights2[1] = SpotLight(1.0f, 1.0f, 0.0f,
-		1.0f, 2.0f,
-		5.0f, 10.0f, 0.0f,
-		0.0f, -5.0f, 0.0f,
-		1.0f, 0.01f, 0.001f,
-		15.0f);
-	spotLightCount2++;
-
-	//LUZ SPOTLIGHT QUE ILUMINA PUERTA DE REJA
-	spotLights2[2] = SpotLight(0.0f, 1.0f, 1.0f,
-		3.0f, 5.0f,
-		-2.0f, 12.0f, -5.0f,
-		0.0f, 0.0f, 5.0f,
-		1.0f, 0.01f, 0.001f,
-		15.0f);
-	spotLightCount2++;
-
-
-	//Luz trasera del auto ENCENDIDA
-	spotLights2[3] = SpotLight(1.0f, 0.0f, 0.0f,
-		1.0f, 2.0f,
-		0.0f, 50.0f, 10.0f,
-		0.0f, 0.0f, 10.0f,
-		1.0f, 0.01f, 0.001f,
-		20.0f);
-	spotLightCount2++;
 }
 
 DirectionalLight calcSunlight() {
@@ -1099,6 +1060,25 @@ DirectionalLight calcSunlight() {
 	return sol;
 }
 
+
+//Prueba de iluminación cocinada (textura)
+
+void renderEstela() {
+	glm::mat4 model, modelaux;
+
+	model = glm::mat4(1.0);
+
+	model = glm::translate(model, glm::vec3(315.0f, -1.0f, 805.0f));
+	modelaux = model;
+	model = glm::scale(model, glm::vec3(5.0f));
+	/*model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));*/
+	//material brillante
+	//Material_brillante.UseMaterial(uniformSpecularIntensity, uniformShininess); //esto afecta a todo el mundo
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	estela_de_luz.RenderModel();
+
+	model = modelaux;
+}
 
 void renderVespa() {
 
