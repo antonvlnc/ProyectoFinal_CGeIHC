@@ -88,6 +88,11 @@ float rotacionNave, inclinacionNave;
 float rotacionNaveOffset;
 float movNaveOffset;
 
+//Animacion metrobus -----------------------------------------------------------------------------------------------------------------------------------------------
+bool flagBus1, flagBus2, flagBus3, flagBus4, flagBus5, flagBus6, flagBus7, flagBus8, flagBus9, flagBus10, flagBus11, flagBus12, flagBus13;
+float rotacionAutomaticaRuedaZ, rotacionAutomaticaRuedaOffSet;
+float metrobusX, metrobusY, metrobusZ;
+
 //para luces
 unsigned int pointLightCount = 0;
 unsigned int pointLightCount2 = 0;
@@ -314,16 +319,21 @@ int main()
 	rotacionNaveOffset = 1.0f;
 	movNaveOffset = 2.0f;
 
+	//Animacion metrobus
+	flagBus1 = true;
+	flagBus2 = flagBus3 = flagBus4 = flagBus5 = flagBus6 = flagBus7 = flagBus8 = flagBus9 = flagBus10 = flagBus11 = flagBus12 = flagBus13 = false;
+	rotacionAutomaticaRuedaZ = 0.0f;
+	rotacionAutomaticaRuedaOffSet = 3.0f;
 	//------------------SONIDO-----------------------
 	//Sonido ambiental
-	ISoundEngine* Ambiental = createIrrKlangDevice();
-	Ambiental->play2D("Sound/Ambiental.wav", true); 
-	Ambiental->setSoundVolume(0.2f);
+	//ISoundEngine* Ambiental = createIrrKlangDevice();
+	//Ambiental->play2D("Sound/Ambiental.wav", true); 
+	//Ambiental->setSoundVolume(0.2f);
 
-	//Pista de fondo
-	ISoundEngine* Intro = createIrrKlangDevice();
-	Intro->play2D("Sound/Lab_Dexter.wav", true); //cambiar a cancion en loop sin la voz
-	Intro->setSoundVolume(0.15f);
+	////Pista de fondo
+	//ISoundEngine* Intro = createIrrKlangDevice();
+	//Intro->play2D("Sound/Lab_Dexter.wav", true); //cambiar a cancion en loop sin la voz
+	//Intro->setSoundVolume(0.15f);
 
 	////Sonido con teclado (Pendiente)
 	/*ISoundEngine* AstrodomoSound = createIrrKlangDevice();
@@ -1116,6 +1126,9 @@ void renderVespa() {
 
 
 void renderMetrobus() {
+	// Esto será indefinido
+	rotacionAutomaticaRuedaZ += rotacionAutomaticaRuedaOffSet * deltaTime;
+	
 
 	glm::mat4 model,modelaux;
 
@@ -1136,6 +1149,7 @@ void renderMetrobus() {
 	model = glm::translate(model, glm::vec3(10.0f, 6.0f, 25.0));
 	model = glm::scale(model, glm::vec3(12.0f));
 	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, rotacionAutomaticaRuedaZ * toRadians, glm::vec3(1.0f, 0.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	metrobus_llanta_izq.RenderModel();
 
@@ -1146,6 +1160,7 @@ void renderMetrobus() {
 	model = glm::translate(model, glm::vec3(10.0f, 6.0f, -26.5));
 	model = glm::scale(model, glm::vec3(12.0f));
 	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, rotacionAutomaticaRuedaZ * toRadians, glm::vec3(1.0f, 0.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	metrobus_llanta_izq.RenderModel();
 
@@ -1156,6 +1171,7 @@ void renderMetrobus() {
 	model = glm::translate(model, glm::vec3(10.0f, 6.0f, -42.0));
 	model = glm::scale(model, glm::vec3(12.0f));
 	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, rotacionAutomaticaRuedaZ * toRadians, glm::vec3(1.0f, 0.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	metrobus_llanta_izq.RenderModel();
 
@@ -1169,6 +1185,7 @@ void renderMetrobus() {
 	model = glm::translate(model, glm::vec3(-10.0f, 6.0f, 25.0));
 	model = glm::scale(model, glm::vec3(12.0f));
 	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, rotacionAutomaticaRuedaZ * toRadians, glm::vec3(1.0f, 0.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	metrobus_llanta_der.RenderModel();
 
@@ -1178,6 +1195,7 @@ void renderMetrobus() {
 	model = glm::translate(model, glm::vec3(-10.0f, 6.0f, -26.5));
 	model = glm::scale(model, glm::vec3(12.0f));
 	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, rotacionAutomaticaRuedaZ * toRadians, glm::vec3(1.0f, 0.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	metrobus_llanta_izq.RenderModel();
 
@@ -1187,6 +1205,7 @@ void renderMetrobus() {
 	model = glm::translate(model, glm::vec3(-10.0f, 6.0f, -42.0));
 	model = glm::scale(model, glm::vec3(12.0f));
 	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, rotacionAutomaticaRuedaZ * toRadians, glm::vec3(1.0f, 0.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	metrobus_llanta_izq.RenderModel();
 
@@ -1379,7 +1398,7 @@ void renderNaveDexter() {
 	if (avanzaNave) {
 		if (movNaveZ > -1275.0f) {
 			movNaveZ -= movNaveOffset * deltaTime;
-			printf("ValorZ1: %f \n", movNaveZ);
+			//printf("ValorZ1: %f \n", movNaveZ);
 			if (controlDeltaTimeDesborde) {
 				movNaveZ = 0.0f;
 				controlDeltaTimeDesborde = false;
