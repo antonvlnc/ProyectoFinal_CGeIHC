@@ -7,8 +7,9 @@ C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\controlador
 C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\controladorLuces.cpp(74,14): warning C4244: '=': conversión de 'double' a 'GLfloat'; posible pérdida de datos
 C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\controladorLuces.cpp(75,16): warning C4244: '=': conversión de 'double' a 'GLfloat'; posible pérdida de datos
 C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\controladorLuces.cpp(76,15): warning C4244: '=': conversión de 'double' a 'GLfloat'; posible pérdida de datos
-C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\controladorLuces.cpp(129,49): warning C4244: 'argumento': conversión de 'double' a 'GLfloat'; posible pérdida de datos
-C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\controladorLuces.cpp(129,24): warning C4244: 'argumento': conversión de 'double' a 'GLfloat'; posible pérdida de datos
-C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\controladorLuces.cpp(180,24): warning C4244: 'argumento': conversión de 'double' a 'GLfloat'; posible pérdida de datos
-C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\controladorLuces.cpp(185,24): warning C4244: 'argumento': conversión de 'double' a 'GLfloat'; posible pérdida de datos
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\controladorLuces.cpp(123,49): warning C4244: 'argumento': conversión de 'double' a 'GLfloat'; posible pérdida de datos
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\controladorLuces.cpp(123,24): warning C4244: 'argumento': conversión de 'double' a 'GLfloat'; posible pérdida de datos
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\controladorLuces.cpp(166,24): warning C4244: 'argumento': conversión de 'double' a 'GLfloat'; posible pérdida de datos
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\controladorLuces.cpp(171,24): warning C4244: 'argumento': conversión de 'double' a 'GLfloat'; posible pérdida de datos
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\controladorLuces.cpp(176,24): warning C4244: 'argumento': conversión de 'double' a 'GLfloat'; posible pérdida de datos
   P08_2-421124433.vcxproj -> C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\Debug\Proyecto_Final.exe

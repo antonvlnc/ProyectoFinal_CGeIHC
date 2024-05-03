@@ -116,38 +116,32 @@ void controladorLuces::setSkyboxNumber() {
 void controladorLuces::initializeSpotlights(glm::vec3 posLuz1, glm::vec3 posLuz2, glm::vec3 posLuz3) {
 	 
 
-	//SpotLight::SpotLight(GLfloat red, GLfloat green, GLfloat blue,
-	//	GLfloat aIntensity, GLfloat dIntensity,
-	//	GLfloat xPos, GLfloat yPos, GLfloat zPos,
-	//	GLfloat xDir, GLfloat yDir, GLfloat zDir,
-	//	GLfloat con, GLfloat lin, GLfloat exp,
-	//	GLfloat edg) : PointLight(red, green, blue, aIntensity, dIntensity, xPos, yPos, zPos, con, lin, exp)
-
 	// agregar algo que tome en cuenta la escala y el desplazamiento de la luz con respecto al centro del modelo.
-	SpotLight letrasDimmsdale = SpotLight(0.5f, 0.0f, 0.8f, //Diana rojo
+	//NOTA: Numero entre paréntesis es la altura a la que esta la fuente de iluminacion en el modelo original por la escala en y del modelo
+	SpotLight diana = SpotLight(0.5f, 0.0f, 0.8f, //Diana rojo
 		1.0f, 1.0f,
 		posLuz1.x, posLuz1.y + (1.0 * 5.0), posLuz1.z - 35.0,
 		0.0f, 1.0f, 0.0f,
 		1.0f, 0.01f, 0.0f ,
 		80.0f);
 
-	SpotLight letrerosDimmsdale = SpotLight(0.0f, 0.0f, 0.7f, //Angel 0.7f ,0.0f ,0.7f
+	SpotLight angel = SpotLight(0.0f, 0.0f, 0.7f, //Angel 0.7f ,0.0f ,0.7f
 		1.0f, 1.0f,
 		posLuz2.x, posLuz2.y  , posLuz2.z,
 		0.0f, 1.0f, 0.0f,
 		1.0f, 0.01f, 0.0f ,
 		80.0f);
 
-	SpotLight x = SpotLight(0.7f, 0.7f, 0.0f, // Ring 0.7f, 0.7f, 0.0f
+	SpotLight ring = SpotLight(0.7f, 0.7f, 0.0f, // Ring 0.7f, 0.7f, 0.0f
 		1.0f, 1.0f,
 		posLuz3.x, posLuz3.y + 50.0f, posLuz3.z,
 		0.0f, -1.0f, 0.0f,
 		1.0f, 0.01f, 0.0f,
 		80.0f);
 
-	spotlights[0] = letrasDimmsdale;
-	spotlights[1] = letrerosDimmsdale;
-	spotlights[2] = x;
+	spotlights[0] = diana;
+	spotlights[1] = angel;
+	spotlights[2] = ring;
 	spotlightCount = 3;
 
 }
@@ -166,23 +160,20 @@ void controladorLuces::chooseSpotLightsArray(GLboolean esDia) {
 
 void controladorLuces::initializePointlights(glm::vec3 posLuz1, glm::vec3 posLuz2, glm::vec3 posLuz3) {
 
-	/*PointLight::PointLight(GLfloat red, GLfloat green, GLfloat blue,
-						GLfloat aIntensity, GLfloat dIntensity,
-						GLfloat xPos, GLfloat yPos, GLfloat zPos,
-						GLfloat con, GLfloat lin, GLfloat exp) : Light(red, green, blue, aIntensity, dIntensity)*/
-	PointLight angel = PointLight(0.8f, 0.8f, 0.0f, //0.0f, 0.2f, 1.0f
+	//NOTA: Numero entre paréntesis es la altura a la que esta la fuente de iluminacion en el modelo original por la escala en y del modelo
+	PointLight letrasDimmsdale = PointLight(0.8f, 0.8f, 0.0f, //0.0f, 0.2f, 1.0f
 		1.0f, 1.0f,
-		posLuz1.x, posLuz1.y + 30.0f, posLuz1.z + 20.0f, //Letras Dimmsdale
-		1.0f, 0.01f, 0.01f);
+		posLuz1.x, posLuz1.y + (25.0 * 2.0f), posLuz1.z - 10.0f,
+		1.0f, 0.03f, 0.0f);
 
-	PointLight diana = PointLight(0.8f, 0.8f, 0.0f, //0.5f, 0.0f, 0.5f
+	PointLight estelaLuz = PointLight(0.8f, 0.8f, 0.8f, 
 		1.0f, 1.0f,
-		posLuz2.x, posLuz2.y + (70.0 * 1.9f), posLuz2.z, //Letrero Dimmsdale
-		1.0f, 0.01f, 0.01f);
+		posLuz2.x, posLuz2.y + (45.0 * 5.0f), posLuz2.z, 
+		1.0f, 0.02f, 0.0f);
 
 	PointLight bigWand = PointLight(1.0f, 1.0f, 0.0f,
 		1.0f, 1.0f,
-		posLuz3.x, posLuz3.y + (12.0 * 20.0), posLuz3.z, //Numero entre paréntesis es la altura a la que esta la fuente de iluminacion en el modelo original por la escala en y del model
+		posLuz3.x, posLuz3.y + (12.0 * 20.0), posLuz3.z, 
 		1.0f, 0.01f, 0.0f);
 	//Para que no se envie un arreglo vacio
 	PointLight defaultPointlight = PointLight(0.0f, 0.0f, 0.0f,
@@ -191,20 +182,31 @@ void controladorLuces::initializePointlights(glm::vec3 posLuz1, glm::vec3 posLuz
 		1.0f, 0.01f, 0.0f);;
 
 	//Para la noche
-	pointLights[0][0] = angel;
-	pointLights[0][1] = diana;
+	pointLights[0][0] = letrasDimmsdale;
+	pointLights[0][1] = estelaLuz;
 	pointLights[0][2] = bigWand;
 	pointlightCount[0] = 3;
 
+	//Luz puntual apagada (negra) para que nunca se mande un arreglo "vacio"
 	pointLights[1][0] = defaultPointlight;
+	pointlightCount[1]++;
+	//Segunda luz big wand para que se puede activar por teclado durante el dia tambien
+	pointLights[1][1] = bigWand;
 	pointlightCount[1]++;
 }
 
-void controladorLuces::choosePointLightsArray(GLboolean esDia, GLboolean luzActivableEncendida) {
+void controladorLuces::choosePointLightsArray(GLboolean luzActivableEncendida) {
 
-	if (esDia) {
+	//ACtiva la luces de forma automatica cuando la bandera de esDia 
+	if (esDeDia) {
 		currentPointlight = pointLights[1];
-		currentPointlightCount = pointlightCount[1];
+		
+		if (luzActivableEncendida) {
+			currentPointlightCount = pointlightCount[1];
+		}
+		else {
+			currentPointlightCount = pointlightCount[1] - 1;
+		}
 	}
 	else {
 		currentPointlight = pointLights[0];

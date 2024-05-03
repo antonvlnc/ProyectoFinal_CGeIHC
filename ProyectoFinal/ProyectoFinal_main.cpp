@@ -100,8 +100,8 @@ unsigned int pointLightCount2 = 0;
 unsigned int spotLightCount = 0; //ARREGLO 0 -> TODAS LAS LUCES ENCENDIDAS
 unsigned int spotLightCount2 = 0;
 
-GLfloat duracionCicloDiayNoche = 20.0; //cantidad de segundos que va a durar el ciclo de dia/noche, el dia dura 2*duracionCicloDiaYNoche
-GLboolean esDeDia = false; //VAriable para controlar eventos ligados a la hora del dia
+GLfloat duracionCicloDiayNoche = 40.0; //cantidad de segundos que va a durar el ciclo de dia/noche, el dia dura 2*duracionCicloDiaYNoche
+GLboolean esDeDia = false; //VAriable para controlar eventos ligados al ciclo de dia y de noche
 
 //Objeto para el manejo de todas las luces del escenario
 controladorLuces lightControl;
@@ -152,6 +152,8 @@ Edificio bigWand;
 Edificio casaDexter;
 Edificio CasaTimmy;
 
+Model nave_cabina;
+Model nave_extra;
 
 
 Lampara luminariaP8;
@@ -160,8 +162,6 @@ Lampara luminariaP8;
 Model luminaria;
 Model angel_independencia;
 Model angel_independencia_ala;
-Model bbva;
-Model estela_de_luz;
 Model helicoptero_base;
 Model helicoptero_helice;
 Model camellon;
@@ -183,13 +183,6 @@ Model taxi;
 Edificio letras_dimmsdale;
 Edificio letrero_dimmsdale;
 
-//Laboratorio de Dexter
-Model casa_dexter;
-Model dexter_body;
-Model dexter_leg;
-Model dexter_arm;
-Model nave_cabina;
-Model nave_extra;
 
 //Ratatouille
 Model vespa;
@@ -208,8 +201,8 @@ Edificio ring;
 
 
 //SKYBOX
-Skybox skybox;
-Skybox current;
+Skybox skybox;	//Default
+Skybox current; //Skybox que se renderiza
 Skybox dia;
 Skybox noche;
 Skybox amanecer;
@@ -220,7 +213,6 @@ Skybox atardecer;
 //MATERIALES
 Material Material_brillante;
 Material Material_opaco;
-//Sphere cabeza = Sphere(0.5, 20, 20);
 
 //DECLARACION DE LAS LUCES
 
@@ -244,12 +236,14 @@ void calcAverageNormals(unsigned int* indices, unsigned int indiceCount, GLfloat
 	unsigned int vLength, unsigned int normalOffset);
 void CreateObjects();
 void CreateShaders();
+
 void InitializeModels();
 void InitializeTextures();
 void InitializeSkyboxes();
 void InitializeLights();
 
 void selectSkybox(int skyboxNumber);
+
 void renderAngelIndependencia();
 void renderTimmyBus();
 void renderVespa();
@@ -346,7 +340,7 @@ int main()
 		deltaTime += (now - lastTime) / limitFPS;
 		lastTime = now;
 
-		//----------------ANIMACIONES-------------- Aquí irán las funciones de las animaciones
+		//Luz Direccional, seleccion de skybox
 		esDeDia = lightControl.recalculateDirectionalLight(deltaTime);
 		lightControl.setSkyboxNumber();
 		selectSkybox(lightControl.getSkyboxNumber());
@@ -379,20 +373,13 @@ int main()
 		glUniform3f(uniformEyePosition, camera.getCameraPosition().x, camera.getCameraPosition().y, camera.getCameraPosition().z);
 
 		//----------------LUCES-----------
-		// luz ligada a la c�mara de tipo flash
-		//sirve para que en tiempo de ejecuci�n (dentro del while) se cambien propiedades de la luz
-		glm::vec3 lowerLight = camera.getCameraPosition();
-		lowerLight.y -= 0.3f;
-		//spotLights[0].SetFlash(lowerLight, camera.getCameraDirection());
 
-		//mainLight = calcSunlight();
 
 		lightControl.chooseSpotLightsArray(esDeDia);
-		lightControl.choosePointLightsArray(esDeDia, mainWindow.getLuzActivable());
+		lightControl.choosePointLightsArray(mainWindow.getLuzActivable());
 
 		//informaci�n al shader de fuentes de iluminaci�n
 		shaderList[0].SetDirectionalLight(&mainLight); //referencia a la mainlight del objeto light control;
-		//shaderList[0].SetDirectionalLight(&mainLight);
 		shaderList[0].SetPointLights(lightControl.getPointlightArray(), lightControl.getPointlightCount());
 		shaderList[0].SetSpotLights(lightControl.getSpotlightArray(), lightControl.getSpotLightCount());
 
@@ -951,12 +938,12 @@ void InitializeLights() {
 	//contador de luces puntuales
 	lightControl = controladorLuces(duracionCicloDiayNoche, limitFPS, esDeDia, &mainLight);
 	lightControl.initializeSpotlights(dianaCazadora.getPos(), glm::vec3(5.0f, -1.0f, -530.0), ring.getPos());
-	lightControl.initializePointlights(letras_dimmsdale.getPos(), letrero_dimmsdale.getPos() , bigWand.getPos());
+	lightControl.initializePointlights(letras_dimmsdale.getPos(), estelaDeLuz.getPos(), bigWand.getPos());
 
 }
 
 //Otros 
-//Devuelve el skybox dependiendo de la "hora" del dia, el código que maneja esto esta en la implementacion de controladorLuces
+//Asigna el skybox que se va a renderizar a current.
 void selectSkybox(int skyboxNumber) {
 
 	switch (skyboxNumber){

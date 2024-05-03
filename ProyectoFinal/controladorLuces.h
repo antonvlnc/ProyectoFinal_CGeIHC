@@ -13,21 +13,18 @@ public:
 	controladorLuces();
 	controladorLuces(float duracionDia, float limitFPS, GLboolean esDia, DirectionalLight* luzDireccional);
 	~controladorLuces();
-	//solo llamarlas una vez!
-	void setSpotlights(SpotLight luz1, SpotLight luz2, SpotLight luz3);
 
 
-	//Por si se requiere algun valor de una luz en tiempo de ejecucion
+	//Por si se requiere modificar algun valor de una luz en tiempo de ejecucion
 	//void updateLights(); 
 
-	//inicializa los arreglos según las luces que se hayan inicializado usando los setters
-
+	//Inicializan y añaden a los arreglos necesarios las luces. Reciben como argumento los vectores de posicion de los objetos a los cuales se les va a ligar la luz.
 	void initializeSpotlights(glm::vec3 posLuz1, glm::vec3 posLuz2, glm::vec3 posLuz3);
 	void initializePointlights(glm::vec3 posLuz1, glm::vec3 posLuz2, glm::vec3 posLuz3);
 
 	//escoge el arreglo y la cuenta de luces que se va a utilizar 
 	void chooseSpotLightsArray(GLboolean esDia);
-	void choosePointLightsArray(GLboolean esDia, GLboolean luzActivableEncendida);
+	void choosePointLightsArray( GLboolean luzActivableEncendida);
 	GLboolean recalculateDirectionalLight(GLfloat deltaTime);
 	void setSkyboxNumber();
 
@@ -38,16 +35,20 @@ public:
 	unsigned int getPointlightCount() { return currentPointlightCount; }
 	int getSkyboxNumber() { return skyboxNumber; }
 
-	//DirectionalLight getDirectionalLight() { return mainLight; }
 
 private:
-	//MainLight
+	//Apuntador a MainLight para que modifique directamente la luz del archivo main.
 	DirectionalLight* mainLight;
-	float maxAngle = 180.0f;
+	//Angulo máximo de la luz direccional, 180 para que el recorrido sea un semicirculo
+	float maxAngle = 180.0f; 
+	//VAriable booleana indica si es de dia o de noche.
 	GLboolean esDeDia;
+	//El incremento del angulo. Esta en funcion de la duracion del dia el angulo máximo y la cantidad de fps
 	float incrementoAngulo;
+	//Angulo de la luz direccional, para poder calcular el vector de dirección de la luz.
 	float angulo;
-	int skyboxNumber;//1 Dia, 2 Noche
+	//El numero indica el skybox que se va a renderizar: 1) amanecer 2) dia 3)aterdecer 4) noche
+	int skyboxNumber;
 
 
 	SpotLight spotlights[MAX_SPOT_LIGHTS]; // Un solo arreglo p/ luces prendidas, mandar count = 0 para apagadas
