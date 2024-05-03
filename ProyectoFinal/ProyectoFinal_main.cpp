@@ -128,6 +128,7 @@ Texture plainTexture;
 Texture pisoTexture;
 Texture AgaveTexture;
 Texture reforma_layout; //piso
+Texture reforma_layout_baked; //piso con luz cocinada
 Texture AstrodomoTexture;
 Texture grass;
 
@@ -164,6 +165,9 @@ Model metrobus_llanta_der;
 Model puerta_reja;
 Model reja_izq;
 Model reja_der;
+Model banqueta;
+Model reflector;
+Model banqueta_luz;
 
 
 
@@ -256,6 +260,12 @@ void renderMetrobus();
 void renderPuertaReja();
 void renderEstela(); //prueba para textura con iluminacion cocinada
 
+void renderBanqueta();
+
+void renderBanquetaBaked();
+
+void renderReflector();
+
 int main()
 {
 	mainWindow = Window(1366, 768); // 1280, 1024 or 1024, 768
@@ -345,6 +355,13 @@ int main()
 
 		//MAINLIGHT PARA PRUEBAS DE NOCHE (ANTONIO) NO BORRAR, COMENTAR SI ES NECESARIO
 
+		//0.5,0.5,1.0 para noche
+		//0.3 en las dos intensidades || 1 y 2 para imagenes de baked lighting
+
+		/*mainLight = DirectionalLight(1.0f, 1.0f, 1.0f, 
+			1.0f, 2.0f,
+			0.0f, 0.0f, -1.0f);*/
+
 		mainLight = DirectionalLight(0.5f, 0.5f, 1.0f,
 			0.3f, 0.3f,
 			0.0f, 0.0f, -1.0f);
@@ -388,7 +405,9 @@ int main()
 		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
 		glUniform3f(uniformEyePosition, camera.getCameraPosition().x, camera.getCameraPosition().y, camera.getCameraPosition().z);
 
-		//----------------LUCES-----------
+
+
+		//------------------------------------------------------LUCES-------------------------------------------------------------------
 		// luz ligada a la c�mara de tipo flash
 		//sirve para que en tiempo de ejecuci�n (dentro del while) se cambien propiedades de la luz
 		glm::vec3 lowerLight = camera.getCameraPosition();
@@ -406,7 +425,7 @@ int main()
 
 
 
-		//-------------------------PISO-----------------------------
+		//-----------------------------------------------------------PISO-----------------------------------------------------------------------------------
 		glm::mat4 model(1.0);
 		glm::mat4 modelaux(1.0);
 		glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -417,7 +436,7 @@ int main()
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
 
-		reforma_layout.UseTexture();
+		reforma_layout_baked.UseTexture();
 		Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
 
 
@@ -480,6 +499,9 @@ int main()
 		//angel de la independencia
 		renderAngelIndependencia();
 
+		//MODELO DE LUMINARIA PARA REPORTE 08
+		luminariaP8.renderModel();
+
 
 		//camellon por piezas
 		renderCamellon();
@@ -489,6 +511,16 @@ int main()
 
 		//Puerta con reja
 		renderPuertaReja();
+
+		//banqueta normal
+
+		renderBanqueta();
+
+		//Banqueta con luz cocinada
+		renderBanquetaBaked();
+
+		//reflector
+		renderReflector();
 
 		//-------------Modelos Mucha Lucha------------------
 
@@ -571,8 +603,7 @@ int main()
 		renderNaveDexter();
 
 
-		//MODELO DE LUMINARIA PARA REPORTE 08
-		luminariaP8.renderModel();
+		
 
 		glUseProgram(0);
 		mainWindow.swapBuffers();
@@ -695,7 +726,7 @@ void CreateShaders()
 }
 
 void InitializeModels() {
-	//----------Modelos Generales---------------------
+	//------------------------------------------Modelos Generales-------------------------------------------------
 
 	//Angel de la independencia
 	angel_independencia = Model();
@@ -740,10 +771,22 @@ void InitializeModels() {
 	metrobus_llanta_der = Model();
 	metrobus_llanta_der.LoadModel("Models/MetrobusLlantaDer.obj");
 
+	//Banqueta normal
+	banqueta = Model();
+	banqueta.LoadModel("Models/Banqueta.obj");
+
+	//Banqueta con luz cocinada
+	banqueta_luz = Model();
+	banqueta_luz.LoadModel("Models/BanquetaLuz.obj");
+
+	//reflector
+	reflector = Model();
+	reflector.LoadModel("Models/Reflector.obj");
+
 
 	//LUMINARIA PARA REPORTE 08
 
-	luminariaP8 = Lampara("Models/luminaria_text.obj", &uniformModel, glm::vec3(-90.0f, -0.95f, -100.0f), glm::vec3(4.0f));
+	luminariaP8 = Lampara("Models/luminaria_text.obj", &uniformModel, glm::vec3(-90.0f, 0.5f, -100.0f), glm::vec3(4.0f));
 
 	//Puerta con reja
 	puerta_reja = Model();
@@ -759,7 +802,7 @@ void InitializeModels() {
 
 
 
-	//----------Modelos Mucha Lucha---------------------
+	//-------------------------------------Modelos Mucha Lucha-------------------------------------------------
 
 	astrodomo = Edificio("Models/MuchaLucha/Astrodomo.obj", &uniformModel, glm::vec3(-295.0f, -2.0f, -50.0f), glm::vec3(5.0f));
 	astrodomo.setRotY(-270.0f);
@@ -793,7 +836,7 @@ void InitializeModels() {
 
 
 
-	//----------Modelos Padrinos Magicos---------------------
+	//--------------------------------------------Modelos Padrinos Magicos-------------------------------------------------------------
 
 
 	bus_padrinos = Model();
@@ -802,8 +845,8 @@ void InitializeModels() {
 	dianaCazadora = Edificio("Models/DianaCupido.obj", &uniformModel, glm::vec3(0.0f, -1.0f, 175.0f), glm::vec3(4.0f, 5.0f, 4.0f));
 	dianaCazadora.setRotY(-180.0f);
 
-	bigWand = Edificio("Models/Padrinos/BigWand.obj", &uniformModel, glm::vec3(-315.0f, -0.5f, 805.0), glm::vec3(20.0f));
-	//bigWand.setRotY(90.0f);
+	bigWand = Edificio("Models/Padrinos/BigWand.obj", &uniformModel, glm::vec3(-190.0f, -0.5f, 265.0), glm::vec3(20.0f));
+	bigWand.setRotY(90.0f);
 
 	CasaTimmy = Edificio("Models/Padrinos/TimmyH_Tex2.obj", &uniformModel, glm::vec3(370.0f, 1.0f, 600.0), glm::vec3(34.0f));
 	CasaTimmy.setRotY(270.0f);
@@ -814,7 +857,7 @@ void InitializeModels() {
 	taxi = Model();
 	taxi.LoadModel("Models/Padrinos/Taxi.obj");
 
-	letras_dimmsdale = Edificio("Models/Padrinos/Dimmsdale.obj", &uniformModel, glm::vec3(0.0f, 1.0f, 845.0), glm::vec3(25.0f));
+	letras_dimmsdale = Edificio("Models/Padrinos/Dimmsdale.obj", &uniformModel, glm::vec3(0.0f, 0.0f, 995.0), glm::vec3(75.0f));
 	letras_dimmsdale.setRotY(180.0f);
 
 	letrero_dimmsdale = Edificio("Models/Padrinos/DimsdaleSign.obj", &uniformModel, glm::vec3(230.0f, 1.0f, -620.0), glm::vec3(1.9f));
@@ -823,7 +866,7 @@ void InitializeModels() {
 
 
 
-	//----------Modelos Lab. de Dexter---------------------
+	//----------------------------------------------Modelos Lab. de Dexter----------------------------------------------------------------
 
 	casaDexter = Edificio("Models/DextersLab/CasaDexter.obj", &uniformModel, glm::vec3(-380.0f, -0.5f, 370.0), glm::vec3(40.0f));
 	casaDexter.setRotY(90.0f);
@@ -841,7 +884,7 @@ void InitializeModels() {
 	dexter = MainAvatar(glm::vec3(0.0f, 0.5f, -650.0f), 15.0f, glm::vec3(3.0f, 3.0f, 3.0f));
 
 
-	//-------------------------Modelos Ratatouille-----------------------------------------
+	//------------------------------------------------------Modelos Ratatouille------------------------------------------------------------------------------
 
 	//moto del chef chaparro
 	vespa = Model();
@@ -880,6 +923,9 @@ void InitializeTextures() { //Texturas y skybox
 
 	reforma_layout = Texture("Textures/reforma_layout.png");
 	reforma_layout.LoadTextureA();
+
+	reforma_layout_baked = Texture("Textures/reforma_layout_baked.png");
+	reforma_layout_baked.LoadTextureA();
 
 	grass = Texture("Textures/grass.png");
 	grass.LoadTextureA();
@@ -1001,16 +1047,29 @@ void InitializeLights() {
 	//	0.3f, 0.2f, 0.1f);
 	//pointLightCount2++;
 
-	//ARREGLO 1 
+	//--------------------------------------------------ARREGLO 1------------------------------------------------------------------- 
 
-	//Luz AMARILLA de tipo SPOTLIGHT para prueba de cocinado de luces (Antonio)
-	spotLights[0] = SpotLight(1.0f, 1.0f, 0.0f,
-		2.0f, 4.0f, //1,2 || 5 y 12 está más grande pero se ve demasiado brillante
-		-69.0f, 79.0f, -100.0f, //posición de la primera luminaria de prueba
-		0.0f, -1.0f, 0.0f, //apunta hacia abajo (-y)
-		1.0f, 0.01f, 0.001f, //valores estándar
-		50.0f); //20 || esto aumenta la difuminación de los bordes del circulo
-	spotLightCount++;
+	//Luz AMARILLA (o blanca si lo cambio) de tipo SPOTLIGHT para prueba de cocinado de luces (Antonio)
+	//spotLights[0] = SpotLight(1.0f, 1.0f, 1.0f,
+	//	2.0f, 4.0f, //1,2 || 5 y 12 está más grande pero se ve demasiado brillante
+	//	-69.0f, 80.45f, -100.0f, //posición de la primera luminaria de prueba
+	//	0.0f, -1.0f, 0.0f, //apunta hacia abajo (-y)
+	//	1.0f, 0.01f, 0.001f, //valores estándar
+	//	37.5f); //20 || esto aumenta la difuminación de los bordes del circulo
+	//spotLightCount++;
+
+	////LUZ BLANCA de prueba para cocinado de luz del letrero de Dimmsdale  230.0f, 0.5f, -750.0f
+	//spotLights[1] = SpotLight(1.0f, 1.0f, 1.0f,
+	//	4.0f, 8.0f, //2,4 o 1,2 || 3 y 6 funciona bien
+	//	230.0f, 14.75f, -750.5f, //15 en y 
+	//	0.0f, sin(18.0f * M_PI / 180.0f), sqrt(2) / 2, //en y y z para angulo de 45?   y en 20 sqrt(2)/2
+	//	1.0f, 0.01f, 0.001f, //1,.01,.001  0.045f 0.0075f
+	//	20.0f); //40 
+	//spotLightCount++;
+
+	//Luz Blanca para iluminar Letras de Dimmsdale 1/2
+
+
 
 }
 
@@ -1090,6 +1149,83 @@ void renderVespa() {
 	model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	vespa.RenderModel();
+	vespa.RenderModel();
+
+}
+
+void renderBanqueta() {
+
+	glm::mat4 model;
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-110.0f, -1.0f, -263.0f));
+	model = glm::scale(model, glm::vec3(38.5f,16.0f,75.0f)); //35 original
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	banqueta.RenderModel();
+
+}
+
+
+
+void renderBanquetaBaked() {
+
+	glm::mat4 model,modelaux;
+
+	//lado derecho, abajo
+	model = glm::mat4(1.0);
+	modelaux = model;
+	model = glm::translate(model, glm::vec3(-110.0f, -1.0f, -100.0f));
+	model = glm::scale(model, glm::vec3(38.5f, 16.0f, 89.0f)); //35 original, 75 a lo largo original
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	banqueta_luz.RenderModel();
+
+	//lado derecho, arriba
+	model = glm::mat4(1.0);
+	modelaux = model;
+	model = glm::translate(model, glm::vec3(-110.0f, -1.0f, 575.0f));
+	model = glm::scale(model, glm::vec3(38.5f, 16.0f, 89.0f)); //35 original, 75 a lo largo original
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	banqueta_luz.RenderModel();
+
+
+	
+	//lado izquierdo, abajo
+	model = glm::mat4(1.0);
+	modelaux = model;
+	model = glm::translate(model, glm::vec3(105.0f, -1.0f, -280.0f));
+	model = glm::scale(model, glm::vec3(43.5f, 16.0f, 89.0f)); //41.5 en ancho no se ve mal, 75 a lo largo original
+	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	banqueta_luz.RenderModel();
+
+	//lado izquierdo, arriba
+
+	model = glm::mat4(1.0);
+	modelaux = model;
+	model = glm::translate(model, glm::vec3(105.0f, -1.0f, 382.0f));
+	model = glm::scale(model, glm::vec3(43.5f, 16.0f, 89.0f)); //41.5 en ancho no se ve mal, 75 a lo largo original
+	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	banqueta_luz.RenderModel();
+
+
+
+}
+
+
+void renderReflector() {
+
+	glm::mat4 model;
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(230.0f, 0.5f, -750.0f));
+	model = glm::scale(model, glm::vec3(5.0f));
+	//model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	reflector.RenderModel();
 
 }
 
@@ -1101,7 +1237,7 @@ void renderMetrobus() {
 
 	model = glm::mat4(1.0);
 
-	model = glm::translate(model, glm::vec3(-55.0f, 2.5f, 395.0));
+	model = glm::translate(model, glm::vec3(-55.0f, 0.5f, 395.0));
 	modelaux = model;
 	model = glm::scale(model, glm::vec3(12.0f));	
 	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
