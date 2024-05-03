@@ -41,6 +41,7 @@ Window::Window(GLint windowWidth, GLint windowHeight)
 	rotAvatar = 0.0f;
 	rotBrazoPiernas = 0.0f;
 	banderaRand = false;
+	banderaLuzActivable = false;
 
 	//Camaras
 	tipoCamara = 1;
@@ -380,6 +381,9 @@ void Window::ManejaTeclado(GLFWwindow* window, int key, int code, int action, in
 	if (key == GLFW_KEY_1)
 	{
 		theWindow->K = 1;
+		if (action == GLFW_PRESS) {
+			theWindow->banderaLuzActivable = !theWindow->banderaLuzActivable;
+		}
 	}
 	if (key == GLFW_KEY_0)
 	{

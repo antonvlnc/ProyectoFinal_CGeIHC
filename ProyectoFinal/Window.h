@@ -36,6 +36,8 @@ public:
 	GLint getTipoCamara() { return tipoCamara; }
 
 
+	//Luces
+	GLboolean getLuzActivable() { return banderaLuzActivable; }
 	GLint getlight() { return K; }
 
 
@@ -76,6 +78,8 @@ private:
 	GLboolean banderaCaminata, banderaRand;
 	//Camara
 	GLint tipoCamara ; //1- camara ligada al avatar, 2 camara aerea, 3 la camara que hemos utilizado para las prácticas 
+	//Luces
+	GLboolean banderaLuzActivable;
 	static void ManejaTeclado(GLFWwindow* window, int key, int code, int action, int mode);
 	static void ManejaMouse(GLFWwindow* window, double xPos, double yPos);
 
