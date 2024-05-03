@@ -57,6 +57,10 @@ using namespace irrklang;
 const float toRadians = 3.14159265f / 180.0f;
 const float maxAngle = 180.0f;
 
+GLfloat deltaTime = 0.0f;
+GLfloat lastTime = 0.0f;
+static double limitFPS = 1.0 / 60.0;
+
 //Para animaci�n
 bool alaIzq = true;
 bool alaDer = true;
@@ -94,7 +98,7 @@ unsigned int pointLightCount2 = 0;
 unsigned int spotLightCount = 0; //ARREGLO 0 -> TODAS LAS LUCES ENCENDIDAS
 unsigned int spotLightCount2 = 0;
 float tiempoTranscurrido;
-GLfloat duracionCicloDiayNoche = 20.0; //cantidad de segundos que va a durar el ciclo de dia y de noche
+GLfloat duracionCicloDiayNoche = 40.0; //cantidad de segundos que va a durar el ciclo de dia/noche, el dia dura 2*duracionCicloDiaYNoche
 //GLfloat lightDirectionIncrement = 0.5f;
 GLfloat lightDirectionIncrement = maxAngle / (duracionCicloDiayNoche * 60.0);
 GLboolean esDeDia = true;
@@ -209,14 +213,7 @@ Skybox skybox;
 //MATERIALES
 Material Material_brillante;
 Material Material_opaco;
-
-
 //Sphere cabeza = Sphere(0.5, 20, 20);
-GLfloat deltaTime = 0.0f;
-GLfloat lastTime = 0.0f;
-static double limitFPS = 1.0 / 60.0;
-
-
 
 //DECLARACION DE LAS LUCES
 
@@ -511,6 +508,7 @@ int main()
 
 		//letras dimmsdale
 		letras_dimmsdale.renderModel();
+
 		
 		//letrero dimmsdale
 		letrero_dimmsdale.renderModel();
@@ -1058,20 +1056,16 @@ DirectionalLight calcSunlight() {
 	GLfloat xDir, yDir, red, green, blue;
 	xDir = 0.0f;
 	yDir = 0.0f;
-	red = 1.0f;
-	green = 0.8f;
-	blue = 0.5f;
+
 
 
 
 	if (anguloLuz >= 180.0) {
 		anguloLuz = 0.0f;
-		//blue = 0.5f;
 		esDeDia = !esDeDia;
 	}
 	else {
 		anguloLuz += lightDirectionIncrement * deltaTime;
-		//anguloLuz += lightDirectionIncrement;
 	}
 
 	xDir = cos(glm::radians(anguloLuz));
@@ -1701,6 +1695,13 @@ Código retirado del main que no sé si se va a necesitar en algun momento;
 		////Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
 		//meshList[3]->RenderMesh();
 		//glDisable(GL_BLEND);
+
+		asaDexter.setPos(letras_dimmsdale.getPos());
+		casaDexter.setUniformScale(5.0f);
+		casaDexter.renderModel();
+
+			casaDexter.setPos(glm::vec3(- 380.0f, -0.5f, 370.0));
+		casaDexter.setUniformScale(40.0f); //Codigo Para pruebas
 
 
 */
