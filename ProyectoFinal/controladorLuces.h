@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "SpotLight.h"
 #include "PointLight.h"
 #include "DirectionalLight.h"
@@ -18,13 +18,13 @@ public:
 	//Por si se requiere modificar algun valor de una luz en tiempo de ejecucion
 	//void updateLights(); 
 
-	//Inicializan y añaden a los arreglos necesarios las luces. Reciben como argumento los vectores de posicion de los objetos a los cuales se les va a ligar la luz.
+	//Inicializan y aï¿½aden a los arreglos necesarios las luces. Reciben como argumento los vectores de posicion de los objetos a los cuales se les va a ligar la luz.
 	void initializeSpotlights(glm::vec3 posLuz1, glm::vec3 posLuz2, glm::vec3 posLuz3);
 	void initializePointlights(glm::vec3 posLuz1, glm::vec3 posLuz2, glm::vec3 posLuz3);
 
 	//escoge el arreglo y la cuenta de luces que se va a utilizar 
 	void chooseSpotLightsArray(GLboolean esDia);
-	void choosePointLightsArray( GLboolean luzActivableEncendida);
+	void choosePointLightsArray(GLboolean luzActivableEncendida);
 	GLboolean recalculateDirectionalLight(GLfloat deltaTime);
 	void setSkyboxNumber();
 
@@ -39,20 +39,20 @@ public:
 private:
 	//Apuntador a MainLight para que modifique directamente la luz del archivo main.
 	DirectionalLight* mainLight;
-	//Angulo máximo de la luz direccional, 180 para que el recorrido sea un semicirculo
-	float maxAngle = 180.0f; 
+	//Angulo mï¿½ximo de la luz direccional, 180 para que el recorrido sea un semicirculo
+	float maxAngle = 180.0f;
 	//VAriable booleana indica si es de dia o de noche.
 	GLboolean esDeDia;
-	//El incremento del angulo. Esta en funcion de la duracion del dia el angulo máximo y la cantidad de fps
+	//El incremento del angulo. Esta en funcion de la duracion del dia el angulo mï¿½ximo y la cantidad de fps
 	float incrementoAngulo;
-	//Angulo de la luz direccional, para poder calcular el vector de dirección de la luz.
+	//Angulo de la luz direccional, para poder calcular el vector de direcciï¿½n de la luz.
 	float angulo;
 	//El numero indica el skybox que se va a renderizar: 1) amanecer 2) dia 3)aterdecer 4) noche
 	int skyboxNumber;
 
 
 	SpotLight spotlights[MAX_SPOT_LIGHTS]; // Un solo arreglo p/ luces prendidas, mandar count = 0 para apagadas
-	unsigned int spotlightCount=0; //Cuenta de luces en el arreglo
+	unsigned int spotlightCount = 0; //Cuenta de luces en el arreglo
 	unsigned int currentSpolightCount; // Cuenta de luces que se manda al shader
 
 	PointLight pointLights[2][3];

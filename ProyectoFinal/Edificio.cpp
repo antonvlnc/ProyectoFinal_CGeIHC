@@ -36,8 +36,8 @@ void Edificio::loadModels(std::string fileName) {
 }
 
 //Setters
-void Edificio::setPos(glm::vec3 pos) {
-	posicion = pos;
+void Edificio::setPos(float xPos, float yPos, float zPos) {
+	posicion = glm::vec3(xPos, yPos, zPos);
 }
 void Edificio::setRotX(float rotX) {
 	rotacionX = rotX;
