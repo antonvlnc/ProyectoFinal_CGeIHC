@@ -15,7 +15,7 @@ public:
 
 	void renderModel();
 	//setters
-	void setPos(glm::vec3 pos);
+	void setPos(float xPos, float yPos, float zPos);
 	void setRotX(float rotX);
 	void setRotY(float rotY);
 	void setRotZ(float rotZ);

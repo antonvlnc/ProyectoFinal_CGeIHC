@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include<stdio.h>
 #include<glew.h>
 #include<glfw3.h>
@@ -23,7 +23,7 @@ public:
 	GLfloat getmovimiento_avanza_retrocede() { return avanza_retrocede; }
 
 	GLfloat getmovimiento_helicoptero() { return avanza_retrocede_helicoptero; }
-	
+
 	GLfloat getanguK() { return anguK; }
 
 	//Movimiento Avatar
@@ -51,13 +51,14 @@ public:
 
 
 	bool getShouldClose() {
-		return  glfwWindowShouldClose(mainWindow);}
+		return  glfwWindowShouldClose(mainWindow);
+	}
 	bool* getsKeys() { return keys; }
 	void swapBuffers() { return glfwSwapBuffers(mainWindow); }
-	
+
 	~Window();
-private: 
-	GLFWwindow *mainWindow;
+private:
+	GLFWwindow* mainWindow;
 	GLint width, height;
 	bool keys[1024];
 	GLint bufferWidth, bufferHeight;
@@ -77,11 +78,10 @@ private:
 	GLfloat movimientoAvatar, rotAvatar, rotBrazoPiernas;
 	GLboolean banderaCaminata, banderaRand;
 	//Camara
-	GLint tipoCamara ; //1- camara ligada al avatar, 2 camara aerea, 3 la camara que hemos utilizado para las prácticas 
+	GLint tipoCamara; //1- camara ligada al avatar, 2 camara aerea, 3 la camara que hemos utilizado para las prï¿½cticas 
 	//Luces
 	GLboolean banderaLuzActivable;
 	static void ManejaTeclado(GLFWwindow* window, int key, int code, int action, int mode);
 	static void ManejaMouse(GLFWwindow* window, double xPos, double yPos);
 
 };
-
