@@ -148,7 +148,7 @@ Edificio CasaTimmy;
 
 
 
-Lampara luminariaP8;
+
 
 //GENERAL
 Model luminaria;
@@ -168,7 +168,9 @@ Model reja_der;
 Model banqueta;
 Model reflector;
 Model banqueta_luz;
-
+Model banqueta_esquina;
+Model street_lamp;
+Lampara luminariaP8;
 
 
 
@@ -181,6 +183,9 @@ Edificio dimmadome;
 Model taxi;
 Edificio letras_dimmsdale;
 Edificio letrero_dimmsdale;
+Edificio letrero_dimmsdale_baked;
+Model doidle;
+
 
 //Laboratorio de Dexter
 Model casa_dexter;
@@ -204,6 +209,9 @@ Edificio poster1;
 Edificio poster2;
 Edificio cactus;
 Edificio ring;
+Model perro_ricochet;
+Model fish;
+Model mutant_plant;
 
 
 //SKYBOX
@@ -257,7 +265,7 @@ void renderTaxi();
 void renderNaveDexter();
 void renderCamellon();
 void renderMetrobus();
-void renderPuertaReja();
+//void renderPuertaReja();
 void renderEstela(); //prueba para textura con iluminacion cocinada
 
 void renderBanqueta();
@@ -265,6 +273,17 @@ void renderBanqueta();
 void renderBanquetaBaked();
 
 void renderReflector();
+
+void renderLuminarias();
+
+void renderPerroRicochet();
+
+void renderFishyFish();
+
+void renderMutantPlant();
+
+void renderDoidle();
+
 
 int main()
 {
@@ -493,14 +512,14 @@ int main()
 
 		//Estela de Luz
 		/*estelaDeLuz.renderModel();*/
-		renderEstela();
+		/*renderEstela();*/
 
 
 		//angel de la independencia
 		renderAngelIndependencia();
 
 		//MODELO DE LUMINARIA PARA REPORTE 08
-		luminariaP8.renderModel();
+		/*luminariaP8.renderModel();*/
 
 
 		//camellon por piezas
@@ -510,17 +529,19 @@ int main()
 		renderMetrobus();
 
 		//Puerta con reja
-		renderPuertaReja();
+		/*renderPuertaReja();*/
 
 		//banqueta normal
 
 		renderBanqueta();
 
 		//Banqueta con luz cocinada
-		renderBanquetaBaked();
+		/*renderBanquetaBaked();*/
 
 		//reflector
 		renderReflector();
+
+		renderLuminarias();
 
 		//-------------Modelos Mucha Lucha------------------
 
@@ -548,6 +569,15 @@ int main()
 		//Ring
 		ring.renderModel();
 
+		//Perro de Ricochet
+		renderPerroRicochet();
+
+		//Fishy Fish
+		renderFishyFish();
+
+		//Mutant Plant
+		renderMutantPlant();
+
 		//--------------Modelos - Padrinos Mágicos------------
 
 		//Big Wand
@@ -571,9 +601,13 @@ int main()
 		
 		//letrero dimmsdale
 		letrero_dimmsdale.renderModel();
-		//
+		letrero_dimmsdale_baked.renderModel();
+		
+		//Doidle
+		renderDoidle();
 
-		//------------------Modelos - Ratatouille------------
+
+		//------------------------------Modelos - Ratatouille--------------------------
 		
 		//Vespa
 		renderVespa();
@@ -601,8 +635,6 @@ int main()
 
 		//nave dexter
 		renderNaveDexter();
-
-
 		
 
 		glUseProgram(0);
@@ -775,6 +807,11 @@ void InitializeModels() {
 	banqueta = Model();
 	banqueta.LoadModel("Models/Banqueta.obj");
 
+
+	//Banqueta esquina
+	banqueta_esquina = Model();
+	banqueta_esquina.LoadModel("Models/BanquetaEsquina.obj");
+
 	//Banqueta con luz cocinada
 	banqueta_luz = Model();
 	banqueta_luz.LoadModel("Models/BanquetaLuz.obj");
@@ -784,19 +821,23 @@ void InitializeModels() {
 	reflector.LoadModel("Models/Reflector.obj");
 
 
-	//LUMINARIA PARA REPORTE 08
+	//LUMINARIA
+	street_lamp = Model();
+	street_lamp.LoadModel("Models/StreetLamp.obj");
 
-	luminariaP8 = Lampara("Models/luminaria_text.obj", &uniformModel, glm::vec3(-90.0f, 0.5f, -100.0f), glm::vec3(4.0f));
 
 	//Puerta con reja
-	puerta_reja = Model();
-	puerta_reja.LoadModel("Models/PuertaReja.obj");
+	/*puerta_reja = Model();
+	puerta_reja.LoadModel("Models/PuertaReja.obj");*/
 
-	reja_der = Model();
+	/*reja_der = Model();
 	reja_der.LoadModel("Models/RejaDer.obj");
 
 	reja_izq = Model();
-	reja_izq.LoadModel("Models/RejaIzq.obj");
+	reja_izq.LoadModel("Models/RejaIzq.obj");*/
+
+
+	
 
 
 
@@ -831,6 +872,16 @@ void InitializeModels() {
 	ring = Edificio("Models/MuchaLucha/Ring.obj", &uniformModel, glm::vec3(220.0f, 1.0f, -30.0), glm::vec3(40.0f));
 	ring.setRotY(270.0f);
 
+	perro_ricochet = Model();
+	perro_ricochet.LoadModel("Models/MuchaLucha/PerroRicochet.obj");
+
+	fish = Model();
+	fish.LoadModel("Models/MuchaLucha/FishyFish.obj");
+
+	
+
+
+
 
 
 
@@ -863,6 +914,11 @@ void InitializeModels() {
 	letrero_dimmsdale = Edificio("Models/Padrinos/DimsdaleSign.obj", &uniformModel, glm::vec3(230.0f, 1.0f, -620.0), glm::vec3(1.9f));
 	letrero_dimmsdale.setRotY(180.0f);
 
+	letrero_dimmsdale_baked = Edificio("Models/Padrinos/DimsdaleSignBaked.obj", &uniformModel, glm::vec3(100.0f, 1.0f, -620.0), glm::vec3(1.9f));
+	//letrero_dimmsdale_baked.setRotY(180.0f);
+
+	doidle = Model();
+	doidle.LoadModel("Models/Padrinos/Doidle.obj");
 
 
 
@@ -877,7 +933,8 @@ void InitializeModels() {
 	nave_extra = Model();
 	nave_extra.LoadModel("Models/DextersLab/NaveCierra.obj");
 
-
+	mutant_plant = Model();
+	mutant_plant.LoadModel("Models/DextersLab/MutantPlant.obj");
 
 	//AVATAR (DEXTER)
 
@@ -1149,7 +1206,6 @@ void renderVespa() {
 	model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	vespa.RenderModel();
-	vespa.RenderModel();
 
 }
 
@@ -1158,11 +1214,11 @@ void renderBanqueta() {
 	glm::mat4 model;
 
 	model = glm::mat4(1.0);
-	model = glm::translate(model, glm::vec3(-110.0f, -1.0f, -263.0f));
+	model = glm::translate(model, glm::vec3(-110.0f, -1.0f, -363.0f));
 	model = glm::scale(model, glm::vec3(38.5f,16.0f,75.0f)); //35 original
 	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	banqueta.RenderModel();
+	banqueta_esquina.RenderModel();
 
 }
 
@@ -1212,6 +1268,19 @@ void renderBanquetaBaked() {
 	banqueta_luz.RenderModel();
 
 
+
+}
+
+
+void renderLuminarias() {
+	glm::mat4 model;
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-120.0f, 1.5f, -102.0f));
+	model = glm::scale(model, glm::vec3(65.0f));
+	//model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	street_lamp.RenderModel();
 
 }
 
@@ -1473,6 +1542,53 @@ void renderLaPulga() {
 	laPulga.RenderModel();
 }
 
+
+void renderPerroRicochet() {
+	glm::mat4 model;
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(170.0f, 0.5f, -105.0));
+	model = glm::scale(model, glm::vec3(4.0f));
+	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	perro_ricochet.RenderModel();
+}
+
+void renderFishyFish() {
+	glm::mat4 model;
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(0.0f, 15.0f, 145.0f));
+	model = glm::scale(model, glm::vec3(5.0f));
+	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	fish.RenderModel();
+}
+
+void renderMutantPlant() {
+	glm::mat4 model;
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-320.0f, 55.0f, 205.0f));
+	model = glm::scale(model, glm::vec3(12.0f));
+	//model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	mutant_plant.RenderModel();
+}
+
+void renderDoidle() {
+	glm::mat4 model;
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-180.0f, 0.5f, 485.0f));
+	model = glm::scale(model, glm::vec3(3.5f));
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	doidle.RenderModel();
+}
+
+
+
 void renderTaxi() {
 
 	glm::mat4 model;
@@ -1572,43 +1688,43 @@ void renderNaveDexter() {
 }
 
 
-void renderPuertaReja() {
-	//PUERTA METÁLICA CON MARCO PARA LETRERO, PARA PRACTICA 08
-	glm::mat4 model, modelaux;
-
-
-	model = glm::mat4(1.0);
-	modelaux = model;
-
-	model = glm::translate(model, glm::vec3(-3.0f, -0.95f, -815.0f));
-	modelaux = model;
-	model = glm::scale(model, glm::vec3(65.0f));	
-	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	puerta_reja.RenderModel();
-	
-	model = modelaux;
-
-	//REJA DERECHA (esta es la que rotaba)
-	model = glm::translate(model, glm::vec3(-65.5f, 52.6f, 0.0f)); //52.5 en y antes, 65.0 en x
-	model = glm::scale(model, glm::vec3(65.0f));
-	model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
-	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	reja_der.RenderModel();
-
-	model = modelaux;
-
-
-
-	//REJA IZQUIERDA
-	model = glm::translate(model, glm::vec3(36.5f, 1.0f, 0.0f)); //40 en x antes
-	model = glm::scale(model, glm::vec3(65.0f));
-	model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
-	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	reja_izq.RenderModel();
-
-	model = modelaux;
-
-}
+//void renderPuertaReja() {
+//	//PUERTA METÁLICA CON MARCO PARA LETRERO, PARA PRACTICA 08
+//	glm::mat4 model, modelaux;
+//
+//
+//	model = glm::mat4(1.0);
+//	modelaux = model;
+//
+//	model = glm::translate(model, glm::vec3(-3.0f, -0.95f, -815.0f));
+//	modelaux = model;
+//	model = glm::scale(model, glm::vec3(65.0f));	
+//	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+//	puerta_reja.RenderModel();
+//	
+//	model = modelaux;
+//
+//	//REJA DERECHA (esta es la que rotaba)
+//	model = glm::translate(model, glm::vec3(-65.5f, 52.6f, 0.0f)); //52.5 en y antes, 65.0 en x
+//	model = glm::scale(model, glm::vec3(65.0f));
+//	model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+//	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+//	reja_der.RenderModel();
+//
+//	model = modelaux;
+//
+//
+//
+//	//REJA IZQUIERDA
+//	model = glm::translate(model, glm::vec3(36.5f, 1.0f, 0.0f)); //40 en x antes
+//	model = glm::scale(model, glm::vec3(65.0f));
+//	model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+//	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+//	reja_izq.RenderModel();
+//
+//	model = modelaux;
+//
+//}
 
 
 void renderCamellon() {
