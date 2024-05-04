@@ -48,6 +48,7 @@ Integrantes:
 #include "PointLight.h"
 #include "SpotLight.h"
 #include "Material.h"
+#include "controladorLuces.h"
 
 //Para sonido
 #include <irrklang.h>
@@ -55,7 +56,10 @@ using namespace irrklang;
 
 //VARIABLES Y CONSTANTES
 const float toRadians = 3.14159265f / 180.0f;
-const float maxAngle = 180.0f;
+
+GLfloat deltaTime = 0.0f;
+GLfloat lastTime = 0.0f;
+static double limitFPS = 1.0 / 60.0;
 
 //Para animaci�n
 bool alaIzq = true;
@@ -88,17 +92,20 @@ float rotacionNave, inclinacionNave;
 float rotacionNaveOffset;
 float movNaveOffset;
 
+float tiempoTranscurrido;
+
 //para luces
 unsigned int pointLightCount = 0;
 unsigned int pointLightCount2 = 0;
 unsigned int spotLightCount = 0; //ARREGLO 0 -> TODAS LAS LUCES ENCENDIDAS
 unsigned int spotLightCount2 = 0;
-float tiempoTranscurrido;
-GLfloat duracionCicloDiayNoche = 20.0; //cantidad de segundos que va a durar el ciclo de dia y de noche
-//GLfloat lightDirectionIncrement = 0.5f;
-GLfloat lightDirectionIncrement = maxAngle / (duracionCicloDiayNoche * 60.0);
-GLboolean esDeDia = true;
-GLfloat anguloLuz = -10.0f;
+
+GLfloat duracionCicloDiayNoche = 40.0; //cantidad de segundos que va a durar el ciclo de dia/noche, el dia dura 2*duracionCicloDiaYNoche
+GLboolean esDeDia = false; //VAriable para controlar eventos ligados al ciclo de dia y de noche
+
+//Objeto para el manejo de todas las luces del escenario
+controladorLuces lightControl;
+
 
 
 //Uniforms
@@ -128,25 +135,12 @@ Texture plainTexture;
 Texture pisoTexture;
 Texture AgaveTexture;
 Texture reforma_layout; //piso
-Texture reforma_layout_baked; //piso con luz cocinada
+Texture reforma_layout_baked; //piso
 Texture AstrodomoTexture;
 Texture grass;
 
 
 //DECLARACION DE MODELOS
-
-//Dexter
-MainAvatar dexter;
-Edificio dianaCazadora;
-Edificio BBVA_Pixies;
-//Edificio estelaDeLuz;
-Edificio astrodomo;
-Edificio slamminDonuts;
-Edificio bigWand;
-Edificio casaDexter;
-Edificio CasaTimmy;
-
-
 
 
 
@@ -155,7 +149,7 @@ Model luminaria;
 Model angel_independencia;
 Model angel_independencia_ala;
 Model bbva;
-Model estela_de_luz;
+//Model estela_de_luz;
 Model helicoptero_base;
 Model helicoptero_helice;
 Model camellon;
@@ -171,6 +165,10 @@ Model banqueta_luz;
 Model banqueta_esquina;
 Model street_lamp;
 Lampara luminariaP8;
+Edificio dianaCazadora;
+Edificio BBVA_Pixies;
+Edificio estelaDeLuz;
+Model banqueta_trunca;
 
 
 
@@ -185,15 +183,18 @@ Edificio letras_dimmsdale;
 Edificio letrero_dimmsdale;
 Edificio letrero_dimmsdale_baked;
 Model doidle;
+Edificio CasaTimmy;
+Edificio bigWand;
 
 
-//Laboratorio de Dexter
-Model casa_dexter;
-Model dexter_body;
-Model dexter_leg;
-Model dexter_arm;
+
+//Dexter
+MainAvatar dexter;
+Edificio casaDexter;
 Model nave_cabina;
 Model nave_extra;
+
+
 
 //Ratatouille
 Model vespa;
@@ -212,23 +213,23 @@ Edificio ring;
 Model perro_ricochet;
 Model fish;
 Model mutant_plant;
+Edificio astrodomo;
+Edificio slamminDonuts;
 
 
 //SKYBOX
-Skybox skybox;
+Skybox skybox;	//Default
+Skybox current; //Skybox que se renderiza
+Skybox dia;
+Skybox noche;
+Skybox amanecer;
+Skybox atardecer;
+
 
 
 //MATERIALES
 Material Material_brillante;
 Material Material_opaco;
-
-
-//Sphere cabeza = Sphere(0.5, 20, 20);
-GLfloat deltaTime = 0.0f;
-GLfloat lastTime = 0.0f;
-static double limitFPS = 1.0 / 60.0;
-
-
 
 //DECLARACION DE LAS LUCES
 
@@ -252,10 +253,14 @@ void calcAverageNormals(unsigned int* indices, unsigned int indiceCount, GLfloat
 	unsigned int vLength, unsigned int normalOffset);
 void CreateObjects();
 void CreateShaders();
+
 void InitializeModels();
 void InitializeTextures();
+void InitializeSkyboxes();
 void InitializeLights();
-DirectionalLight calcSunlight();
+
+void selectSkybox(int skyboxNumber);
+
 void renderAngelIndependencia();
 void renderTimmyBus();
 void renderVespa();
@@ -266,11 +271,12 @@ void renderNaveDexter();
 void renderCamellon();
 void renderMetrobus();
 //void renderPuertaReja();
-void renderEstela(); //prueba para textura con iluminacion cocinada
+//void renderEstela(); //prueba para textura con iluminacion cocinada
 
-void renderBanqueta();
+void renderBanquetasGenerales(); //Las que no cambiarán
 
-void renderBanquetaBaked();
+void renderBanquetaNormal();//Las que cambiarán en el día
+void renderBanquetaBaked(); //Las que cambiarán de noche
 
 void renderReflector();
 
@@ -295,6 +301,7 @@ int main()
 	InitializeModels();
 	InitializeTextures();
 	InitializeLights();
+	InitializeSkyboxes();
 
 	//CAMARAS
 	camera = Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), -60.0f, 0.0f, 5.5f, 0.5f);
@@ -347,7 +354,7 @@ int main()
 	//------------------SONIDO-----------------------
 	//Sonido ambiental
 	ISoundEngine* Ambiental = createIrrKlangDevice();
-	Ambiental->play2D("Sound/Ambiental.wav", true); 
+	Ambiental->play2D("Sound/Ambiental.wav", true);
 	Ambiental->setSoundVolume(0.2f);
 
 	//Pista de fondo
@@ -369,33 +376,10 @@ int main()
 		deltaTime += (now - lastTime) / limitFPS;
 		lastTime = now;
 
-
-
-
-		//MAINLIGHT PARA PRUEBAS DE NOCHE (ANTONIO) NO BORRAR, COMENTAR SI ES NECESARIO
-
-		//0.5,0.5,1.0 para noche
-		//0.3 en las dos intensidades || 1 y 2 para imagenes de baked lighting
-
-		/*mainLight = DirectionalLight(1.0f, 1.0f, 1.0f, 
-			1.0f, 2.0f,
-			0.0f, 0.0f, -1.0f);*/
-
-		mainLight = DirectionalLight(0.5f, 0.5f, 1.0f,
-			0.3f, 0.3f,
-			0.0f, 0.0f, -1.0f);
-
-
-		/*mainLight = calcSunlight();*/ //Comenté el sol de momento
-
-
-
-
-		//----------------ANIMACIONES-------------- Aquí irán las funciones de las animaciones
-
-
-
-		
+		//Luz Direccional, seleccion de skybox
+		esDeDia = lightControl.recalculateDirectionalLight(deltaTime);
+		lightControl.setSkyboxNumber();
+		selectSkybox(lightControl.getSkyboxNumber());
 
 
 		//Recibir eventos del usuario
@@ -406,7 +390,7 @@ int main()
 		// Clear the window
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		skybox.DrawSkybox(camera.calculateViewMatrix(), projection);
+		current.DrawSkybox(camera.calculateViewMatrix(), projection);
 		shaderList[0].UseShader();
 
 		//---------INICIACILIZACION DE VARIABLES UNIFORM-------------
@@ -424,27 +408,19 @@ int main()
 		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
 		glUniform3f(uniformEyePosition, camera.getCameraPosition().x, camera.getCameraPosition().y, camera.getCameraPosition().z);
 
+		//----------------LUCES-----------
 
 
-		//------------------------------------------------------LUCES-------------------------------------------------------------------
-		// luz ligada a la c�mara de tipo flash
-		//sirve para que en tiempo de ejecuci�n (dentro del while) se cambien propiedades de la luz
-		glm::vec3 lowerLight = camera.getCameraPosition();
-		lowerLight.y -= 0.3f;
-		//spotLights[0].SetFlash(lowerLight, camera.getCameraDirection());
+		lightControl.chooseSpotLightsArray(esDeDia);
+		lightControl.choosePointLightsArray(mainWindow.getLuzActivable());
 
 		//informaci�n al shader de fuentes de iluminaci�n
-		shaderList[0].SetDirectionalLight(&mainLight);
-		//shaderList[0].SetPointLights(pointLights, pointLightCount);
-		shaderList[0].SetSpotLights(spotLights, spotLightCount); 
+		shaderList[0].SetDirectionalLight(&mainLight); //referencia a la mainlight del objeto light control;
+		shaderList[0].SetPointLights(lightControl.getPointlightArray(), lightControl.getPointlightCount());
+		shaderList[0].SetSpotLights(lightControl.getSpotlightArray(), lightControl.getSpotLightCount());
 
 
-		//tipo spotlight (para pruebas de cocinado de luces - Antonio)
-
-
-
-
-		//-----------------------------------------------------------PISO-----------------------------------------------------------------------------------
+		//-------------------------PISO-----------------------------
 		glm::mat4 model(1.0);
 		glm::mat4 modelaux(1.0);
 		glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -455,7 +431,7 @@ int main()
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
 
-		reforma_layout_baked.UseTexture();
+		reforma_layout.UseTexture();
 		Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
 
 
@@ -511,15 +487,11 @@ int main()
 		renderHelicoptero();
 
 		//Estela de Luz
-		/*estelaDeLuz.renderModel();*/
+		estelaDeLuz.renderModel();
 		/*renderEstela();*/
-
 
 		//angel de la independencia
 		renderAngelIndependencia();
-
-		//MODELO DE LUMINARIA PARA REPORTE 08
-		/*luminariaP8.renderModel();*/
 
 
 		//camellon por piezas
@@ -528,12 +500,10 @@ int main()
 		//Metrobus
 		renderMetrobus();
 
-		//Puerta con reja
-		/*renderPuertaReja();*/
-
 		//banqueta normal
 
-		renderBanqueta();
+		renderBanquetasGenerales();
+		renderBanquetaNormal();
 
 		//Banqueta con luz cocinada
 		/*renderBanquetaBaked();*/
@@ -542,6 +512,12 @@ int main()
 		renderReflector();
 
 		renderLuminarias();
+
+
+		//Puerta con reja
+		/*renderPuertaReja();*/
+
+
 
 		//-------------Modelos Mucha Lucha------------------
 
@@ -598,17 +574,19 @@ int main()
 
 		//letras dimmsdale
 		letras_dimmsdale.renderModel();
-		
+
+
+
 		//letrero dimmsdale
 		letrero_dimmsdale.renderModel();
 		letrero_dimmsdale_baked.renderModel();
-		
+
 		//Doidle
 		renderDoidle();
-
-
-		//------------------------------Modelos - Ratatouille--------------------------
 		
+
+		//------------------Modelos - Ratatouille------------
+
 		//Vespa
 		renderVespa();
 
@@ -624,7 +602,7 @@ int main()
 		dexter.setUniformModel(uniformModel);
 		dexter.setMovimiento(mainWindow.getMovimientoAvatar(), mainWindow.getRotacionAvatar(), mainWindow.getrotBrazoPiernas());
 		dexter.renderMainAvatar();
-		
+
 
 		//Casa de dexter
 		casaDexter.renderModel();
@@ -635,7 +613,10 @@ int main()
 
 		//nave dexter
 		renderNaveDexter();
-		
+
+
+		//MODELO DE LUMINARIA PARA REPORTE 08
+		//luminariaP8.renderModel();
 
 		glUseProgram(0);
 		mainWindow.swapBuffers();
@@ -757,8 +738,9 @@ void CreateShaders()
 	shaderList.push_back(*shader1);
 }
 
+//Funciones de inicializacion
 void InitializeModels() {
-	//------------------------------------------Modelos Generales-------------------------------------------------
+	//----------Modelos Generales---------------------
 
 	//Angel de la independencia
 	angel_independencia = Model();
@@ -773,9 +755,9 @@ void InitializeModels() {
 	BBVA_Pixies.setRotY(270.0f);
 
 	//Estela de luz
-	/*estelaDeLuz = Edificio("Models/Estela.obj", &uniformModel, glm::vec3(315.0f, -1.0f, 805.0f), glm::vec3(5.0f));*/
-	estela_de_luz = Model();
-	estela_de_luz.LoadModel("Models/Estela.obj");
+	estelaDeLuz = Edificio("Models/Estela.obj", &uniformModel, glm::vec3(315.0f, -1.0f, 805.0f), glm::vec3(5.0f));
+	/*estela_de_luz = Model();
+	estela_de_luz.LoadModel("Models/Estela.obj");*/
 
 	//Cuerpo del helicoptero
 	helicoptero_base = Model();
@@ -803,6 +785,21 @@ void InitializeModels() {
 	metrobus_llanta_der = Model();
 	metrobus_llanta_der.LoadModel("Models/MetrobusLlantaDer.obj");
 
+
+	//LUMINARIA PARA REPORTE 08
+
+	luminariaP8 = Lampara("Models/luminaria_text.obj", &uniformModel, glm::vec3(-90.0f, -0.95f, -100.0f), glm::vec3(4.0f));
+
+	//Puerta con reja
+	/*puerta_reja = Model();
+	puerta_reja.LoadModel("Models/PuertaReja.obj");
+
+	reja_der = Model();
+	reja_der.LoadModel("Models/RejaDer.obj");
+
+	reja_izq = Model();
+	reja_izq.LoadModel("Models/RejaIzq.obj");*/
+
 	//Banqueta normal
 	banqueta = Model();
 	banqueta.LoadModel("Models/Banqueta.obj");
@@ -811,6 +808,10 @@ void InitializeModels() {
 	//Banqueta esquina
 	banqueta_esquina = Model();
 	banqueta_esquina.LoadModel("Models/BanquetaEsquina.obj");
+
+	//Banqueta trunca
+	banqueta_trunca = Model();
+	banqueta_trunca.LoadModel("Models/BanquetaTrunca.obj");
 
 	//Banqueta con luz cocinada
 	banqueta_luz = Model();
@@ -826,24 +827,9 @@ void InitializeModels() {
 	street_lamp.LoadModel("Models/StreetLamp.obj");
 
 
-	//Puerta con reja
-	/*puerta_reja = Model();
-	puerta_reja.LoadModel("Models/PuertaReja.obj");*/
-
-	/*reja_der = Model();
-	reja_der.LoadModel("Models/RejaDer.obj");
-
-	reja_izq = Model();
-	reja_izq.LoadModel("Models/RejaIzq.obj");*/
 
 
-	
-
-
-
-
-
-	//-------------------------------------Modelos Mucha Lucha-------------------------------------------------
+	//----------Modelos Mucha Lucha---------------------
 
 	astrodomo = Edificio("Models/MuchaLucha/Astrodomo.obj", &uniformModel, glm::vec3(-295.0f, -2.0f, -50.0f), glm::vec3(5.0f));
 	astrodomo.setRotY(-270.0f);
@@ -878,16 +864,12 @@ void InitializeModels() {
 	fish = Model();
 	fish.LoadModel("Models/MuchaLucha/FishyFish.obj");
 
-	
 
 
 
 
 
-
-
-
-	//--------------------------------------------Modelos Padrinos Magicos-------------------------------------------------------------
+	//----------Modelos Padrinos Magicos---------------------
 
 
 	bus_padrinos = Model();
@@ -902,7 +884,7 @@ void InitializeModels() {
 	CasaTimmy = Edificio("Models/Padrinos/TimmyH_Tex2.obj", &uniformModel, glm::vec3(370.0f, 1.0f, 600.0), glm::vec3(34.0f));
 	CasaTimmy.setRotY(270.0f);
 
-	dimmadome= Edificio("Models/Padrinos/Dimmadome.obj", &uniformModel, glm::vec3(310.0f, 1.0f, -300.0), glm::vec3(18.0f));
+	dimmadome = Edificio("Models/Padrinos/Dimmadome.obj", &uniformModel, glm::vec3(310.0f, 1.0f, -300.0), glm::vec3(18.0f));
 	dimmadome.setRotY(270.0f);
 
 	taxi = Model();
@@ -922,7 +904,8 @@ void InitializeModels() {
 
 
 
-	//----------------------------------------------Modelos Lab. de Dexter----------------------------------------------------------------
+
+	//----------Modelos Lab. de Dexter---------------------
 
 	casaDexter = Edificio("Models/DextersLab/CasaDexter.obj", &uniformModel, glm::vec3(-380.0f, -0.5f, 370.0), glm::vec3(40.0f));
 	casaDexter.setRotY(90.0f);
@@ -936,12 +919,14 @@ void InitializeModels() {
 	mutant_plant = Model();
 	mutant_plant.LoadModel("Models/DextersLab/MutantPlant.obj");
 
+
+
 	//AVATAR (DEXTER)
 
 	dexter = MainAvatar(glm::vec3(0.0f, 0.5f, -650.0f), 15.0f, glm::vec3(3.0f, 3.0f, 3.0f));
 
 
-	//------------------------------------------------------Modelos Ratatouille------------------------------------------------------------------------------
+	//-------------------------Modelos Ratatouille-----------------------------------------
 
 	//moto del chef chaparro
 	vespa = Model();
@@ -960,7 +945,7 @@ void InitializeModels() {
 
 
 
-	
+
 
 	//camera = Camera(glm::vec3(370.0f, 712.0f, 285.0), glm::vec3(0.0f, 1.0f, 0.0f), -60.0f, 0.0f, 5.5f, 0.5f);
 
@@ -978,15 +963,26 @@ void InitializeTextures() { //Texturas y skybox
 	AgaveTexture = Texture("Textures/Agave.tga");
 	AgaveTexture.LoadTextureA();
 
-	reforma_layout = Texture("Textures/reforma_layout.png");
+	reforma_layout = Texture("Textures/reforma_layout.png"); //piso normal
 	reforma_layout.LoadTextureA();
 
-	reforma_layout_baked = Texture("Textures/reforma_layout_baked.png");
+	reforma_layout_baked = Texture("Textures/reforma_layout_baked.png"); //piso para la noche (luces cocinadas)
 	reforma_layout_baked.LoadTextureA();
 
 	grass = Texture("Textures/grass.png");
 	grass.LoadTextureA();
 
+
+
+
+	//SKYBOX
+
+	Material_brillante = Material(4.0f, 256);
+	Material_opaco = Material(0.3f, 4);
+
+}
+
+void InitializeSkyboxes() {
 
 	std::vector<std::string> skyboxFaces;
 	skyboxFaces.push_back("Textures/Skybox/sky-right.jpg");
@@ -998,13 +994,90 @@ void InitializeTextures() { //Texturas y skybox
 
 	skybox = Skybox(skyboxFaces);
 
-	//SKYBOX
+	//Dia caricatura
+	std::vector<std::string> skyboxFaces2;
+	skyboxFaces2.push_back("Textures/CartoonSkybox/Day/Right.2048x2048.png");
+	skyboxFaces2.push_back("Textures/CartoonSkybox/Day/Left.2048x2048.png");
+	skyboxFaces2.push_back("Textures/CartoonSkybox/Day/Down.2048x2048.png");
+	skyboxFaces2.push_back("Textures/CartoonSkybox/Day/Up.2048x2048.png");
+	skyboxFaces2.push_back("Textures/CartoonSkybox/Day/Front.2048x2048.png");
+	skyboxFaces2.push_back("Textures/CartoonSkybox/Day/BAck.2048x2048.png");
 
-	Material_brillante = Material(4.0f, 256);
-	Material_opaco = Material(0.3f, 4);
+	dia = Skybox(skyboxFaces2);
+
+	std::vector<std::string> skyboxFaces3;
+	skyboxFaces3.push_back("Textures/CartoonSkybox/Day6/Right.2048x2048.png");
+	skyboxFaces3.push_back("Textures/CartoonSkybox/Day6/Left.2048x2048.png");
+	skyboxFaces3.push_back("Textures/CartoonSkybox/Day6/Down.2048x2048.png");
+	skyboxFaces3.push_back("Textures/CartoonSkybox/Day6/Up.2048x2048.png");
+	skyboxFaces3.push_back("Textures/CartoonSkybox/Day6/Front.2048x2048.png");
+	skyboxFaces3.push_back("Textures/CartoonSkybox/Day6/BAck.2048x2048.png");
+
+	noche = Skybox(skyboxFaces3);
+
+	std::vector<std::string> skyboxFaces4;
+	skyboxFaces4.push_back("Textures/CartoonSkybox/Day8/Right.2048x2048.png");
+	skyboxFaces4.push_back("Textures/CartoonSkybox/Day8/Left.2048x2048.png");
+	skyboxFaces4.push_back("Textures/CartoonSkybox/Day8/Down.2048x2048.png");
+	skyboxFaces4.push_back("Textures/CartoonSkybox/Day8/Up.2048x2048.png");
+	skyboxFaces4.push_back("Textures/CartoonSkybox/Day8/Front.2048x2048.png");
+	skyboxFaces4.push_back("Textures/CartoonSkybox/Day8/BAck.2048x2048.png");
+
+	amanecer = Skybox(skyboxFaces4);
+
+	std::vector<std::string> skyboxFaces5;
+	skyboxFaces5.push_back("Textures/CartoonSkybox/Day9/Right.2048x2048.png");
+	skyboxFaces5.push_back("Textures/CartoonSkybox/Day9/Left.2048x2048.png");
+	skyboxFaces5.push_back("Textures/CartoonSkybox/Day9/Down.2048x2048.png");
+	skyboxFaces5.push_back("Textures/CartoonSkybox/Day9/Up.2048x2048.png");
+	skyboxFaces5.push_back("Textures/CartoonSkybox/Day9/Front.2048x2048.png");
+	skyboxFaces5.push_back("Textures/CartoonSkybox/Day9/BAck.2048x2048.png");
+
+	atardecer = Skybox(skyboxFaces5);
+
+
+
+	current = noche;
 
 }
 
+void InitializeLights() {
+	//APARTADO DE LUCES
+	//luz direccional, s�lo 1 y siempre debe de existir
+
+	//contador de luces puntuales
+	lightControl = controladorLuces(duracionCicloDiayNoche, limitFPS, esDeDia, &mainLight);
+	lightControl.initializeSpotlights(dianaCazadora.getPos(), glm::vec3(5.0f, -1.0f, -530.0), ring.getPos());
+	lightControl.initializePointlights(letras_dimmsdale.getPos(), estelaDeLuz.getPos(), bigWand.getPos());
+
+}
+
+//Otros 
+//Asigna el skybox que se va a renderizar a current.
+void selectSkybox(int skyboxNumber) {
+
+	switch (skyboxNumber) {
+	case 1:
+		current = amanecer;
+		break;
+	case 2:
+		current = dia;
+		break;
+	case 3:
+		current = atardecer;
+		break;
+	case 4:
+		current = noche;
+		break;
+	default:
+		current = skybox;
+		break;
+	}
+
+
+}
+
+//Funciones para renderizado
 void renderAngelIndependencia() {
 
 	if (alaIzq && alaDer)
@@ -1073,128 +1146,25 @@ void renderAngelIndependencia() {
 
 }
 
-void InitializeLights() {
-	//APARTADO DE LUCES
-//luz direccional, s�lo 1 y siempre debe de existir
-	mainLight = DirectionalLight(1.0f, 1.0f, 1.0f,
-		0.3f, 0.3f,
-		0.0f, 0.0f, -1.0f);
-
-	//contador de luces puntuales
 
 
-	//Declaraci�n de primer luz puntual (magenta) | PARA LUMINARIA
-	pointLights[0] = PointLight(1.0f, 0.0f, 1.0f,
-		0.0f, 3.0f,
-		-60.0f, 25.5f, 65.0f,
-		1.0f, 0.045f, 0.0075f);
-	pointLightCount++;
+//void renderEstela() {
+//	glm::mat4 model, modelaux;
+//
+//	model = glm::mat4(1.0);
+//
+//	model = glm::translate(model, glm::vec3(315.0f, -1.0f, 805.0f));
+//	modelaux = model;
+//	model = glm::scale(model, glm::vec3(5.0f));
+//	/*model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));*/
+//	//material brillante
+//	//Material_brillante.UseMaterial(uniformSpecularIntensity, uniformShininess); //esto afecta a todo el mundo
+//	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+//	estela_de_luz.RenderModel();
+//
+//	model = modelaux;
+//}
 
-	//LUZ PUNTUAL PARA LA DESK LAMP (BLANCA)
-	pointLights[1] = PointLight(1.0f, 1.0f, 1.0f,
-		0.0f, 3.0f,
-		25.0f, 2.5f, 7.0f,
-		1.0f, 0.14f, 0.07f);
-	pointLightCount++;
-
-	//LUZ NEGRA PARA APAGAR (ARREGLO 2 DE POINTLIGHTS)
-	//pointLights2[0] = PointLight(0.0f, 0.0f, 0.0f,
-	//	0.0f, 24.0f,
-	//	4.0f, 9.0f, 12.0f,
-	//	0.3f, 0.2f, 0.1f);
-	//pointLightCount2++;
-
-	//--------------------------------------------------ARREGLO 1------------------------------------------------------------------- 
-
-	//Luz AMARILLA (o blanca si lo cambio) de tipo SPOTLIGHT para prueba de cocinado de luces (Antonio)
-	//spotLights[0] = SpotLight(1.0f, 1.0f, 1.0f,
-	//	2.0f, 4.0f, //1,2 || 5 y 12 está más grande pero se ve demasiado brillante
-	//	-69.0f, 80.45f, -100.0f, //posición de la primera luminaria de prueba
-	//	0.0f, -1.0f, 0.0f, //apunta hacia abajo (-y)
-	//	1.0f, 0.01f, 0.001f, //valores estándar
-	//	37.5f); //20 || esto aumenta la difuminación de los bordes del circulo
-	//spotLightCount++;
-
-	////LUZ BLANCA de prueba para cocinado de luz del letrero de Dimmsdale  230.0f, 0.5f, -750.0f
-	//spotLights[1] = SpotLight(1.0f, 1.0f, 1.0f,
-	//	4.0f, 8.0f, //2,4 o 1,2 || 3 y 6 funciona bien
-	//	230.0f, 14.75f, -750.5f, //15 en y 
-	//	0.0f, sin(18.0f * M_PI / 180.0f), sqrt(2) / 2, //en y y z para angulo de 45?   y en 20 sqrt(2)/2
-	//	1.0f, 0.01f, 0.001f, //1,.01,.001  0.045f 0.0075f
-	//	20.0f); //40 
-	//spotLightCount++;
-
-	//Luz Blanca para iluminar Letras de Dimmsdale 1/2
-
-
-
-}
-
-DirectionalLight calcSunlight() {
-	GLfloat intensity = 0.4f;
-	GLfloat xDir, yDir, red, green, blue;
-	xDir = 0.0f;
-	yDir = 0.0f;
-	red = 1.0f;
-	green = 0.8f;
-	blue = 0.5f;
-
-
-
-	if (anguloLuz >= 180.0) {
-		anguloLuz = 0.0f;
-		//blue = 0.5f;
-		esDeDia = !esDeDia;
-	}
-	else {
-		anguloLuz += lightDirectionIncrement * deltaTime;
-		//anguloLuz += lightDirectionIncrement;
-	}
-
-	xDir = cos(glm::radians(anguloLuz));
-	yDir = (-1.0) * sin(glm::radians(anguloLuz));
-
-	if (esDeDia) {
-		red = 0.8f + 0.2 * sin(glm::radians(anguloLuz));
-		green = 0.6f + 0.4 * sin(glm::radians(anguloLuz));
-		blue = 0.6f + 0.4 * sin(glm::radians(anguloLuz));
-		intensity = 0.6f;
-	}
-	else {
-		red = 0.6f - 0.1 * sin(glm::radians(anguloLuz));
-		green = 0.6f - 0.1 * sin(glm::radians(anguloLuz));
-		blue = 0.6f + (0.4 * sin(glm::radians(anguloLuz)));
-		intensity = 0.3f;
-	}
-
-
-
-	DirectionalLight sol = DirectionalLight(red, green, blue,
-		intensity, 0.5f,
-		xDir, yDir, 0.0f);
-
-	return sol;
-}
-
-
-//Prueba de iluminación cocinada (textura)
-
-void renderEstela() {
-	glm::mat4 model, modelaux;
-
-	model = glm::mat4(1.0);
-
-	model = glm::translate(model, glm::vec3(315.0f, -1.0f, 805.0f));
-	modelaux = model;
-	model = glm::scale(model, glm::vec3(5.0f));
-	/*model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));*/
-	//material brillante
-	//Material_brillante.UseMaterial(uniformSpecularIntensity, uniformShininess); //esto afecta a todo el mundo
-	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	estela_de_luz.RenderModel();
-
-	model = modelaux;
-}
 
 void renderVespa() {
 
@@ -1209,16 +1179,199 @@ void renderVespa() {
 
 }
 
-void renderBanqueta() {
 
-	glm::mat4 model;
+void renderBanquetasGenerales() {
 
+	//26 para largo es lo óptimo
+
+	//para derecha arriba
+	/*model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));*/
+
+	//para derecha abajo
+	/*model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::rotate(model, 180 * toRadians, glm::vec3(1.0f, 0.0f, 0.0f));*/
+
+	//son solo las truncas?
+	glm::mat4 model,modelaux;
+
+
+	//-----------------------Lado Izquierdo-----------------------------
+
+
+	//abajo izquierda
 	model = glm::mat4(1.0);
-	model = glm::translate(model, glm::vec3(-110.0f, -1.0f, -363.0f));
-	model = glm::scale(model, glm::vec3(38.5f,16.0f,75.0f)); //35 original
+	model = glm::translate(model, glm::vec3(105.0f, -1.0f, -394.0f)); //--110 en x
+	model = glm::scale(model, glm::vec3(43.5f, 16.0f, 26.0f)); //35 original
+	model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	banqueta_trunca.RenderModel();
+
+	//enmedio arriba izquierda
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(105.0f, -1.0f, 252.0f)); //--110 en x
+	model = glm::scale(model, glm::vec3(43.5f, 16.0f, 42.0f)); //35 original
+	model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	banqueta_trunca.RenderModel();
+
+
+	//RECTA antes de enmedio abajo izquierda
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(105.0f, 2.2f, -68.0f)); //--110 en x
+	model = glm::scale(model, glm::vec3(43.5f, 16.0f, 130.0f)); //35 original
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	//model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::rotate(model, 180 * toRadians, glm::vec3(1.0f, 0.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	banqueta.RenderModel();
+
+
+
+	//enmedio abajo izquierda
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(105.0f, 2.2f, 85.0f)); //--110 en x
+	model = glm::scale(model, glm::vec3(43.5f, 16.0f, 26.0f)); //35 original
+	model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	//model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::rotate(model, 180 * toRadians, glm::vec3(1.0f, 0.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	banqueta_trunca.RenderModel();
+
+	//RECTA FINAL izquierda
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(105.0f, 2.2f, 585.0f)); //--110 en x
+	model = glm::scale(model, glm::vec3(43.5f, 16.0f, 125.0f)); //35 original
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	//model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::rotate(model, 180 * toRadians, glm::vec3(1.0f, 0.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	banqueta.RenderModel();
+
+
+	//----------------------------------Lado derecho------------------------------------------------
+
+	// abajo derecha
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-110.0f, 2.0f, -394.0f)); //--110 en x
+	model = glm::scale(model, glm::vec3(38.5f, 16.0f, 26.0f)); //35 original
+	model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
+	//model = glm::rotate(model, 180 * toRadians, glm::vec3(1.0f, 0.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	banqueta_trunca.RenderModel();
+
+#	//RECTA entre abajo derecha y el que cambia
+	model = glm::mat4(1.0);
+	modelaux = model;
+	model = glm::translate(model, glm::vec3(-110.0f, -1.0f, -276.0f));
+	model = glm::scale(model, glm::vec3(38.5f, 16.0f, 95.0f)); //35 original, 75 a lo largo original
 	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	banqueta_esquina.RenderModel();
+	banqueta.RenderModel();
+
+
+	//RECTA entre la que cambia y enmedio abajo derecha
+	model = glm::mat4(1.0);
+	modelaux = model;
+	model = glm::translate(model, glm::vec3(-110.0f, -1.0f, 24.0f));
+	model = glm::scale(model, glm::vec3(38.5f, 16.0f, 40.0f)); //35 original, 75 a lo largo original
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	banqueta.RenderModel();
+
+
+	//enmedio abajo derecha
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-110.0f, -1.0f, 90.0f)); //--110 en x
+	model = glm::scale(model, glm::vec3(38.5f, 16.0f, 26.0f)); //35 original
+	model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::rotate(model, 180 * toRadians, glm::vec3(1.0f, 0.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	banqueta_trunca.RenderModel();
+
+
+
+	//enmedio arriba derecha
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-110.0f, 2.5f, 249.0f)); //--110 en x
+	model = glm::scale(model, glm::vec3(38.5f, 16.0f, 30.0f)); //35 original
+	model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
+	//model = glm::rotate(model, 180 * toRadians, glm::vec3(1.0f, 0.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	banqueta_trunca.RenderModel();
+
+
+	//RECTA entre arriba derecha y el que cambia
+	model = glm::mat4(1.0);
+	modelaux = model;
+	model = glm::translate(model, glm::vec3(-110.0f, -1.0f, 386.0f));
+	model = glm::scale(model, glm::vec3(38.5f, 16.0f, 110.0f)); //35 original, 75 a lo largo original
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	banqueta.RenderModel();
+
+	//RECTA entre el que cambia y final (corto)
+	model = glm::mat4(1.0);
+	modelaux = model;
+	model = glm::translate(model, glm::vec3(-110.0f, -1.0f, 685.0f));
+	model = glm::scale(model, glm::vec3(38.5f, 16.0f, 25.0f)); //35 original, 75 a lo largo original
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	banqueta.RenderModel();
+
+
+
+
+}
+
+
+
+void renderBanquetaNormal() {
+
+	glm::mat4 model, modelaux;
+
+	//lado derecho, abajo
+	model = glm::mat4(1.0);
+	modelaux = model;
+	model = glm::translate(model, glm::vec3(-110.0f, -1.0f, -100.0f));
+	model = glm::scale(model, glm::vec3(38.5f, 16.0f, 89.0f)); //35 original, 75 a lo largo original
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	banqueta.RenderModel();
+
+	//lado derecho, arriba
+	model = glm::mat4(1.0);
+	modelaux = model;
+	model = glm::translate(model, glm::vec3(-110.0f, -1.0f, 575.0f));
+	model = glm::scale(model, glm::vec3(38.5f, 16.0f, 89.0f)); //35 original, 75 a lo largo original
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	banqueta.RenderModel();
+
+
+
+	//lado izquierdo, abajo
+	model = glm::mat4(1.0);
+	modelaux = model;
+	model = glm::translate(model, glm::vec3(105.0f, -1.0f, -280.0f));
+	model = glm::scale(model, glm::vec3(43.5f, 16.0f, 89.0f)); //41.5 en ancho no se ve mal, 75 a lo largo original
+	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	banqueta.RenderModel();
+
+	//lado izquierdo, arriba
+
+	model = glm::mat4(1.0);
+	modelaux = model;
+	model = glm::translate(model, glm::vec3(105.0f, -1.0f, 382.0f));
+	model = glm::scale(model, glm::vec3(43.5f, 16.0f, 89.0f)); //41.5 en ancho no se ve mal, 75 a lo largo original
+	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	banqueta.RenderModel();
 
 }
 
@@ -1226,7 +1379,7 @@ void renderBanqueta() {
 
 void renderBanquetaBaked() {
 
-	glm::mat4 model,modelaux;
+	glm::mat4 model, modelaux;
 
 	//lado derecho, abajo
 	model = glm::mat4(1.0);
@@ -1247,7 +1400,7 @@ void renderBanquetaBaked() {
 	banqueta_luz.RenderModel();
 
 
-	
+
 	//lado izquierdo, abajo
 	model = glm::mat4(1.0);
 	modelaux = model;
@@ -1275,12 +1428,40 @@ void renderBanquetaBaked() {
 void renderLuminarias() {
 	glm::mat4 model;
 
+	//abajo derecha
 	model = glm::mat4(1.0);
 	model = glm::translate(model, glm::vec3(-120.0f, 1.5f, -102.0f));
 	model = glm::scale(model, glm::vec3(65.0f));
 	//model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	street_lamp.RenderModel();
+
+	//arriba derecha
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-120.0f, 1.5f, 570.0f));
+	model = glm::scale(model, glm::vec3(65.0f));
+	//model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	street_lamp.RenderModel();
+
+	//abajo izquierda
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(120.0f, 1.5f, -275.0f));
+	model = glm::scale(model, glm::vec3(65.0f));
+	model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	street_lamp.RenderModel();
+
+	//arriba izquierda
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(120.0f, 1.5f, 368.0f));
+	model = glm::scale(model, glm::vec3(65.0f));
+	model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	street_lamp.RenderModel();
+
+
+
 
 }
 
@@ -1300,15 +1481,19 @@ void renderReflector() {
 
 
 
+
+
+
+
 void renderMetrobus() {
 
-	glm::mat4 model,modelaux;
+	glm::mat4 model, modelaux;
 
 	model = glm::mat4(1.0);
 
 	model = glm::translate(model, glm::vec3(-55.0f, 0.5f, 395.0));
 	modelaux = model;
-	model = glm::scale(model, glm::vec3(12.0f));	
+	model = glm::scale(model, glm::vec3(12.0f));
 	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	metrobus.RenderModel();
@@ -1349,7 +1534,7 @@ void renderMetrobus() {
 
 
 	//Llantas derechas
-	
+
 	//delantera
 	model = glm::translate(model, glm::vec3(-10.0f, 6.0f, 25.0));
 	model = glm::scale(model, glm::vec3(12.0f));
@@ -1382,141 +1567,137 @@ void renderMetrobus() {
 
 
 
-
-
-void renderHelicoptero(){
+void renderHelicoptero() {
 
 	//Helicoptero
-		movHelice += giraHeliceOffset * deltaTime;
+	movHelice += giraHeliceOffset * deltaTime;
 
-		// INICIALIZA LA ANIMACIÓN DEL RECORRIDO DEL HELICOPTERO
-		if (avanzaHelicoptero) {
-			//movHelicopteroX -= movHelicopteroOffset * deltaTime;
-			if (movHelicopteroY < 5.0f) {
-				movHelicopteroY += movHelicopteroOffset * deltaTime;
-				if (controlDeltaTimeDesborde) {
-					movHelicopteroY = 0.0f;
-					controlDeltaTimeDesborde = false;
-				}
-			}
-			else {
-				avanzaHelicoptero = false;
-				avanzaHelicoptero2 = true;
+	// INICIALIZA LA ANIMACIÓN DEL RECORRIDO DEL HELICOPTERO
+	if (avanzaHelicoptero) {
+		//movHelicopteroX -= movHelicopteroOffset * deltaTime;
+		if (movHelicopteroY < 5.0f) {
+			movHelicopteroY += movHelicopteroOffset * deltaTime;
+			if (controlDeltaTimeDesborde) {
+				movHelicopteroY = 0.0f;
+				controlDeltaTimeDesborde = false;
 			}
 		}
-		if (avanzaHelicoptero2) {
-			if (movHelicopteroX > -300.0f) {
-				inclinacion = 0.4f;
-				movHelicopteroX -= movHelicopteroOffset * deltaTime;
-				if (movHelicopteroX < -50.0f) {
-					movHelicopteroY -= movHelicopteroOffset * deltaTime;
-				}
-				
-			}
-			else {
-				avanzaHelicoptero2 = false;
-				avanzaHelicoptero3 = true;
-			}
+		else {
+			avanzaHelicoptero = false;
+			avanzaHelicoptero2 = true;
 		}
-
-		if (avanzaHelicoptero3){
-			if (movHelicopteroZ > -850.0f) {
-				if (rotacionHelicopteroY > 90.0f) {
-					movHelicopteroZ -= movHelicopteroOffset * deltaTime;
-				}
-				else {
-					rotacionHelicopteroY += rotacionHelicopteroOffset * deltaTime;
-				}
-			}
-			else {
-				avanzaHelicoptero3 = false;
-				avanzaHelicoptero4 = true;
-			}
-		}
-
-		if (avanzaHelicoptero4) {
-			if (movHelicopteroZ < 0.0f){
-				if (rotacionHelicopteroY > 270.0f) {
-					movHelicopteroZ += movHelicopteroOffset * deltaTime;
-				}
-				else {
-					rotacionHelicopteroY += rotacionHelicopteroOffset * deltaTime;
-				}
-			}
-			else {
-				avanzaHelicoptero4 = false;
-				avanzaHelicoptero5 = true;
-			}
-		}
-
-		if (avanzaHelicoptero5) {
-			if (movHelicopteroX < 0.0f) {
-				if (rotacionHelicopteroY > 180.0f) {
-					rotacionHelicopteroY -= rotacionHelicopteroOffset * deltaTime;
-				}
-				else {
-					movHelicopteroX += movHelicopteroOffset * deltaTime;
-					if (movHelicopteroX < -50.0f) {
-						movHelicopteroY += movHelicopteroOffset * deltaTime;
-					}
-				}
-			}
-			else {
-				if (rotacionHelicopteroY > 0.0f) {
-					if (inclinacion > 0.0f)
-						inclinacion -= 0.01 * deltaTime;
-					rotacionHelicopteroY -= rotacionHelicopteroOffset * deltaTime;
-				}
-				else {
-					avanzaHelicoptero5 = false;
-					avanzaHelicoptero6 = true;
-				}
-			}
-		}
-		
-		if (avanzaHelicoptero6) {
-			if (movHelicopteroY > 0.0f) {
+	}
+	if (avanzaHelicoptero2) {
+		if (movHelicopteroX > -300.0f) {
+			inclinacion = 0.4f;
+			movHelicopteroX -= movHelicopteroOffset * deltaTime;
+			if (movHelicopteroX < -50.0f) {
 				movHelicopteroY -= movHelicopteroOffset * deltaTime;
-				tiempoInicial = clock();
+			}
+
+		}
+		else {
+			avanzaHelicoptero2 = false;
+			avanzaHelicoptero3 = true;
+		}
+	}
+
+	if (avanzaHelicoptero3) {
+		if (movHelicopteroZ > -850.0f) {
+			if (rotacionHelicopteroY > 90.0f) {
+				movHelicopteroZ -= movHelicopteroOffset * deltaTime;
 			}
 			else {
-				tiempoTranscurrido = (double)(clock() - tiempoInicial) / CLOCKS_PER_SEC;
-				if (tiempoTranscurrido > 5.0f) {
-					avanzaHelicoptero6 = false;
-					avanzaHelicoptero = true;
+				rotacionHelicopteroY += rotacionHelicopteroOffset * deltaTime;
+			}
+		}
+		else {
+			avanzaHelicoptero3 = false;
+			avanzaHelicoptero4 = true;
+		}
+	}
+
+	if (avanzaHelicoptero4) {
+		if (movHelicopteroZ < 0.0f) {
+			if (rotacionHelicopteroY > 270.0f) {
+				movHelicopteroZ += movHelicopteroOffset * deltaTime;
+			}
+			else {
+				rotacionHelicopteroY += rotacionHelicopteroOffset * deltaTime;
+			}
+		}
+		else {
+			avanzaHelicoptero4 = false;
+			avanzaHelicoptero5 = true;
+		}
+	}
+
+	if (avanzaHelicoptero5) {
+		if (movHelicopteroX < 0.0f) {
+			if (rotacionHelicopteroY > 180.0f) {
+				rotacionHelicopteroY -= rotacionHelicopteroOffset * deltaTime;
+			}
+			else {
+				movHelicopteroX += movHelicopteroOffset * deltaTime;
+				if (movHelicopteroX < -50.0f) {
+					movHelicopteroY += movHelicopteroOffset * deltaTime;
 				}
 			}
 		}
+		else {
+			if (rotacionHelicopteroY > 0.0f) {
+				if (inclinacion > 0.0f)
+					inclinacion -= 0.01 * deltaTime;
+				rotacionHelicopteroY -= rotacionHelicopteroOffset * deltaTime;
+			}
+			else {
+				avanzaHelicoptero5 = false;
+				avanzaHelicoptero6 = true;
+			}
+		}
+	}
 
-		glm::mat4 model, modelauxHeli;
-		//Helicoptero
-		model = glm::mat4(1.0);
-		model = glm::translate(model, glm::vec3(350.0f + movHelicopteroX, 702.0f + movHelicopteroY, 285.0 + movHelicopteroZ));
-		model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
-		model = glm::rotate(model, -rotacionHelicopteroY * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
-		model = glm::rotate(model, inclinacion, glm::vec3(0.0f, 0.0f, 01.0f));
-		//model = glm::rotate(model, -15.0f, glm::vec3(0.0f, 0.0f, 1.0f));
-		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-		modelauxHeli = model;
-		helicoptero_base.RenderModel();
-		
-		//Mousequeherramienta misteriosa que nos servirá para despues
-		//Previo prueba cambio de perspectiva
-		/*camera.setPosicionX(350.0f + movHelicopteroX);
-		camera.setPosicionY(702.0f + movHelicopteroY);
-		camera.setPosicionZ(285.0 + movHelicopteroZ);*/
+	if (avanzaHelicoptero6) {
+		if (movHelicopteroY > 0.0f) {
+			movHelicopteroY -= movHelicopteroOffset * deltaTime;
+			tiempoInicial = clock();
+		}
+		else {
+			tiempoTranscurrido = (double)(clock() - tiempoInicial) / CLOCKS_PER_SEC;
+			if (tiempoTranscurrido > 5.0f) {
+				avanzaHelicoptero6 = false;
+				avanzaHelicoptero = true;
+			}
+		}
+	}
 
-		model = glm::translate(model, glm::vec3(0.5f, 23.5f, 0.0f));
-		model = glm::rotate(model, movHelice * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 model, modelauxHeli;
+	//Helicoptero
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(350.0f + movHelicopteroX, 702.0f + movHelicopteroY, 285.0 + movHelicopteroZ));
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+	model = glm::rotate(model, -rotacionHelicopteroY * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, inclinacion, glm::vec3(0.0f, 0.0f, 01.0f));
+	//model = glm::rotate(model, -15.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	modelauxHeli = model;
+	helicoptero_base.RenderModel();
 
-		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
-		model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
-		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-		helicoptero_helice.RenderModel();
+	//Mousequeherramienta misteriosa que nos servirá para despues
+	//Previo prueba cambio de perspectiva
+	/*camera.setPosicionX(350.0f + movHelicopteroX);
+	camera.setPosicionY(702.0f + movHelicopteroY);
+	camera.setPosicionZ(285.0 + movHelicopteroZ);*/
+
+	model = glm::translate(model, glm::vec3(0.5f, 23.5f, 0.0f));
+	model = glm::rotate(model, movHelice * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	helicoptero_helice.RenderModel();
 }
-
-
 
 void renderTimmyBus() {
 
@@ -1543,6 +1724,7 @@ void renderLaPulga() {
 }
 
 
+
 void renderPerroRicochet() {
 	glm::mat4 model;
 
@@ -1565,11 +1747,13 @@ void renderFishyFish() {
 	fish.RenderModel();
 }
 
+
+
 void renderMutantPlant() {
 	glm::mat4 model;
 
 	model = glm::mat4(1.0);
-	model = glm::translate(model, glm::vec3(-320.0f, 55.0f, 205.0f));
+	model = glm::translate(model, glm::vec3(-320.0f, 55.0f, 265.0f));
 	model = glm::scale(model, glm::vec3(12.0f));
 	//model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
@@ -1589,6 +1773,8 @@ void renderDoidle() {
 
 
 
+
+
 void renderTaxi() {
 
 	glm::mat4 model;
@@ -1602,12 +1788,11 @@ void renderTaxi() {
 
 }
 
-
 void renderNaveDexter() {
 
 	movBaseNave += giraBaseOffset * deltaTime;
 	//tiempoInicial = clock();
-	
+
 	if (avanzaNave) {
 		if (movNaveZ > -1275.0f) {
 			movNaveZ -= movNaveOffset * deltaTime;
@@ -1660,7 +1845,7 @@ void renderNaveDexter() {
 		}
 	}
 
-	glm::mat4 model,modelauxNave;
+	glm::mat4 model, modelauxNave;
 
 	model = glm::mat4(1.0);
 	model = glm::translate(model, glm::vec3(120.0f + movNaveX, 100.0f, 600.0 + movNaveZ));
@@ -1687,51 +1872,49 @@ void renderNaveDexter() {
 
 }
 
+void renderPuertaReja() {
+	//PUERTA METÁLICA CON MARCO PARA LETRERO, PARA PRACTICA 08
+	glm::mat4 model, modelaux;
 
-//void renderPuertaReja() {
-//	//PUERTA METÁLICA CON MARCO PARA LETRERO, PARA PRACTICA 08
-//	glm::mat4 model, modelaux;
-//
-//
-//	model = glm::mat4(1.0);
-//	modelaux = model;
-//
-//	model = glm::translate(model, glm::vec3(-3.0f, -0.95f, -815.0f));
-//	modelaux = model;
-//	model = glm::scale(model, glm::vec3(65.0f));	
-//	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-//	puerta_reja.RenderModel();
-//	
-//	model = modelaux;
-//
-//	//REJA DERECHA (esta es la que rotaba)
-//	model = glm::translate(model, glm::vec3(-65.5f, 52.6f, 0.0f)); //52.5 en y antes, 65.0 en x
-//	model = glm::scale(model, glm::vec3(65.0f));
-//	model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
-//	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-//	reja_der.RenderModel();
-//
-//	model = modelaux;
-//
-//
-//
-//	//REJA IZQUIERDA
-//	model = glm::translate(model, glm::vec3(36.5f, 1.0f, 0.0f)); //40 en x antes
-//	model = glm::scale(model, glm::vec3(65.0f));
-//	model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
-//	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-//	reja_izq.RenderModel();
-//
-//	model = modelaux;
-//
-//}
 
+	model = glm::mat4(1.0);
+	modelaux = model;
+
+	model = glm::translate(model, glm::vec3(-3.0f, -0.95f, -815.0f));
+	modelaux = model;
+	model = glm::scale(model, glm::vec3(65.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	puerta_reja.RenderModel();
+
+	model = modelaux;
+
+	//REJA DERECHA (esta es la que rotaba)
+	model = glm::translate(model, glm::vec3(-65.5f, 52.6f, 0.0f)); //52.5 en y antes, 65.0 en x
+	model = glm::scale(model, glm::vec3(65.0f));
+	model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	reja_der.RenderModel();
+
+	model = modelaux;
+
+
+
+	//REJA IZQUIERDA
+	model = glm::translate(model, glm::vec3(36.5f, 1.0f, 0.0f)); //40 en x antes
+	model = glm::scale(model, glm::vec3(65.0f));
+	model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	reja_izq.RenderModel();
+
+	model = modelaux;
+
+}
 
 void renderCamellon() {
 
 	glm::mat4 model, modelaux;
 
-	
+
 
 	model = glm::mat4(1.0);
 	modelaux = model;
@@ -1933,6 +2116,51 @@ Código retirado del main que no sé si se va a necesitar en algun momento;
 		////Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
 		//meshList[3]->RenderMesh();
 		//glDisable(GL_BLEND);
+
+
+		DirectionalLight calcSunlight() {
+	GLfloat intensity = 0.4f , dintensity = 0.5f;
+	GLfloat xDir, yDir, red, green, blue;
+	xDir = 0.0f;
+	yDir = 0.0f;
+
+
+
+
+	if (anguloLuz >= 180.0) {
+		anguloLuz = 0.0f;
+		esDeDia = !esDeDia;
+	}
+	else {
+		anguloLuz += lightDirectionIncrement * deltaTime;
+	}
+
+	xDir = cos(glm::radians(anguloLuz));
+	yDir = (-1.0) * sin(glm::radians(anguloLuz));
+
+	if (esDeDia) {
+		red = 0.8f + 0.2 * sin(glm::radians(anguloLuz));
+		green = 0.6f + 0.4 * sin(glm::radians(anguloLuz));
+		blue = 0.6f + 0.4 * sin(glm::radians(anguloLuz));
+		intensity = 0.6f;
+		dintensity = 0.5f;
+	}
+	else {
+		red = 0.6f - 0.1 * sin(glm::radians(anguloLuz));
+		green = 0.6f - 0.1 * sin(glm::radians(anguloLuz));
+		blue = 0.6f + (0.4 * sin(glm::radians(anguloLuz)));
+		intensity = 0.2f;
+		dintensity = 0.2f;
+	}
+
+
+
+	DirectionalLight sol = DirectionalLight(red, green, blue,
+		intensity, dintensity,
+		xDir, yDir, 0.0f);
+
+	return sol;
+}
 
 
 */
