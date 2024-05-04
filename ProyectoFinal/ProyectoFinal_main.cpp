@@ -348,9 +348,9 @@ int main()
 	//Ambiental->setSoundVolume(0.2f);
 
 	////Pista de fondo
-	//ISoundEngine* Intro = createIrrKlangDevice();
-	//Intro->play2D("Sound/Lab_Dexter.wav", true); //cambiar a cancion en loop sin la voz
-	//Intro->setSoundVolume(0.15f);
+	ISoundEngine* Intro = createIrrKlangDevice();
+	Intro->play2D("Sound/Dexter_Pista.wav", true); //cambiar a cancion en loop sin la voz
+	Intro->setSoundVolume(0.15f);
 
 	////Sonido con teclado (Pendiente)
 	/*ISoundEngine* AstrodomoSound = createIrrKlangDevice();
