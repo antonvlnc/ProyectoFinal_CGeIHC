@@ -95,16 +95,14 @@ float movNaveOffset;
 float tiempoTranscurrido;
 
 //para luces
-unsigned int pointLightCount = 0;
-unsigned int pointLightCount2 = 0;
-unsigned int spotLightCount = 0; //ARREGLO 0 -> TODAS LAS LUCES ENCENDIDAS
-unsigned int spotLightCount2 = 0;
-
-GLfloat duracionCicloDiayNoche = 40.0; //cantidad de segundos que va a durar el ciclo de dia/noche, el dia dura 2*duracionCicloDiaYNoche
-GLboolean esDeDia = false; //VAriable para controlar eventos ligados al ciclo de dia y de noche
-
+// luz direccional
+DirectionalLight mainLight;
 //Objeto para el manejo de todas las luces del escenario
 controladorLuces lightControl;
+
+GLfloat duracionCicloDiayNoche = 40.0;	//cantidad de segundos que va a durar el ciclo de dia/noche.
+GLboolean esDeDia = false;				//Variable para controlar eventos ligados al ciclo de dia y de noche
+
 
 
 
@@ -143,20 +141,15 @@ Texture grass;
 
 //Dexter
 MainAvatar dexter;
-Edificio dianaCazadora;
-Edificio BBVA_Pixies;
-Edificio estelaDeLuz;
-Edificio astrodomo;
-Edificio slamminDonuts;
-Edificio bigWand;
 Edificio casaDexter;
-Edificio CasaTimmy;
+Edificio tokyo_tree;
 
 Model nave_cabina;
 Model nave_extra;
 
 
-Lampara luminariaP8;
+
+
 
 //GENERAL
 Model luminaria;
@@ -172,27 +165,37 @@ Model puerta_reja;
 Model reja_izq;
 Model reja_der;
 
+Edificio dianaCazadora;
+Edificio BBVA_Pixies;
+Edificio estelaDeLuz;
 
+Lampara luminariaP8;
 
 
 //Padrinos Magicos
 Model bus_padrinos;
-Model big_wand;
-Edificio dimmadome;
 Model taxi;
+
+
+Edificio dimmadome;
 Edificio letras_dimmsdale;
 Edificio letrero_dimmsdale;
+Edificio bigWand;
+Edificio CasaTimmy;
 
 
 //Ratatouille
 Model vespa;
+
 Edificio gusteaus;
 Edificio gusteau_sign;
 
 //Mucha Lucha
-Model tienda_donas;
 Model laPulga;
-Edificio tokyo_tree;
+
+Edificio astrodomo;
+Edificio slamminDonuts;
+
 Edificio academy;
 Edificio poster1;
 Edificio poster2;
@@ -208,20 +211,10 @@ Skybox noche;
 Skybox amanecer;
 Skybox atardecer;
 
-
-
 //MATERIALES
 Material Material_brillante;
 Material Material_opaco;
 
-//DECLARACION DE LAS LUCES
-
-// luz direccional
-DirectionalLight mainLight;
-PointLight pointLights[MAX_POINT_LIGHTS];
-PointLight pointLights2[MAX_POINT_LIGHTS];
-SpotLight spotLights[MAX_SPOT_LIGHTS];
-SpotLight spotLights2[MAX_SPOT_LIGHTS];
 
 
 //SHADERS
@@ -234,6 +227,7 @@ static const char* fShader = "shaders/shader_light.frag";
 
 void calcAverageNormals(unsigned int* indices, unsigned int indiceCount, GLfloat* vertices, unsigned int verticeCount,
 	unsigned int vLength, unsigned int normalOffset);
+
 void CreateObjects();
 void CreateShaders();
 
@@ -241,6 +235,7 @@ void InitializeModels();
 void InitializeTextures();
 void InitializeSkyboxes();
 void InitializeLights();
+void InitializeCameras();
 
 void selectSkybox(int skyboxNumber);
 
@@ -266,9 +261,9 @@ int main()
 	InitializeTextures();
 	InitializeLights();
 	InitializeSkyboxes();
+	//InitializeCameras();
 
-	//CAMARAS
-	camera = Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), -60.0f, 0.0f, 5.5f, 0.5f);
+	camera = Camera(glm::vec3(0.0f, 200.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.0f, 0.0f, 5.5f, 0.5f);
 
 
 	glm::mat4 model(1.0);
@@ -331,6 +326,7 @@ int main()
 	AstrodomoSound->play2D("Sound/Mucha_Lucha.wav", true);
 	AstrodomoSound->setSoundVolume(0.1f);*/
 
+	
 
 	////Loop mientras no se cierra la ventana
 	while (!mainWindow.getShouldClose())
@@ -349,7 +345,20 @@ int main()
 		//Recibir eventos del usuario
 		glfwPollEvents();
 		camera.keyControl(mainWindow.getsKeys(), deltaTime);
-		camera.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
+		camera.mouseControl(mainWindow.getRotacionAvatar(), 0.0f);
+
+		//-------------------------------------------------------------------------
+
+		/*model = glm::mat4(1.0);
+		dexRotPos = glm::vec4(dexter.getPos(), 1.0);
+
+		model = glm::rotate(model, glm::radians(dexter.getRotY()), glm::vec3(0.0f, 1.0f, 0.0f));
+
+		dexRotPos = model * dexRotPos;*/
+
+		//
+
+		//-------------------------------------------------------------------------
 
 		// Clear the window
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -614,7 +623,7 @@ void CreateObjects()
 
 
 	GLfloat floorVertices[] = {
-		-1.0f, 0.0f, -1.0f,		0.0f, 0.0f,			0.0f, -1.0f, 0.0f, //0
+		-1.0f, 0.0f, -1.0f,		0.0f, 0.0f,		0.0f, -1.0f, 0.0f, //0
 		1.0f, 0.0f, -1.0f,		1.0f, 0.0f,		0.0f, -1.0f, 0.0f, //1
 		-1.0f, 0.0f, 1.0f,		0.0f, 1.0f,		0.0f, -1.0f, 0.0f, //2
 		1.0f, 0.0f, 1.0f,		1.0f, 1.0f,		0.0f, -1.0f, 0.0f //3
@@ -816,7 +825,7 @@ void InitializeModels() {
 
 	//AVATAR (DEXTER)
 
-	dexter = MainAvatar(glm::vec3(0.0f, 0.5f, -650.0f), 15.0f, glm::vec3(3.0f, 3.0f, 3.0f));
+	dexter = MainAvatar(glm::vec3(0.0f, 0.5f, -650.0f), 0.0f, glm::vec3(3.0f, 3.0f, 3.0f)); //dexter = MainAvatar(glm::vec3(0.0f, 0.5f, -650.0f), 15.0f, glm::vec3(3.0f, 3.0f, 3.0f));
 
 
 	//-------------------------Modelos Ratatouille-----------------------------------------
@@ -942,10 +951,25 @@ void InitializeLights() {
 
 }
 
-//Otros 
-//Asigna el skybox que se va a renderizar a current.
-void selectSkybox(int skyboxNumber) {
+void InitializeCameras() {
+	glm::vec3 startingPos;
 
+	startingPos = dexter.getPos() + glm::vec3(0.0f, 15.0f, -35.0f);
+
+	//glm::mat4 rot(1.0);
+	//rot = glm::rotate(rot, glm::radians(dexter.getRotY()) , glm::vec3(0.0f, 1.0f ,0.0f));
+
+	//glm::vec4 posRotada(startingPos, 1.0);
+
+	//posRotada = rot * posRotada;
+	
+	//CAMARAS
+	camera = Camera( startingPos , glm::vec3(0.0f, 1.0f, 0.0f), 90.0f, 0.0f, 1.0f, -1.0f); //Camera(glm::vec3(0.0f, 200.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.0f, 0.0f, 5.5f, 0.5f);
+}
+
+//Otros 
+void selectSkybox(int skyboxNumber) {
+	//Asigna el skybox que se va a renderizar a current.
 	switch (skyboxNumber){
 	case 1:
 		current = amanecer;
@@ -1599,8 +1623,25 @@ void renderCamellon() {
 
 
 /*
-Código retirado del main que no sé si se va a necesitar en algun momento;
+Código retirado del main que no sé si se va a necesitar en algun momento;.
 
+	glm::mat4 dexRotPos(1.0f);
+
+	dexRotPos = glm::rotate(dexRotPos, glm::radians(dexter.getRotY()), glm::vec3(0.0f, 1.0f, 0.0f));
+
+	glm::vec4 CamPos(dexter.getPos(), 1.0f);
+	glm::vec4 desp(0.0f, 15.0f, -35.0f,0.0f);
+
+	glm::vec4 CamPos(dexter.getPos(), 1.0f);
+
+		////dexRotPos = glm::rotate(dexRotPos, glm::radians(dexter.getRotY()), glm::vec3(0.0f, 1.0f, 0.0f));
+		//dexRotPos = glm::rotate(dexRotPos, glm::radians(mainWindow.getRotacionAvatar()), glm::vec3(0.0f, 1.0f, 0.0f));
+		//CamPos = dexRotPos * (CamPos + desp);
+
+
+		//camera.setPosicionX(CamPos.x);
+		//camera.setPosicionY(CamPos.y);
+		//camera.setPosicionZ(CamPos.z);
 
 	movCoche = 0.0f;
 	movOffset = 0.8f;
