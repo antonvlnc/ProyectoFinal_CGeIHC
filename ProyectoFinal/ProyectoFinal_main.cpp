@@ -107,6 +107,7 @@ float metrobusX, metrobusY, metrobusZ;
 float traslacionMetrobusOffSet;
 float tiempoTranscurrido;
 float radioCircunferencia;
+float auxiliarDesbordamiento;
 
 //para luces
 unsigned int pointLightCount = 0;
@@ -1527,7 +1528,7 @@ void renderMetrobus() {
 	model = glm::mat4(1.0);
 	printf("(%f,%f,%f)\n", sqrt(pow(radioCircunferencia, 2) - pow(metrobusZ, 2)), 2.5f + metrobusY,metrobusZ);
 	model = glm::translate(model, glm::vec3(0.0f + sqrt(pow(radioCircunferencia,2) - pow(metrobusZ,2)), 2.5f + metrobusY, 175.0f + metrobusZ));
-	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	//model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	modelaux = model;
 	model = glm::scale(model, glm::vec3(12.0f));
 	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -1605,8 +1606,14 @@ void renderMetrobus() {
 	model = modelaux;
 
 	printf("\t---------> %d (%f < %f)\n", metrobusZ < radioCircunferencia, metrobusZ, radioCircunferencia);
-	if (metrobusZ < radioCircunferencia) {
+	if (metrobusZ + 1 < radioCircunferencia - 8) {
+		auxiliarDesbordamiento = metrobusZ;
 		metrobusZ += traslacionMetrobusOffSet * deltaTime;
+		if (controlDeltaTimeDesborde2) {
+			printf("\t\t%f", auxiliarDesbordamiento);
+			metrobusZ = auxiliarDesbordamiento;
+			controlDeltaTimeDesborde2 = false;
+		}
 	}
 		
 
