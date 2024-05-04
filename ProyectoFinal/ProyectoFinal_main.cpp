@@ -106,6 +106,7 @@ float rotacionAutomaticaRuedaZ, rotacionAutomaticaRuedaOffSet;
 float metrobusX, metrobusY, metrobusZ;
 float traslacionMetrobusOffSet;
 float tiempoTranscurrido;
+float radioCircunferencia;
 
 //para luces
 unsigned int pointLightCount = 0;
@@ -372,27 +373,26 @@ int main()
 	giraTorsoOffset = 0.5f;
 	movTorsoOffset = 0.5f;
 
-	//Animacion metrobus
+	//Animacion metrobus //------------------SONIDO-----------------------//------------------SONIDO-----------------------//------------------SONIDO-----------------------//------------------SONIDO-----------------------//------------------SONIDO-----------------------//------------------SONIDO-----------------------//------------------SONIDO-----------------------//------------------SONIDO-----------------------
 	flagBus1 = true;
 	flagBus2 = flagBus3 = flagBus4 = flagBus5 = flagBus6 = flagBus7 = flagBus8 = flagBus9 = flagBus10 = flagBus11 = flagBus12 = flagBus13 = false;
 	rotacionAutomaticaRuedaZ = 0.0f;
 	rotacionAutomaticaRuedaOffSet = 3.0f;
-	traslacionMetrobusOffSet = 0.01f;
-	metrobusX = metrobusY = metrobusZ = -10.0f;
+	traslacionMetrobusOffSet = 0.1f;
+	metrobusX = metrobusY = 0.0f;
+	metrobusZ = -100.0f;
 	controlDeltaTimeDesborde2 = true;
+	radioCircunferencia = 0.0f;
 	//------------------SONIDO-----------------------
-	//Sonido ambiental
+	////Ambiental
 	//ISoundEngine* Ambiental = createIrrKlangDevice();
-	//Ambiental->play2D("Sound/Ambiental.wav", true); 
-	//Ambiental->setSoundVolume(0.2f);
-	ISoundEngine* Ambiental = createIrrKlangDevice();
-	Ambiental->play2D("Sound/Ambiental.wav", true);
-	Ambiental->setSoundVolume(0.2f);
+	//Ambiental->play2D("Sound/Ambiental.wav", true);
+	//Ambiental->setSoundVolume(0.8f);
 
-	////Pista de fondo
-	ISoundEngine* Intro = createIrrKlangDevice();
-	Intro->play2D("Sound/Dexter_Pista.wav", true); //cambiar a cancion en loop sin la voz
-	Intro->setSoundVolume(0.15f);
+	//////Pista de fondo
+	//ISoundEngine* Intro = createIrrKlangDevice();
+	//Intro->play2D("Sound/Dexter_Pista.wav", true); //cambiar a cancion en loop sin la voz
+	//Intro->setSoundVolume(0.1f);
 
 	////Sonido con teclado (Pendiente)
 	/*ISoundEngine* AstrodomoSound = createIrrKlangDevice();
@@ -1519,27 +1519,15 @@ void renderReflector() {
 
 
 
-
+//<>
 void renderMetrobus() {
-	//
-	//// Esto será indefinido
-	//rotacionAutomaticaRuedaZ += rotacionAutomaticaRuedaOffSet * deltaTime;
-	//float radio1 = 10.0f;
-	////metrobus rutina circunferencia
-	////metrobusZ = sqrt(double(pow(metrobusX, 2)) + double(pow(radio1, 2)));
-	//if (metrobusZ < 10.0f) {
-	//	//metrobusZ += traslacionMetrobusOffSet * deltaTime;
-	//}
-	//if (controlDeltaTimeDesborde2) {
-	//	metrobusZ = metrobusX = 0.0f;
-	//	controlDeltaTimeDesborde2 = false;
-	//}
-	//printf("(%f,%f,%f)\n", sqrt(pow(metrobusZ, 2)), metrobusY, metrobusZ);
+	radioCircunferencia = 100.0f;
 	glm::mat4 model,modelaux;
 
 	model = glm::mat4(1.0);
-	//0.0f, -1.0f, 175.0f
-	model = glm::translate(model, glm::vec3(0.0f + sqrt(pow(100,2) - pow(metrobusZ,2)), 2.5f + metrobusY, 175.0f + metrobusZ));
+	printf("(%f,%f,%f)\n", sqrt(pow(radioCircunferencia, 2) - pow(metrobusZ, 2)), 2.5f + metrobusY,metrobusZ);
+	model = glm::translate(model, glm::vec3(0.0f + sqrt(pow(radioCircunferencia,2) - pow(metrobusZ,2)), 2.5f + metrobusY, 175.0f + metrobusZ));
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	modelaux = model;
 	model = glm::scale(model, glm::vec3(12.0f));
 	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -1616,6 +1604,11 @@ void renderMetrobus() {
 
 	model = modelaux;
 
+	printf("\t---------> %d (%f < %f)\n", metrobusZ < radioCircunferencia, metrobusZ, radioCircunferencia);
+	if (metrobusZ < radioCircunferencia) {
+		metrobusZ += traslacionMetrobusOffSet * deltaTime;
+	}
+		
 
 }
 
@@ -1838,6 +1831,9 @@ void renderPerroRicochet() {
 }
 
 void renderFishyFish() {
+	
+
+	
 	glm::mat4 model;
 
 	model = glm::mat4(1.0);
