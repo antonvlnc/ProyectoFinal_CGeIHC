@@ -1,4 +1,4 @@
-#include "Window.h"
+ï»¿#include "Window.h"
 
 Window::Window()
 {
@@ -41,6 +41,7 @@ Window::Window(GLint windowWidth, GLint windowHeight)
 	rotAvatar = 0.0f;
 	rotBrazoPiernas = 0.0f;
 	banderaRand = false;
+	banderaLuzActivable = false;
 
 	//Camaras
 	tipoCamara = 1;
@@ -52,10 +53,10 @@ Window::Window(GLint windowWidth, GLint windowHeight)
 }
 int Window::Initialise()
 {
-	//Inicialización de GLFW
+	//Inicializaciï¿½n de GLFW
 	if (!glfwInit())
 	{
-		printf("Falló inicializar GLFW");
+		printf("Fallï¿½ inicializar GLFW");
 		glfwTerminate();
 		return 1;
 	}
@@ -75,7 +76,7 @@ int Window::Initialise()
 		glfwTerminate();
 		return 1;
 	}
-	//Obtener tamaño de Buffer
+	//Obtener tamaï¿½o de Buffer
 	glfwGetFramebufferSize(mainWindow, &bufferWidth, &bufferHeight);
 
 	//asignar el contexto
@@ -90,18 +91,18 @@ int Window::Initialise()
 
 	if (glewInit() != GLEW_OK)
 	{
-		printf("Falló inicialización de GLEW");
+		printf("Fallï¿½ inicializaciï¿½n de GLEW");
 		glfwDestroyWindow(mainWindow);
 		glfwTerminate();
 		return 1;
 	}
 
 	glEnable(GL_DEPTH_TEST); //HABILITAR BUFFER DE PROFUNDIDAD
-							 // Asignar valores de la ventana y coordenadas
-							 
-							 //Asignar Viewport
+	// Asignar valores de la ventana y coordenadas
+
+	//Asignar Viewport
 	glViewport(0, 0, bufferWidth, bufferHeight);
-	//Callback para detectar que se está usando la ventana
+	//Callback para detectar que se estï¿½ usando la ventana
 	glfwSetWindowUserPointer(mainWindow, this);
 }
 
@@ -197,27 +198,27 @@ void Window::ManejaTeclado(GLFWwindow* window, int key, int code, int action, in
 	{
 		if (action == GLFW_PRESS) {
 			switch (theWindow->tipoCamara) {
-				case 1:
-					theWindow->tipoCamara = 2;
-					break;
+			case 1:
+				theWindow->tipoCamara = 2;
+				break;
 
-				case 2:
-					theWindow->tipoCamara = 3;
-					break;
+			case 2:
+				theWindow->tipoCamara = 3;
+				break;
 
-				case 3: 
-					theWindow->tipoCamara = 1;
-					break;
+			case 3:
+				theWindow->tipoCamara = 1;
+				break;
 
-				default:
-					theWindow->tipoCamara = 1;
-					break;
+			default:
+				theWindow->tipoCamara = 1;
+				break;
 			}
-				
+
 
 
 		}
-	
+
 	}
 
 
@@ -329,25 +330,25 @@ void Window::ManejaTeclado(GLFWwindow* window, int key, int code, int action, in
 
 	//	
 
-	//	//AQUÍ LA LUZ DELANTERA (AZUL) DEBE ENCENDERSE, POR DEFECTO DEBE ESTAR ENCENDIDA
+	//	//AQUï¿½ LA LUZ DELANTERA (AZUL) DEBE ENCENDERSE, POR DEFECTO DEBE ESTAR ENCENDIDA
 	//	theWindow->luz_del = 1.0;
 
 	//}
 	//ARTICULACION REVERSA
 	if (key == GLFW_KEY_K)
-	{	
+	{
 		theWindow->luz_del = 0.0; //apagamos la luz delantera
 
 		theWindow->articulacion_avanza -= 10.0;
 		//AUTO HACE TRANSLATE (AVANZA O RETROCEDE)
 		theWindow->avanza_retrocede -= 1.0;
 
-		//AQUÍ LA LUZ TRASERA (ROJA) DEBE ENCENDERSE, POR DEFECTO DEBE ESTAR APAGADA
+		//AQUï¿½ LA LUZ TRASERA (ROJA) DEBE ENCENDERSE, POR DEFECTO DEBE ESTAR APAGADA
 		theWindow->luz_tras = 1.0;
 	}
 
 
-	//MOVIMIENTO HELICÓPTERO
+	//MOVIMIENTO HELICï¿½PTERO
 	if (key == GLFW_KEY_N)
 	{
 		theWindow->avanza_helicoptero += 10.0;
@@ -380,6 +381,9 @@ void Window::ManejaTeclado(GLFWwindow* window, int key, int code, int action, in
 	if (key == GLFW_KEY_1)
 	{
 		theWindow->K = 1;
+		if (action == GLFW_PRESS) {
+			theWindow->banderaLuzActivable = !theWindow->banderaLuzActivable;
+		}
 	}
 	if (key == GLFW_KEY_0)
 	{
@@ -389,11 +393,11 @@ void Window::ManejaTeclado(GLFWwindow* window, int key, int code, int action, in
 	//Botones para reproducir musica
 	if (key == GLFW_KEY_I)
 	{
-		theWindow -> MusicaSi = true;
+		theWindow->MusicaSi = true;
 	}
 	if (key == GLFW_KEY_O)
 	{
-		theWindow ->  MusicaSi = false;
+		theWindow->MusicaSi = false;
 	}
 
 
