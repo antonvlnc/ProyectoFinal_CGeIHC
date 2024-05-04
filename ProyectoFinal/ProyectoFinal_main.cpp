@@ -48,6 +48,7 @@ Integrantes:
 #include "PointLight.h"
 #include "SpotLight.h"
 #include "Material.h"
+#include "controladorLuces.h"
 
 //Para sonido
 #include <irrklang.h>
@@ -55,7 +56,6 @@ using namespace irrklang;
 
 //VARIABLES Y CONSTANTES
 const float toRadians = 3.14159265f / 180.0f;
-const float maxAngle = 180.0f;
 
 GLfloat deltaTime = 0.0f;
 GLfloat lastTime = 0.0f;
@@ -92,17 +92,20 @@ float rotacionNave, inclinacionNave;
 float rotacionNaveOffset;
 float movNaveOffset;
 
+float tiempoTranscurrido;
+
 //para luces
 unsigned int pointLightCount = 0;
 unsigned int pointLightCount2 = 0;
 unsigned int spotLightCount = 0; //ARREGLO 0 -> TODAS LAS LUCES ENCENDIDAS
 unsigned int spotLightCount2 = 0;
-float tiempoTranscurrido;
+
 GLfloat duracionCicloDiayNoche = 40.0; //cantidad de segundos que va a durar el ciclo de dia/noche, el dia dura 2*duracionCicloDiaYNoche
-//GLfloat lightDirectionIncrement = 0.5f;
-GLfloat lightDirectionIncrement = maxAngle / (duracionCicloDiayNoche * 60.0);
-GLboolean esDeDia = true;
-GLfloat anguloLuz = -10.0f;
+GLboolean esDeDia = false; //VAriable para controlar eventos ligados al ciclo de dia y de noche
+
+//Objeto para el manejo de todas las luces del escenario
+controladorLuces lightControl;
+
 
 
 //Uniforms
@@ -149,6 +152,8 @@ Edificio bigWand;
 Edificio casaDexter;
 Edificio CasaTimmy;
 
+Model nave_cabina;
+Model nave_extra;
 
 
 Lampara luminariaP8;
@@ -157,8 +162,6 @@ Lampara luminariaP8;
 Model luminaria;
 Model angel_independencia;
 Model angel_independencia_ala;
-Model bbva;
-Model estela_de_luz;
 Model helicoptero_base;
 Model helicoptero_helice;
 Model camellon;
@@ -175,20 +178,11 @@ Model reja_der;
 //Padrinos Magicos
 Model bus_padrinos;
 Model big_wand;
-Model letrero_dimsdale;
-Model letras_letrero_dimsdale;
 Edificio dimmadome;
 Model taxi;
 Edificio letras_dimmsdale;
 Edificio letrero_dimmsdale;
 
-//Laboratorio de Dexter
-Model casa_dexter;
-Model dexter_body;
-Model dexter_leg;
-Model dexter_arm;
-Model nave_cabina;
-Model nave_extra;
 
 //Ratatouille
 Model vespa;
@@ -207,13 +201,18 @@ Edificio ring;
 
 
 //SKYBOX
-Skybox skybox;
+Skybox skybox;	//Default
+Skybox current; //Skybox que se renderiza
+Skybox dia;
+Skybox noche;
+Skybox amanecer;
+Skybox atardecer;
+
 
 
 //MATERIALES
 Material Material_brillante;
 Material Material_opaco;
-//Sphere cabeza = Sphere(0.5, 20, 20);
 
 //DECLARACION DE LAS LUCES
 
@@ -237,10 +236,14 @@ void calcAverageNormals(unsigned int* indices, unsigned int indiceCount, GLfloat
 	unsigned int vLength, unsigned int normalOffset);
 void CreateObjects();
 void CreateShaders();
+
 void InitializeModels();
 void InitializeTextures();
+void InitializeSkyboxes();
 void InitializeLights();
-DirectionalLight calcSunlight();
+
+void selectSkybox(int skyboxNumber);
+
 void renderAngelIndependencia();
 void renderTimmyBus();
 void renderVespa();
@@ -262,6 +265,7 @@ int main()
 	InitializeModels();
 	InitializeTextures();
 	InitializeLights();
+	InitializeSkyboxes();
 
 	//CAMARAS
 	camera = Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), -60.0f, 0.0f, 5.5f, 0.5f);
@@ -336,8 +340,10 @@ int main()
 		deltaTime += (now - lastTime) / limitFPS;
 		lastTime = now;
 
-		//----------------ANIMACIONES-------------- Aquí irán las funciones de las animaciones
-		mainLight = calcSunlight();
+		//Luz Direccional, seleccion de skybox
+		esDeDia = lightControl.recalculateDirectionalLight(deltaTime);
+		lightControl.setSkyboxNumber();
+		selectSkybox(lightControl.getSkyboxNumber());
 
 
 		//Recibir eventos del usuario
@@ -348,7 +354,7 @@ int main()
 		// Clear the window
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		skybox.DrawSkybox(camera.calculateViewMatrix(), projection);
+		current.DrawSkybox(camera.calculateViewMatrix(), projection);
 		shaderList[0].UseShader();
 
 		//---------INICIACILIZACION DE VARIABLES UNIFORM-------------
@@ -367,16 +373,15 @@ int main()
 		glUniform3f(uniformEyePosition, camera.getCameraPosition().x, camera.getCameraPosition().y, camera.getCameraPosition().z);
 
 		//----------------LUCES-----------
-		// luz ligada a la c�mara de tipo flash
-		//sirve para que en tiempo de ejecuci�n (dentro del while) se cambien propiedades de la luz
-		glm::vec3 lowerLight = camera.getCameraPosition();
-		lowerLight.y -= 0.3f;
-		//spotLights[0].SetFlash(lowerLight, camera.getCameraDirection());
+
+
+		lightControl.chooseSpotLightsArray(esDeDia);
+		lightControl.choosePointLightsArray(mainWindow.getLuzActivable());
 
 		//informaci�n al shader de fuentes de iluminaci�n
-		shaderList[0].SetDirectionalLight(&mainLight);
-		/*shaderList[0].SetPointLights(pointLights, pointLightCount);
-		shaderList[0].SetSpotLights(spotLights, spotLightCount);*/
+		shaderList[0].SetDirectionalLight(&mainLight); //referencia a la mainlight del objeto light control;
+		shaderList[0].SetPointLights(lightControl.getPointlightArray(), lightControl.getPointlightCount());
+		shaderList[0].SetSpotLights(lightControl.getSpotlightArray(), lightControl.getSpotLightCount());
 
 
 		//-------------------------PISO-----------------------------
@@ -508,6 +513,7 @@ int main()
 
 		//letras dimmsdale
 		letras_dimmsdale.renderModel();
+
 
 		
 		//letrero dimmsdale
@@ -667,6 +673,7 @@ void CreateShaders()
 	shaderList.push_back(*shader1);
 }
 
+//Funciones de inicializacion
 void InitializeModels() {
 	//----------Modelos Generales---------------------
 
@@ -856,6 +863,17 @@ void InitializeTextures() { //Texturas y skybox
 	grass.LoadTextureA();
 
 
+
+
+	//SKYBOX
+
+	Material_brillante = Material(4.0f, 256);
+	Material_opaco = Material(0.3f, 4);
+
+}
+
+void InitializeSkyboxes() {
+
 	std::vector<std::string> skyboxFaces;
 	skyboxFaces.push_back("Textures/Skybox/sky-right.jpg");
 	skyboxFaces.push_back("Textures/Skybox/sky-left.jpg");
@@ -866,13 +884,90 @@ void InitializeTextures() { //Texturas y skybox
 
 	skybox = Skybox(skyboxFaces);
 
-	//SKYBOX
+	//Dia caricatura
+	std::vector<std::string> skyboxFaces2;
+	skyboxFaces2.push_back("Textures/CartoonSkybox/Day/Right.2048x2048.png");
+	skyboxFaces2.push_back("Textures/CartoonSkybox/Day/Left.2048x2048.png");
+	skyboxFaces2.push_back("Textures/CartoonSkybox/Day/Down.2048x2048.png");
+	skyboxFaces2.push_back("Textures/CartoonSkybox/Day/Up.2048x2048.png");
+	skyboxFaces2.push_back("Textures/CartoonSkybox/Day/Front.2048x2048.png");
+	skyboxFaces2.push_back("Textures/CartoonSkybox/Day/BAck.2048x2048.png");
 
-	Material_brillante = Material(4.0f, 256);
-	Material_opaco = Material(0.3f, 4);
+	dia = Skybox(skyboxFaces2);
+
+	std::vector<std::string> skyboxFaces3;
+	skyboxFaces3.push_back("Textures/CartoonSkybox/Day6/Right.2048x2048.png");
+	skyboxFaces3.push_back("Textures/CartoonSkybox/Day6/Left.2048x2048.png");
+	skyboxFaces3.push_back("Textures/CartoonSkybox/Day6/Down.2048x2048.png");
+	skyboxFaces3.push_back("Textures/CartoonSkybox/Day6/Up.2048x2048.png");
+	skyboxFaces3.push_back("Textures/CartoonSkybox/Day6/Front.2048x2048.png");
+	skyboxFaces3.push_back("Textures/CartoonSkybox/Day6/BAck.2048x2048.png");
+
+	noche = Skybox(skyboxFaces3);
+
+	std::vector<std::string> skyboxFaces4;
+	skyboxFaces4.push_back("Textures/CartoonSkybox/Day8/Right.2048x2048.png");
+	skyboxFaces4.push_back("Textures/CartoonSkybox/Day8/Left.2048x2048.png");
+	skyboxFaces4.push_back("Textures/CartoonSkybox/Day8/Down.2048x2048.png");
+	skyboxFaces4.push_back("Textures/CartoonSkybox/Day8/Up.2048x2048.png");
+	skyboxFaces4.push_back("Textures/CartoonSkybox/Day8/Front.2048x2048.png");
+	skyboxFaces4.push_back("Textures/CartoonSkybox/Day8/BAck.2048x2048.png");
+
+	amanecer = Skybox(skyboxFaces4);
+
+	std::vector<std::string> skyboxFaces5;
+	skyboxFaces5.push_back("Textures/CartoonSkybox/Day9/Right.2048x2048.png");
+	skyboxFaces5.push_back("Textures/CartoonSkybox/Day9/Left.2048x2048.png");
+	skyboxFaces5.push_back("Textures/CartoonSkybox/Day9/Down.2048x2048.png");
+	skyboxFaces5.push_back("Textures/CartoonSkybox/Day9/Up.2048x2048.png");
+	skyboxFaces5.push_back("Textures/CartoonSkybox/Day9/Front.2048x2048.png");
+	skyboxFaces5.push_back("Textures/CartoonSkybox/Day9/BAck.2048x2048.png");
+
+	atardecer = Skybox(skyboxFaces5);
+
+
+
+	current = noche;
 
 }
 
+void InitializeLights() {
+	//APARTADO DE LUCES
+    //luz direccional, s�lo 1 y siempre debe de existir
+
+	//contador de luces puntuales
+	lightControl = controladorLuces(duracionCicloDiayNoche, limitFPS, esDeDia, &mainLight);
+	lightControl.initializeSpotlights(dianaCazadora.getPos(), glm::vec3(5.0f, -1.0f, -530.0), ring.getPos());
+	lightControl.initializePointlights(letras_dimmsdale.getPos(), estelaDeLuz.getPos(), bigWand.getPos());
+
+}
+
+//Otros 
+//Asigna el skybox que se va a renderizar a current.
+void selectSkybox(int skyboxNumber) {
+
+	switch (skyboxNumber){
+	case 1:
+		current = amanecer;
+		break;
+	case 2:
+		current = dia;
+		break;
+	case 3:
+		current = atardecer;
+		break;
+	case 4: 
+		current = noche;
+		break;
+	default:
+		current = skybox;
+		break;
+	}
+
+
+}
+
+//Funciones para renderizado
 void renderAngelIndependencia() {
 
 	if (alaIzq && alaDer)
@@ -941,159 +1036,6 @@ void renderAngelIndependencia() {
 
 }
 
-void InitializeLights() {
-	//APARTADO DE LUCES
-//luz direccional, s�lo 1 y siempre debe de existir
-	mainLight = DirectionalLight(1.0f, 1.0f, 1.0f,
-		0.3f, 0.3f,
-		0.0f, 0.0f, -1.0f);
-
-	//contador de luces puntuales
-
-
-	//Declaraci�n de primer luz puntual (magenta) | PARA LUMINARIA
-	pointLights[0] = PointLight(1.0f, 0.0f, 1.0f,
-		0.0f, 3.0f,
-		-60.0f, 25.5f, 65.0f,
-		1.0f, 0.045f, 0.0075f);
-	pointLightCount++;
-
-	//LUZ PUNTUAL PARA LA DESK LAMP
-	pointLights[1] = PointLight(1.0f, 1.0f, 1.0f,
-		0.0f, 3.0f,
-		25.0f, 2.5f, 7.0f,
-		1.0f, 0.14f, 0.07f);
-	pointLightCount++;
-
-	//LUZ NEGRA PARA APAGAR (ARREGLO 2 DE POINTLIGHTS)
-	pointLights2[0] = PointLight(0.0f, 0.0f, 0.0f,
-		0.0f, 24.0f,
-		4.0f, 9.0f, 12.0f,
-		0.3f, 0.2f, 0.1f);
-	pointLightCount2++;
-
-	//ARREGLO 1 -> CUANDO EL AUTO AVANZA
-	   //unsigned int spotLightCount3 = 0; //ARREGLO 2 -> CUANDO EL AUTO RETROCEDE
-	   //PRIMER ARREGLO DE SPOTLIGHTS (TODAS LAS SPOTLIGHTS ENCENDIDAS)
-	   // Luz vehiculo delantera (azul)
-	spotLights[0] = SpotLight(0.0f, 0.0f, 1.0f,
-		1.0f, 2.0f,
-		0.0f, 50.0f, -10.0f,
-		0.0f, 0.0f, -10.0f,
-		1.0f, 0.01f, 0.001f,
-		20.0f);
-	spotLightCount++;
-
-
-	// Luz helicoptero
-	spotLights[1] = SpotLight(1.0f, 1.0f, 0.0f,
-		1.0f, 2.0f,
-		5.0f, 10.0f, 0.0f,
-		0.0f, -5.0f, 0.0f,
-		1.0f, 0.01f, 0.001f,
-		15.0f);
-	spotLightCount++;
-
-	//LUZ SPOTLIGHT QUE ILUMINA PUERTA DE REJA
-	spotLights[2] = SpotLight(0.0f, 1.0f, 1.0f,
-		3.0f, 5.0f,
-		-2.0f, 12.0f, -5.0f,
-		0.0f, 0.0f, 5.0f,
-		1.0f, 0.01f, 0.001f,
-		15.0f);
-	spotLightCount++;
-
-
-
-	// Luz vehiculo trasera (rojo) APAGADA
-	spotLights[3] = SpotLight(0.0f, 0.0f, 0.0f,
-		1.0f, 2.0f,
-		0.0f, 50.0f, 10.0f,
-		0.0f, 0.0f, 10.0f,
-		1.0f, 0.01f, 0.001f,
-		20.0f);
-	spotLightCount++;
-	//SEGUNDO ARREGLO (CUANDO EL AUTO RETROCEDE)
-	// Luz vehiculo delantera (azul) APAGADA
-	spotLights2[0] = SpotLight(0.0f, 0.0f, 0.0f,
-		1.0f, 2.0f,
-		0.0f, 50.0f, -10.0f,
-		0.0f, 0.0f, -10.0f,
-		1.0f, 0.01f, 0.001f,
-		20.0f);
-	spotLightCount2++;
-	// Luz helicoptero
-	spotLights2[1] = SpotLight(1.0f, 1.0f, 0.0f,
-		1.0f, 2.0f,
-		5.0f, 10.0f, 0.0f,
-		0.0f, -5.0f, 0.0f,
-		1.0f, 0.01f, 0.001f,
-		15.0f);
-	spotLightCount2++;
-
-	//LUZ SPOTLIGHT QUE ILUMINA PUERTA DE REJA
-	spotLights2[2] = SpotLight(0.0f, 1.0f, 1.0f,
-		3.0f, 5.0f,
-		-2.0f, 12.0f, -5.0f,
-		0.0f, 0.0f, 5.0f,
-		1.0f, 0.01f, 0.001f,
-		15.0f);
-	spotLightCount2++;
-
-
-	//Luz trasera del auto ENCENDIDA
-	spotLights2[3] = SpotLight(1.0f, 0.0f, 0.0f,
-		1.0f, 2.0f,
-		0.0f, 50.0f, 10.0f,
-		0.0f, 0.0f, 10.0f,
-		1.0f, 0.01f, 0.001f,
-		20.0f);
-	spotLightCount2++;
-}
-
-DirectionalLight calcSunlight() {
-	GLfloat intensity = 0.4f;
-	GLfloat xDir, yDir, red, green, blue;
-	xDir = 0.0f;
-	yDir = 0.0f;
-
-
-
-
-	if (anguloLuz >= 180.0) {
-		anguloLuz = 0.0f;
-		esDeDia = !esDeDia;
-	}
-	else {
-		anguloLuz += lightDirectionIncrement * deltaTime;
-	}
-
-	xDir = cos(glm::radians(anguloLuz));
-	yDir = (-1.0) * sin(glm::radians(anguloLuz));
-
-	if (esDeDia) {
-		red = 0.8f + 0.2 * sin(glm::radians(anguloLuz));
-		green = 0.6f + 0.4 * sin(glm::radians(anguloLuz));
-		blue = 0.6f + 0.4 * sin(glm::radians(anguloLuz));
-		intensity = 0.6f;
-	}
-	else {
-		red = 0.6f - 0.1 * sin(glm::radians(anguloLuz));
-		green = 0.6f - 0.1 * sin(glm::radians(anguloLuz));
-		blue = 0.6f + (0.4 * sin(glm::radians(anguloLuz)));
-		intensity = 0.3f;
-	}
-
-
-
-	DirectionalLight sol = DirectionalLight(red, green, blue,
-		intensity, 0.5f,
-		xDir, yDir, 0.0f);
-
-	return sol;
-}
-
-
 void renderVespa() {
 
 	glm::mat4 model;
@@ -1106,8 +1048,6 @@ void renderVespa() {
 	vespa.RenderModel();
 
 }
-
-
 
 void renderMetrobus() {
 
@@ -1188,10 +1128,6 @@ void renderMetrobus() {
 
 
 }
-
-
-
-
 
 void renderHelicoptero(){
 
@@ -1325,8 +1261,6 @@ void renderHelicoptero(){
 		helicoptero_helice.RenderModel();
 }
 
-
-
 void renderTimmyBus() {
 
 	glm::mat4 model;
@@ -1363,7 +1297,6 @@ void renderTaxi() {
 	taxi.RenderModel();
 
 }
-
 
 void renderNaveDexter() {
 
@@ -1449,7 +1382,6 @@ void renderNaveDexter() {
 
 }
 
-
 void renderPuertaReja() {
 	//PUERTA METÁLICA CON MARCO PARA LETRERO, PARA PRACTICA 08
 	glm::mat4 model, modelaux;
@@ -1487,7 +1419,6 @@ void renderPuertaReja() {
 	model = modelaux;
 
 }
-
 
 void renderCamellon() {
 
@@ -1696,12 +1627,50 @@ Código retirado del main que no sé si se va a necesitar en algun momento;
 		//meshList[3]->RenderMesh();
 		//glDisable(GL_BLEND);
 
-		asaDexter.setPos(letras_dimmsdale.getPos());
-		casaDexter.setUniformScale(5.0f);
-		casaDexter.renderModel();
 
-			casaDexter.setPos(glm::vec3(- 380.0f, -0.5f, 370.0));
-		casaDexter.setUniformScale(40.0f); //Codigo Para pruebas
+		DirectionalLight calcSunlight() {
+	GLfloat intensity = 0.4f , dintensity = 0.5f;
+	GLfloat xDir, yDir, red, green, blue;
+	xDir = 0.0f;
+	yDir = 0.0f;
+
+
+
+
+	if (anguloLuz >= 180.0) {
+		anguloLuz = 0.0f;
+		esDeDia = !esDeDia;
+	}
+	else {
+		anguloLuz += lightDirectionIncrement * deltaTime;
+	}
+
+	xDir = cos(glm::radians(anguloLuz));
+	yDir = (-1.0) * sin(glm::radians(anguloLuz));
+
+	if (esDeDia) {
+		red = 0.8f + 0.2 * sin(glm::radians(anguloLuz));
+		green = 0.6f + 0.4 * sin(glm::radians(anguloLuz));
+		blue = 0.6f + 0.4 * sin(glm::radians(anguloLuz));
+		intensity = 0.6f;
+		dintensity = 0.5f;
+	}
+	else {
+		red = 0.6f - 0.1 * sin(glm::radians(anguloLuz));
+		green = 0.6f - 0.1 * sin(glm::radians(anguloLuz));
+		blue = 0.6f + (0.4 * sin(glm::radians(anguloLuz)));
+		intensity = 0.2f;
+		dintensity = 0.2f;
+	}
+
+
+
+	DirectionalLight sol = DirectionalLight(red, green, blue,
+		intensity, dintensity,
+		xDir, yDir, 0.0f);
+
+	return sol;
+}
 
 
 */
