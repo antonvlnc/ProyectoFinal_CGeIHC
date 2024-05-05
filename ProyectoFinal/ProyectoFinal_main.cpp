@@ -108,7 +108,8 @@ float traslacionMetrobusOffSet;
 float tiempoTranscurrido;
 float radioCircunferencia;
 float auxiliarDesbordamiento;
-//float diferenciaParaCalcularOrigen;
+float diferenciaParaCalcularOrigen;
+float valorUnitario;
 //para luces
 unsigned int pointLightCount = 0;
 unsigned int pointLightCount2 = 0;
@@ -320,7 +321,7 @@ int main()
 	InitializeSkyboxes();
 
 	//CAMARAS
-	camera = Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), -60.0f, 0.0f, 5.5f, 0.5f);
+	camera = Camera(glm::vec3(-189.508026f, 87.584869f, 663.147034f), glm::vec3(0.0f, 1.0f, 0.0f), -60.0f, 0.0f, 5.5f, 0.5f);
 
 
 	glm::mat4 model(1.0);
@@ -375,15 +376,16 @@ int main()
 	movTorsoOffset = 0.5f;
 
 	//Animacion metrobus //------------------SONIDO-----------------------//------------------SONIDO-----------------------//------------------SONIDO-----------------------//------------------SONIDO-----------------------//------------------SONIDO-----------------------//------------------SONIDO-----------------------//------------------SONIDO-----------------------//------------------SONIDO-----------------------
-	flagBus1 = true;
-	flagBus2 = flagBus3 = flagBus4 = flagBus5 = flagBus6 = flagBus7 = flagBus8 = flagBus9 = flagBus10 = flagBus11 = flagBus12 = flagBus13 = false;
+	flagBus1 = flagBus4 = true;
+	flagBus2 = flagBus3 = flagBus5 = flagBus6 = flagBus7 = flagBus8 = flagBus9 = flagBus10 = flagBus11 = flagBus12 = flagBus13 = false;
 	rotacionAutomaticaRuedaZ = 0.0f;
 	rotacionAutomaticaRuedaOffSet = 3.0f;
-	traslacionMetrobusOffSet = 0.7f;
+	traslacionMetrobusOffSet = 1.0f;
 	metrobusX = metrobusY = 0.0f;
 	metrobusZ = -100.0f;
 	controlDeltaTimeDesborde2 = true;
 	radioCircunferencia = 0.0f;
+	valorUnitario = 1.0f;
 	//------------------SONIDO-----------------------
 	////Ambiental
 	//ISoundEngine* Ambiental = createIrrKlangDevice();
@@ -1526,7 +1528,7 @@ void renderMetrobus() {
 	glm::mat4 model, modelaux;
 
 	model = glm::mat4(1.0);
-	printf("(%f,%f,%f)\n", sqrt(pow(radioCircunferencia, 2) - pow(metrobusZ, 2)), 2.5f + metrobusY, metrobusZ);
+	//printf("(%f,%f,%f)\n", sqrt(pow(radioCircunferencia, 2) - pow(metrobusZ, 2)), 2.5f + metrobusY, metrobusZ);
 	model = glm::translate(model, glm::vec3(0.0f + metrobusX, 2.5f + metrobusY, 175.0f + metrobusZ));
 	model = glm::scale(model, glm::vec3(0.6f));
 	//model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -1613,7 +1615,7 @@ void renderMetrobus() {
 			metrobusX = sqrt(pow(radioCircunferencia, 2) - pow(metrobusZ, 2));
 			metrobusZ += traslacionMetrobusOffSet * deltaTime;
 			if (controlDeltaTimeDesborde2) {
-				printf("\t\t%f", auxiliarDesbordamiento);
+				//printf("\t\t%f", auxiliarDesbordamiento);
 				metrobusZ = auxiliarDesbordamiento;
 				controlDeltaTimeDesborde2 = false;
 			}
@@ -1624,6 +1626,7 @@ void renderMetrobus() {
 		}
 	}
 	// -26 a 41 //33 de radio
+//<>
 	if (flagBus2) {
 		if (metrobusZ < 460.0f) {
 			metrobusZ += traslacionMetrobusOffSet * deltaTime;
@@ -1631,18 +1634,49 @@ void renderMetrobus() {
 		else {
 			flagBus2 = false;
 			flagBus3 = true;
+			printf("(%f,%f,%f)\n", camera.getCameraPosition().x, camera.getCameraPosition().y, camera.getCameraPosition().z);
+			printf("\n>>>>>>>>(%f,\t%f)\n", metrobusX, metrobusZ);
+			
 		}
 	}
 
 	if (flagBus3) {
-		if (metrobusZ < 490.0f) {
+		if (metrobusZ < 490.0f && flagBus4) {
 			metrobusZ += traslacionMetrobusOffSet * deltaTime;
 		}
 		else {
+			flagBus4 = false;
+			flagBus5 = true;
+			
+		}
+		
+
+		if (flagBus5) {
+			if (metrobusZ > 460.0f) {
+				metrobusZ -= traslacionMetrobusOffSet * deltaTime;
+				valorUnitario = -1.0f;
+			}
+			else {
+				flagBus3 = false;
+				flagBus6 = true;
+				printf("\nmzmzmzmz (%f,\t%f)\n", metrobusX, metrobusZ);
+			}
+		}
+
+		diferenciaParaCalcularOrigen = metrobusZ - 460.0f;
+		radioCircunferencia = 30;
+		//metrobusZ + 1 < radioCircunferencia - 8
+		if (diferenciaParaCalcularOrigen + 1 < radioCircunferencia) {
+			metrobusX = valorUnitario * sqrt(pow(radioCircunferencia, 2) - pow(diferenciaParaCalcularOrigen, 2)) + 12;
+			printf("\n>>>>>>>>(%f(%f),\t%f)\n", metrobusX, diferenciaParaCalcularOrigen, metrobusZ);
+		}
+	
+	}
+
+	if (flagBus6) {
+		if (metrobusZ > 91.0f) {
 			metrobusZ -= traslacionMetrobusOffSet * deltaTime;
 		}
-		//diferenciaParaCalcularOrigen = 460.0f - metrobusZ;
-
 	}
 
 }
