@@ -42,7 +42,7 @@ Integrantes:
 #include "Edificio.h"
 #include "Lampara.h"
 
-//para iluminaci�n
+//para iluminaci n
 #include "CommonValues.h"
 #include "DirectionalLight.h"
 #include "PointLight.h"
@@ -61,7 +61,7 @@ GLfloat deltaTime = 0.0f;
 GLfloat lastTime = 0.0f;
 static double limitFPS = 1.0 / 60.0;
 
-//Para animaci�n
+//Para animaci n
 bool alaIzq = true;
 bool alaDer = true;
 float giraAlaIzq;
@@ -108,7 +108,7 @@ float traslacionMetrobusOffSet;
 float tiempoTranscurrido;
 float radioCircunferencia;
 float auxiliarDesbordamiento;
-
+//float diferenciaParaCalcularOrigen;
 //para luces
 unsigned int pointLightCount = 0;
 unsigned int pointLightCount2 = 0;
@@ -379,7 +379,7 @@ int main()
 	flagBus2 = flagBus3 = flagBus4 = flagBus5 = flagBus6 = flagBus7 = flagBus8 = flagBus9 = flagBus10 = flagBus11 = flagBus12 = flagBus13 = false;
 	rotacionAutomaticaRuedaZ = 0.0f;
 	rotacionAutomaticaRuedaOffSet = 3.0f;
-	traslacionMetrobusOffSet = 0.1f;
+	traslacionMetrobusOffSet = 0.7f;
 	metrobusX = metrobusY = 0.0f;
 	metrobusZ = -100.0f;
 	controlDeltaTimeDesborde2 = true;
@@ -433,7 +433,7 @@ int main()
 		uniformEyePosition = shaderList[0].GetEyePositionLocation();
 		uniformColor = shaderList[0].getColorLocation();
 
-		//informaci�n en el shader de intensidad especular y brillo
+		//informaci n en el shader de intensidad especular y brillo
 		uniformSpecularIntensity = shaderList[0].GetSpecularIntensityLocation();
 		uniformShininess = shaderList[0].GetShininessLocation();
 
@@ -447,7 +447,7 @@ int main()
 		lightControl.chooseSpotLightsArray(esDeDia);
 		lightControl.choosePointLightsArray(mainWindow.getLuzActivable());
 
-		//informaci�n al shader de fuentes de iluminaci�n
+		//informaci n al shader de fuentes de iluminaci n
 		shaderList[0].SetDirectionalLight(&mainLight); //referencia a la mainlight del objeto light control;
 		shaderList[0].SetPointLights(lightControl.getPointlightArray(), lightControl.getPointlightCount());
 		shaderList[0].SetSpotLights(lightControl.getSpotlightArray(), lightControl.getSpotLightCount());
@@ -615,7 +615,7 @@ int main()
 
 		//Doidle
 		renderDoidle();
-		
+
 
 		//------------------Modelos - Ratatouille------------
 
@@ -1079,7 +1079,7 @@ void InitializeSkyboxes() {
 
 void InitializeLights() {
 	//APARTADO DE LUCES
-	//luz direccional, s�lo 1 y siempre debe de existir
+	//luz direccional, s lo 1 y siempre debe de existir
 
 	//contador de luces puntuales
 	lightControl = controladorLuces(duracionCicloDiayNoche, limitFPS, esDeDia, &mainLight);
@@ -1230,7 +1230,7 @@ void renderBanquetasGenerales() {
 	model = glm::rotate(model, 180 * toRadians, glm::vec3(1.0f, 0.0f, 0.0f));*/
 
 	//son solo las truncas?
-	glm::mat4 model,modelaux;
+	glm::mat4 model, modelaux;
 
 
 	//-----------------------Lado Izquierdo-----------------------------
@@ -1523,11 +1523,12 @@ void renderReflector() {
 //<>
 void renderMetrobus() {
 	radioCircunferencia = 100.0f;
-	glm::mat4 model,modelaux;
+	glm::mat4 model, modelaux;
 
 	model = glm::mat4(1.0);
-	printf("(%f,%f,%f)\n", sqrt(pow(radioCircunferencia, 2) - pow(metrobusZ, 2)), 2.5f + metrobusY,metrobusZ);
-	model = glm::translate(model, glm::vec3(0.0f + sqrt(pow(radioCircunferencia,2) - pow(metrobusZ,2)), 2.5f + metrobusY, 175.0f + metrobusZ));
+	printf("(%f,%f,%f)\n", sqrt(pow(radioCircunferencia, 2) - pow(metrobusZ, 2)), 2.5f + metrobusY, metrobusZ);
+	model = glm::translate(model, glm::vec3(0.0f + metrobusX, 2.5f + metrobusY, 175.0f + metrobusZ));
+	model = glm::scale(model, glm::vec3(0.6f));
 	//model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	modelaux = model;
 	model = glm::scale(model, glm::vec3(12.0f));
@@ -1604,18 +1605,45 @@ void renderMetrobus() {
 	metrobus_llanta_izq.RenderModel();
 
 	model = modelaux;
-
-	printf("\t---------> %d (%f < %f)\n", metrobusZ < radioCircunferencia, metrobusZ, radioCircunferencia);
-	if (metrobusZ + 1 < radioCircunferencia - 8) {
-		auxiliarDesbordamiento = metrobusZ;
-		metrobusZ += traslacionMetrobusOffSet * deltaTime;
-		if (controlDeltaTimeDesborde2) {
-			printf("\t\t%f", auxiliarDesbordamiento);
-			metrobusZ = auxiliarDesbordamiento;
-			controlDeltaTimeDesborde2 = false;
+	//<>
+	//printf("\t---------> %d (%f < %f)\n", metrobusZ < radioCircunferencia, metrobusZ, radioCircunferencia);
+	if (flagBus1) {
+		if (metrobusZ + 1 < radioCircunferencia - 8) {
+			auxiliarDesbordamiento = metrobusZ;
+			metrobusX = sqrt(pow(radioCircunferencia, 2) - pow(metrobusZ, 2));
+			metrobusZ += traslacionMetrobusOffSet * deltaTime;
+			if (controlDeltaTimeDesborde2) {
+				printf("\t\t%f", auxiliarDesbordamiento);
+				metrobusZ = auxiliarDesbordamiento;
+				controlDeltaTimeDesborde2 = false;
+			}
+		}
+		else {
+			flagBus1 = false;
+			flagBus2 = true;
 		}
 	}
-		
+	// -26 a 41 //33 de radio
+	if (flagBus2) {
+		if (metrobusZ < 460.0f) {
+			metrobusZ += traslacionMetrobusOffSet * deltaTime;
+		}
+		else {
+			flagBus2 = false;
+			flagBus3 = true;
+		}
+	}
+
+	if (flagBus3) {
+		if (metrobusZ < 490.0f) {
+			metrobusZ += traslacionMetrobusOffSet * deltaTime;
+		}
+		else {
+			metrobusZ -= traslacionMetrobusOffSet * deltaTime;
+		}
+		//diferenciaParaCalcularOrigen = 460.0f - metrobusZ;
+
+	}
 
 }
 
@@ -1767,13 +1795,13 @@ void renderTimmyBus() {
 }
 
 void renderLaPulga() {
-	
+
 
 	if (subeTorso)
 	{
 		if (anguloTorso > 0.0f)
 		{
-			
+
 			anguloTorso -= movTorsoOffset * deltaTime;
 			sube -= giraTorsoOffset * deltaTime;
 			//printf("Sube %f \n", sube);
@@ -1811,7 +1839,7 @@ void renderLaPulga() {
 	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
 	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	modelauxPulga= model;
+	modelauxPulga = model;
 	laPulgaInferior.RenderModel();
 
 	model = glm::translate(model, glm::vec3(0.0f, 0.5f, -1.0f));
@@ -1838,9 +1866,9 @@ void renderPerroRicochet() {
 }
 
 void renderFishyFish() {
-	
 
-	
+
+
 	glm::mat4 model;
 
 	model = glm::mat4(1.0);
@@ -2123,7 +2151,7 @@ void renderCamellon() {
 	camellon.RenderModel();
 
 	model = modelaux;
-	
+
 	model = glm::mat4(1.0);
 	model = glm::translate(model, glm::vec3(-3.0f, -1.0f, 365.0));
 	model = glm::scale(model, glm::vec3(6.0f, 10.0f, 10.0f));
@@ -2204,7 +2232,7 @@ Código retirado del main que no sé si se va a necesitar en algun momento;
 
 	//DEJO COMENTADO EL INSTANCIAMIENTO DEL AGAVE PARA PRUEBAS DE BLENDING
 
-		////Agave �qu� sucede si lo renderizan antes del coche y el helic�ptero?
+		////Agave  qu  sucede si lo renderizan antes del coche y el helic ptero?
 		//model = glm::mat4(1.0);
 		//model = glm::translate(model, glm::vec3(0.0f, 1.0f, -4.0f));
 		//model = glm::scale(model, glm::vec3(4.0f, 4.0f, 4.0f));
