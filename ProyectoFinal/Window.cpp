@@ -36,11 +36,10 @@ Window::Window(GLint windowWidth, GLint windowHeight)
 
 	//Movimiento Avatar
 
-	banderaCaminata = true;
+	banderaCaminata = false;
+
 	movimientoAvatar = 0.0f;
 	rotAvatar = 0.0f;
-	rotBrazoPiernas = 0.0f;
-	banderaRand = false;
 	banderaLuzActivable = false;
 
 	//Camaras
@@ -139,57 +138,46 @@ void Window::ManejaTeclado(GLFWwindow* window, int key, int code, int action, in
 	//Movimiento AVatar: Y -> avanzar hacia adelante, U -> rotar Avatar
 	if (key == GLFW_KEY_V)
 	{
-		if (action == GLFW_PRESS) {
-			theWindow->movimientoAvatar = 0.1f;
-			theWindow->banderaRand = true;
-		}
-		if (action == GLFW_RELEASE) {
-			theWindow->rotBrazoPiernas = 0.0;
-			theWindow->banderaCaminata = true;
-			theWindow->movimientoAvatar = 0.0f;
-			theWindow->banderaRand = false;
-		}
-		if (theWindow->banderaRand) {
-			if (theWindow->banderaCaminata) {
-				if (theWindow->rotBrazoPiernas <= 30.0) {
-					theWindow->rotBrazoPiernas += 5.0f;
-
-				}
-				else {
-					theWindow->banderaCaminata = !theWindow->banderaCaminata;
-				}
-			}
-			else {
-				if (theWindow->rotBrazoPiernas >= -30.0) {
-					theWindow->rotBrazoPiernas -= 5.0f;
-				}
-				else {
-					theWindow->banderaCaminata = !theWindow->banderaCaminata;
-				}
+		if (theWindow->tipoCamara == 1) {
+			if (action == GLFW_PRESS) {
+				theWindow->movimientoAvatar = 1.0f;
+				theWindow->banderaCaminata = true;
 
 			}
-
+			if (action == GLFW_RELEASE) {
+				theWindow->banderaCaminata = false;
+				theWindow->movimientoAvatar = 0.0f;
+			}
 		}
+		
+
+
 	}
 	if (key == GLFW_KEY_B)
 	{
-		if (action == GLFW_RELEASE) {
-			theWindow->rotAvatar = 0.0;
+		if ((theWindow->tipoCamara == 1)) {
+			if (action == GLFW_RELEASE) {
+				theWindow->rotAvatar = 0.0;
+			}
+			else {
+				theWindow->rotAvatar = -3.0;
+			}
 		}
-		else {
-			theWindow->rotAvatar = -5.0;
-		}
+		
 
 
 	}
 	if (key == GLFW_KEY_C)
 	{
-		if (action == GLFW_RELEASE) {
-			theWindow->rotAvatar = 0.0;
+		if ((theWindow->tipoCamara == 1)) {
+			if (action == GLFW_RELEASE) {
+				theWindow->rotAvatar = 0.0;
+			}
+			else {
+				theWindow->rotAvatar = 3.0;
+			}
 		}
-		else {
-			theWindow->rotAvatar = 5.0;
-		}
+		
 
 
 	}
