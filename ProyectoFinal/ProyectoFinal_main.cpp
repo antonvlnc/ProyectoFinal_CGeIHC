@@ -167,7 +167,6 @@ Texture grass;
 //Dexter
 MainAvatar dexter;
 Edificio casaDexter;
-Edificio tokyo_tree;
 
 Model nave_cabina;
 Model nave_extra;
@@ -255,6 +254,7 @@ Model tienda_donas;
 Model laPulgaInferior;
 Model laPulgaSuperior;
 Edificio tokyo_tree;
+
 Edificio academy;
 Edificio poster1;
 Edificio poster2;
