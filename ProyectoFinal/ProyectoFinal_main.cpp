@@ -70,6 +70,8 @@ float anguloAlaIzq;
 float anguloAlaDer;
 float giraAlaOffset;
 float movAlaOffset;
+float giraRotonda;
+float giraRotondaOffset;
 
 //Para la animación del helicoptero
 bool avanzaHelicoptero, avanzaHelicoptero2, avanzaHelicoptero3, avanzaHelicoptero4, avanzaHelicoptero5, avanzaHelicoptero6;
@@ -110,6 +112,18 @@ float radioCircunferencia;
 float auxiliarDesbordamiento;
 float diferenciaParaCalcularOrigen;
 float valorUnitario;
+
+//Animacion AE86
+float movAE86;
+float giraAE86Offset;
+float giraAE86LlantaOffset;
+float movAE86Llantas;
+
+//Animacion Letras
+float rotacionLetras;
+float rotacionLetrasOffset;
+
+
 //para luces
 unsigned int pointLightCount = 0;
 unsigned int pointLightCount2 = 0;
@@ -185,8 +199,9 @@ Edificio dianaCazadora;
 Edificio BBVA_Pixies;
 Edificio estelaDeLuz;
 Model banqueta_trunca;
-
-
+Model AE86;
+Model AE86_Llanta;
+Model AE86_LlantaI;
 
 //Padrinos Magicos
 Model bus_padrinos;
@@ -230,7 +245,8 @@ Edificio ring;
 Model perro_ricochet;
 Model fish;
 Model mutant_plant;
-Edificio astrodomo;
+Model Astrodomo;
+Model AstrodomoLetras;
 Edificio slamminDonuts;
 
 
@@ -279,7 +295,7 @@ void InitializeLights();
 void selectSkybox(int skyboxNumber);
 
 void renderAngelIndependencia();
-void renderTimmyBus();
+//void renderTimmyBus();
 void renderVespa();
 void renderHelicoptero();
 void renderLaPulga();
@@ -307,6 +323,9 @@ void renderMutantPlant();
 
 void renderDoidle();
 
+void renderAE86();
+
+void renderLetrasAstrodomo();
 
 int main()
 {
@@ -345,6 +364,8 @@ int main()
 	anguloAlaDer = 90.0f;
 	giraAlaOffset = 1.0f;
 	movAlaOffset = 1.0f;
+	giraRotonda = 0.0f; 
+	giraRotondaOffset = 0.5f;
 
 	//Animacion helicoptero
 	avanzaHelicoptero = controlDeltaTimeDesborde = true;
@@ -374,6 +395,16 @@ int main()
 	anguloTorso = 0.0f;
 	giraTorsoOffset = 0.5f;
 	movTorsoOffset = 0.5f;
+
+	//Animacion AE86
+	movAE86 = 0.0f;
+	giraAE86Offset = 1.5f;
+	giraAE86LlantaOffset = 3.0f;
+	movAE86Llantas = 0.0f;
+
+	//Animacion Letras Astrodomo
+	rotacionLetras = 0.0f;
+	rotacionLetrasOffset = 0.5;
 
 	//Animacion metrobus //------------------SONIDO-----------------------//------------------SONIDO-----------------------//------------------SONIDO-----------------------//------------------SONIDO-----------------------//------------------SONIDO-----------------------//------------------SONIDO-----------------------//------------------SONIDO-----------------------//------------------SONIDO-----------------------
 	flagBus1 = flagBus4 = true;
@@ -552,12 +583,13 @@ int main()
 		//Puerta con reja
 		/*renderPuertaReja();*/
 
-
+		//AE86
+		renderAE86();
 
 		//-------------Modelos Mucha Lucha------------------
 
 		//ASTRODOMO
-		astrodomo.renderModel();
+		renderLetrasAstrodomo();
 
 		//La pulga
 		renderLaPulga();
@@ -596,7 +628,7 @@ int main()
 
 
 		//Bus
-		renderTimmyBus();
+		//renderTimmyBus();
 
 		//Dimmadome
 		dimmadome.renderModel();
@@ -860,13 +892,27 @@ void InitializeModels() {
 	street_lamp = Model();
 	street_lamp.LoadModel("Models/StreetLamp.obj");
 
+	//AE86
+	AE86 = Model();
+	AE86.LoadModel("Models/AE86.obj");
 
+	//AE86_Neumatico
+	AE86_Llanta = Model();
+	AE86_Llanta.LoadModel("Models/Llanta_AE86.obj");
+
+	//AE86_Neumatico
+	AE86_LlantaI = Model();
+	AE86_LlantaI.LoadModel("Models/Llanta_AE86I.obj");
 
 
 	//----------Modelos Mucha Lucha---------------------
 
-	astrodomo = Edificio("Models/MuchaLucha/Astrodomo.obj", &uniformModel, glm::vec3(-295.0f, -2.0f, -50.0f), glm::vec3(5.0f));
-	astrodomo.setRotY(-270.0f);
+	Astrodomo = Model();
+	Astrodomo.LoadModel("Models/MuchaLucha/Astrodomo.obj");
+
+	AstrodomoLetras = Model();
+	AstrodomoLetras.LoadModel("Models/MuchaLucha/AstrodomoLetras.obj");
+
 
 	slamminDonuts = Edificio("Models/MuchaLucha/SlamminDonuts.obj", &uniformModel, glm::vec3(-275.0f, 0.5f, -580.0), glm::vec3(1.6f));
 	slamminDonuts.setRotY(90.0f);
@@ -901,10 +947,6 @@ void InitializeModels() {
 
 	fish = Model();
 	fish.LoadModel("Models/MuchaLucha/FishyFish.obj");
-
-
-
-
 
 
 	//----------Modelos Padrinos Magicos---------------------
@@ -1118,6 +1160,8 @@ void selectSkybox(int skyboxNumber) {
 //Funciones para renderizado
 void renderAngelIndependencia() {
 
+	giraRotonda -= giraRotondaOffset * deltaTime;
+
 	if (alaIzq && alaDer)
 	{
 		if (anguloAlaIzq >= 0.0f)
@@ -1182,6 +1226,17 @@ void renderAngelIndependencia() {
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	angel_independencia_ala.RenderModel();
 
+	model = modelaux2;
+
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+	model = glm::rotate(model, giraRotonda * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+
+	model = glm::translate(model, glm::vec3(15.0f, 0.0f, 15.0));
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+	model = glm::rotate(model, -135 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	bus_padrinos.RenderModel();
+
 }
 
 
@@ -1216,7 +1271,6 @@ void renderVespa() {
 	vespa.RenderModel();
 
 }
-
 
 void renderBanquetasGenerales() {
 
@@ -1366,8 +1420,6 @@ void renderBanquetasGenerales() {
 
 }
 
-
-
 void renderBanquetaNormal() {
 
 	glm::mat4 model, modelaux;
@@ -1412,8 +1464,6 @@ void renderBanquetaNormal() {
 	banqueta.RenderModel();
 
 }
-
-
 
 void renderBanquetaBaked() {
 
@@ -1462,7 +1512,6 @@ void renderBanquetaBaked() {
 
 }
 
-
 void renderLuminarias() {
 	glm::mat4 model;
 
@@ -1503,7 +1552,6 @@ void renderLuminarias() {
 
 }
 
-
 void renderReflector() {
 
 	glm::mat4 model;
@@ -1516,11 +1564,6 @@ void renderReflector() {
 	reflector.RenderModel();
 
 }
-
-
-
-
-
 
 //<>
 void renderMetrobus() {
@@ -1681,8 +1724,6 @@ void renderMetrobus() {
 
 }
 
-
-
 void renderHelicoptero() {
 
 	//Helicoptero
@@ -1815,18 +1856,18 @@ void renderHelicoptero() {
 	helicoptero_helice.RenderModel();
 }
 
-void renderTimmyBus() {
-
-	glm::mat4 model;
-
-	model = glm::mat4(1.0);
-	model = glm::translate(model, glm::vec3(-35.0f, -0.5f, -260.0));
-	model = glm::scale(model, glm::vec3(15.0f, 15.0f, 15.0f));
-	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
-	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	bus_padrinos.RenderModel();
-
-}
+//void renderTimmyBus() {
+//
+//	glm::mat4 model;
+//
+//	model = glm::mat4(1.0);
+//	model = glm::translate(model, glm::vec3(-35.0f, -0.5f, -260.0));
+//	model = glm::scale(model, glm::vec3(15.0f, 15.0f, 15.0f));
+//	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+//	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+//	bus_padrinos.RenderModel();
+//
+//}
 
 void renderLaPulga() {
 
@@ -1886,8 +1927,6 @@ void renderLaPulga() {
 	model = modelauxPulga;
 }
 
-
-
 void renderPerroRicochet() {
 	glm::mat4 model;
 
@@ -1913,8 +1952,6 @@ void renderFishyFish() {
 	fish.RenderModel();
 }
 
-
-
 void renderMutantPlant() {
 	glm::mat4 model;
 
@@ -1936,10 +1973,6 @@ void renderDoidle() {
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	doidle.RenderModel();
 }
-
-
-
-
 
 void renderTaxi() {
 
@@ -2249,8 +2282,89 @@ void renderCamellon() {
 	camellon.RenderModel();
 }
 
+void renderAE86() {
+	
+	movAE86 -= giraAE86Offset * deltaTime;
+	movAE86Llantas += giraAE86LlantaOffset * deltaTime;
 
+	glm::mat4 model, modelauxAE86;
 
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-250.0f, 8.0f, 375.0));
+	model = glm::scale(model, glm::vec3(15.0f, 15.0f, 15.0f));
+	model = glm::rotate(model, movAE86 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	modelauxAE86 = model;
+	AE86.RenderModel();
+
+	model = glm::translate(model, glm::vec3(-0.25f, -0.15f, 0.6f));
+	model = glm::rotate(model, 135 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, movAE86Llantas * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
+
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0));
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	AE86_Llanta.RenderModel();
+
+	model = modelauxAE86;
+
+	model = glm::translate(model, glm::vec3(-0.25f, -0.15f, -0.65f));
+	model = glm::rotate(model, 135 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, movAE86Llantas * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
+
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0));
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	AE86_LlantaI.RenderModel();
+
+	model = modelauxAE86;
+
+	model = glm::translate(model, glm::vec3(-2.37f, -0.15f, 0.6f));
+	model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, movAE86Llantas * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
+
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0));
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	AE86_Llanta.RenderModel();
+
+	model = modelauxAE86;
+
+	model = glm::translate(model, glm::vec3(-2.37f, -0.15f, -0.65f));
+	model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, movAE86Llantas * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
+
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0));
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	AE86_LlantaI.RenderModel();
+
+	model = modelauxAE86;
+}
+
+void renderLetrasAstrodomo() {
+	
+	rotacionLetras += rotacionLetrasOffset * deltaTime;
+
+	glm::mat4 model, modelauxAstrodomo;
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-305.0f, -2.0f, -55.0f));
+	model = glm::scale(model, glm::vec3(4.8f, 4.8f, 4.8f));
+	model = glm::rotate(model, 90.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	modelauxAstrodomo = model;
+	Astrodomo.RenderModel();
+
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+	model = glm::rotate(model, rotacionLetras * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+
+	model = glm::translate(model, glm::vec3(1.0f, 0.0f, 1.0));
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	AstrodomoLetras.RenderModel();
+
+}
 /*
 Código retirado del main que no sé si se va a necesitar en algun momento;
 
