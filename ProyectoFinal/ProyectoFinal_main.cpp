@@ -1113,7 +1113,7 @@ void InitializeCameras() {
 	camaraLibre = Camera(glm::vec3(0.0f, 200.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.0f, 90.0f, 5.5f, 0.5f);
 
 
-	currentCamera = &camaraAvatar;
+	currentCamera = &camaraLibre;
 }
 
 //Otros 
@@ -1144,6 +1144,7 @@ void selectSkybox(int skyboxNumber) {
 void setCamera(GLint cameraNumber) {
 	//Camara 1 camara del avatar, camara 2 camara aerea, camara 3 camara libre
 
+	//Calculo de la rotacion del avatar
 	camRot = glm::rotate(camRot, glm::radians(mainWindow.getRotacionAvatar() * deltaTime), glm::vec3(0.0f, 1.0f, 0.0f));
 	camPos = dexter.getPos() + glm::vec3(camRot * camoffset);
 	camaraAvatar.mouseControl(mainWindow.getRotacionAvatar() * deltaTime, 0.0f);

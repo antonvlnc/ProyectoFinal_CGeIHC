@@ -138,37 +138,46 @@ void Window::ManejaTeclado(GLFWwindow* window, int key, int code, int action, in
 	//Movimiento AVatar: Y -> avanzar hacia adelante, U -> rotar Avatar
 	if (key == GLFW_KEY_V)
 	{
-		if (action == GLFW_PRESS) {
-			theWindow->movimientoAvatar = 1.0f;
-			theWindow->banderaCaminata = true;
-			
+		if (theWindow->tipoCamara == 1) {
+			if (action == GLFW_PRESS) {
+				theWindow->movimientoAvatar = 1.0f;
+				theWindow->banderaCaminata = true;
+
+			}
+			if (action == GLFW_RELEASE) {
+				theWindow->banderaCaminata = false;
+				theWindow->movimientoAvatar = 0.0f;
+			}
 		}
-		if (action == GLFW_RELEASE) {
-			theWindow->banderaCaminata = false;
-			theWindow->movimientoAvatar = 0.0f;
-		}
+		
 
 
 	}
 	if (key == GLFW_KEY_B)
 	{
-		if (action == GLFW_RELEASE) {
-			theWindow->rotAvatar = 0.0;
+		if ((theWindow->tipoCamara == 1)) {
+			if (action == GLFW_RELEASE) {
+				theWindow->rotAvatar = 0.0;
+			}
+			else {
+				theWindow->rotAvatar = -3.0;
+			}
 		}
-		else {
-			theWindow->rotAvatar = -3.0;
-		}
+		
 
 
 	}
 	if (key == GLFW_KEY_C)
 	{
-		if (action == GLFW_RELEASE) {
-			theWindow->rotAvatar = 0.0;
+		if ((theWindow->tipoCamara == 1)) {
+			if (action == GLFW_RELEASE) {
+				theWindow->rotAvatar = 0.0;
+			}
+			else {
+				theWindow->rotAvatar = 3.0;
+			}
 		}
-		else {
-			theWindow->rotAvatar = 3.0;
-		}
+		
 
 
 	}
