@@ -73,7 +73,7 @@ float movAlaOffset;
 
 //Para la animación del helicoptero
 bool avanzaHelicoptero, avanzaHelicoptero2, avanzaHelicoptero3, avanzaHelicoptero4, avanzaHelicoptero5, avanzaHelicoptero6;
-bool controlDeltaTimeDesborde;
+bool controlDeltaTimeDesborde, controlDeltaTimeDesborde2;
 float movHelice;
 float giraHeliceOffset;
 float rotacionHelicopteroOffset;
@@ -92,6 +92,19 @@ float rotacionNave, inclinacionNave;
 float rotacionNaveOffset;
 float movNaveOffset;
 
+//Animacion La pulga
+bool subeTorso;
+float sube;
+float giraTorsoOffset;
+float movTorsoOffset;
+float anguloTorso;
+
+
+//Animacion metrobus -----------------------------------------------------------------------------------------------------------------------------------------------
+bool flagBus1, flagBus2, flagBus3, flagBus4, flagBus5, flagBus6, flagBus7, flagBus8, flagBus9, flagBus10, flagBus11, flagBus12, flagBus13;
+float rotacionAutomaticaRuedaZ, rotacionAutomaticaRuedaOffSet;
+float metrobusX, metrobusY, metrobusZ;
+float traslacionMetrobusOffSet;
 float tiempoTranscurrido;
 
 //para luces
@@ -224,6 +237,13 @@ Model vespa;
 
 Edificio gusteaus;
 Edificio gusteau_sign;
+Edificio gusteaus_extra;
+Edificio eiffel;
+Model trashcan;
+Model banca;
+Edificio fountain;
+
+
 
 //Mucha Lucha
 Model laPulga;
@@ -231,6 +251,10 @@ Model laPulga;
 Edificio astrodomo;
 Edificio slamminDonuts;
 
+Model tienda_donas;
+Model laPulgaInferior;
+Model laPulgaSuperior;
+Edificio tokyo_tree;
 Edificio academy;
 Edificio poster1;
 Edificio poster2;
@@ -307,6 +331,11 @@ void renderMutantPlant();
 
 void renderDoidle();
 
+void renderBancas();
+
+void renderTrashcan();
+
+
 
 //-----------------------MAIN ----------------------------------------------------------------
 int main()
@@ -369,15 +398,33 @@ int main()
 	rotacionNaveOffset = 1.0f;
 	movNaveOffset = 2.0f;
 
+	//Animacion pulga
+	subeTorso = true;
+	sube = 0.0f;
+	anguloTorso = 0.0f;
+	giraTorsoOffset = 0.5f;
+	movTorsoOffset = 0.5f;
+
+	//Animacion metrobus
+	flagBus1 = true;
+	flagBus2 = flagBus3 = flagBus4 = flagBus5 = flagBus6 = flagBus7 = flagBus8 = flagBus9 = flagBus10 = flagBus11 = flagBus12 = flagBus13 = false;
+	rotacionAutomaticaRuedaZ = 0.0f;
+	rotacionAutomaticaRuedaOffSet = 3.0f;
+	traslacionMetrobusOffSet = 0.01f;
+	metrobusX = metrobusY = metrobusZ = -10.0f;
+	controlDeltaTimeDesborde2 = true;
 	//------------------SONIDO-----------------------
 	//Sonido ambiental
+	//ISoundEngine* Ambiental = createIrrKlangDevice();
+	//Ambiental->play2D("Sound/Ambiental.wav", true); 
+	//Ambiental->setSoundVolume(0.2f);
 	ISoundEngine* Ambiental = createIrrKlangDevice();
 	Ambiental->play2D("Sound/Ambiental.wav", true);
 	Ambiental->setSoundVolume(0.2f);
 
-	//Pista de fondo
+	////Pista de fondo
 	ISoundEngine* Intro = createIrrKlangDevice();
-	Intro->play2D("Sound/Lab_Dexter.wav", true); //cambiar a cancion en loop sin la voz
+	Intro->play2D("Sound/Dexter_Pista.wav", true); //cambiar a cancion en loop sin la voz
 	Intro->setSoundVolume(0.15f);
 
 	////Sonido con teclado (Pendiente)
@@ -623,7 +670,6 @@ int main()
 		letras_dimmsdale.renderModel();
 
 
-
 		//letrero dimmsdale
 		if (esDeDia) {
 			letrero_dimmsdale.renderModel();
@@ -650,7 +696,20 @@ int main()
 		//Gusteau Sign
 		gusteau_sign.renderModel();
 
+		//más artículos de Gusteau's
+		gusteaus_extra.renderModel();
 
+		//Banca
+		renderBancas();
+
+		//Bote de basura
+		renderTrashcan();
+
+		//Torre Eiffel
+		eiffel.renderModel();
+
+		//fuente
+		fountain.renderModel();
 
 		//-------------------Modelos - Laboratorio de Dexter---------------------
 		dexter.setUniformModel(uniformModel);
@@ -891,8 +950,12 @@ void InitializeModels() {
 	slamminDonuts = Edificio("Models/MuchaLucha/SlamminDonuts.obj", &uniformModel, glm::vec3(-275.0f, 0.5f, -580.0), glm::vec3(1.6f));
 	slamminDonuts.setRotY(90.0f);
 
-	laPulga = Model();
-	laPulga.LoadModel("Models/MuchaLucha/La_Pulga.obj");
+	laPulgaInferior = Model();
+	laPulgaInferior.LoadModel("Models/MuchaLucha/LaPulga_Inferior.obj");
+
+
+	laPulgaSuperior = Model();
+	laPulgaSuperior.LoadModel("Models/MuchaLucha/LaPulga_Superior.obj");
 
 	tokyo_tree = Edificio("Models/MuchaLucha/TokyoTree.obj", &uniformModel, glm::vec3(-180.0f, 0.0f, -225.0), glm::vec3(5.0f));
 	tokyo_tree.setRotY(90.0f);
@@ -988,13 +1051,34 @@ void InitializeModels() {
 
 	//Gusteau's
 
-	gusteaus = Edificio("Models/Ratatouille/gusteaus.obj", &uniformModel, glm::vec3(-265.0f, 1.0f, 575.0), glm::vec3(13.0f));
-	gusteaus.setRotY(90.0f);
+	gusteaus = Edificio("Models/Ratatouille/gusteaus.obj", &uniformModel, glm::vec3(-390.0f, -6.0f, 575.0), glm::vec3(30.0f));
+	//gusteaus.setRotY(90.0f);
+
+	//Objetos extra Gusteau's
+	gusteaus_extra = Edificio("Models/Ratatouille/gusteaus_extra.obj", &uniformModel, glm::vec3(-350.0f, 2.0f, 575.0), glm::vec3(15.0f));
+	gusteaus_extra.setRotY(90.0f);
+
 
 	//Anuncio Gusteau's
 
-	gusteau_sign = Edificio("Models/Ratatouille/GusteauSign.obj", &uniformModel, glm::vec3(-255.0f, 145.0f, 575.0), glm::vec3(35.0f));
+	gusteau_sign = Edificio("Models/Ratatouille/GusteauSign.obj", &uniformModel, glm::vec3(-357.0f, 145.0f, 575.0), glm::vec3(35.0f));
 	gusteau_sign.setRotY(90.0f);
+
+	//Torre Eiffel
+
+	eiffel = Edificio("Models/Ratatouille/eiffel.obj", &uniformModel, glm::vec3(-357.0f, 0.0f, 735.0), glm::vec3(2.0f));
+	eiffel.setRotY(90.0f);
+
+	trashcan = Model();
+	trashcan.LoadModel("Models/Ratatouille/trashcan.obj");
+
+	banca = Model();
+	banca.LoadModel("Models/Ratatouille/banca.obj");
+
+	fountain = Edificio("Models/Ratatouille/fountain.obj", &uniformModel, glm::vec3(-210.0f, 0.0f, 575.0), glm::vec3(25.0f));
+	fountain.setRotY(90.0f);
+
+
 
 
 
@@ -1269,9 +1353,9 @@ void renderVespa() {
 	glm::mat4 model;
 
 	model = glm::mat4(1.0);
-	model = glm::translate(model, glm::vec3(45.0f, -0.5f, -300.0));
+	model = glm::translate(model, glm::vec3(-335.0f, -0.5f, 610.0));
 	model = glm::scale(model, glm::vec3(15.0f, 15.0f, 15.0f));
-	model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	vespa.RenderModel();
 
@@ -1580,12 +1664,25 @@ void renderReflector() {
 
 
 void renderMetrobus() {
-
-	glm::mat4 model, modelaux;
+	//
+	//// Esto será indefinido
+	//rotacionAutomaticaRuedaZ += rotacionAutomaticaRuedaOffSet * deltaTime;
+	//float radio1 = 10.0f;
+	////metrobus rutina circunferencia
+	////metrobusZ = sqrt(double(pow(metrobusX, 2)) + double(pow(radio1, 2)));
+	//if (metrobusZ < 10.0f) {
+	//	//metrobusZ += traslacionMetrobusOffSet * deltaTime;
+	//}
+	//if (controlDeltaTimeDesborde2) {
+	//	metrobusZ = metrobusX = 0.0f;
+	//	controlDeltaTimeDesborde2 = false;
+	//}
+	//printf("(%f,%f,%f)\n", sqrt(pow(metrobusZ, 2)), metrobusY, metrobusZ);
+	glm::mat4 model,modelaux;
 
 	model = glm::mat4(1.0);
-
-	model = glm::translate(model, glm::vec3(-55.0f, 0.5f, 395.0));
+	//0.0f, -1.0f, 175.0f
+	model = glm::translate(model, glm::vec3(0.0f + sqrt(pow(100,2) - pow(metrobusZ,2)), 2.5f + metrobusY, 175.0f + metrobusZ));
 	modelaux = model;
 	model = glm::scale(model, glm::vec3(12.0f));
 	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -1600,6 +1697,7 @@ void renderMetrobus() {
 	model = glm::translate(model, glm::vec3(10.0f, 6.0f, 25.0));
 	model = glm::scale(model, glm::vec3(12.0f));
 	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, rotacionAutomaticaRuedaZ * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	metrobus_llanta_izq.RenderModel();
 
@@ -1610,6 +1708,7 @@ void renderMetrobus() {
 	model = glm::translate(model, glm::vec3(10.0f, 6.0f, -26.5));
 	model = glm::scale(model, glm::vec3(12.0f));
 	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, rotacionAutomaticaRuedaZ * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	metrobus_llanta_izq.RenderModel();
 
@@ -1620,6 +1719,7 @@ void renderMetrobus() {
 	model = glm::translate(model, glm::vec3(10.0f, 6.0f, -42.0));
 	model = glm::scale(model, glm::vec3(12.0f));
 	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, rotacionAutomaticaRuedaZ * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	metrobus_llanta_izq.RenderModel();
 
@@ -1633,6 +1733,7 @@ void renderMetrobus() {
 	model = glm::translate(model, glm::vec3(-10.0f, 6.0f, 25.0));
 	model = glm::scale(model, glm::vec3(12.0f));
 	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, rotacionAutomaticaRuedaZ * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	metrobus_llanta_der.RenderModel();
 
@@ -1642,6 +1743,7 @@ void renderMetrobus() {
 	model = glm::translate(model, glm::vec3(-10.0f, 6.0f, -26.5));
 	model = glm::scale(model, glm::vec3(12.0f));
 	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, rotacionAutomaticaRuedaZ * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	metrobus_llanta_izq.RenderModel();
 
@@ -1651,6 +1753,7 @@ void renderMetrobus() {
 	model = glm::translate(model, glm::vec3(-10.0f, 6.0f, -42.0));
 	model = glm::scale(model, glm::vec3(12.0f));
 	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, rotacionAutomaticaRuedaZ * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	metrobus_llanta_izq.RenderModel();
 
@@ -1807,14 +1910,61 @@ void renderTimmyBus() {
 }
 
 void renderLaPulga() {
-	glm::mat4 model;
+	
+
+	if (subeTorso)
+	{
+		if (anguloTorso > 0.0f)
+		{
+			
+			anguloTorso -= movTorsoOffset * deltaTime;
+			sube -= giraTorsoOffset * deltaTime;
+			//printf("Sube %f \n", sube);
+
+			if (controlDeltaTimeDesborde) {
+				sube = 0.0f;
+				controlDeltaTimeDesborde = false;
+			}
+		}
+		else
+		{
+			subeTorso = false;
+		}
+	}
+
+	else
+	{
+		if (anguloTorso < 50.0f)
+		{
+			anguloTorso += movTorsoOffset * deltaTime;
+			sube += giraTorsoOffset * deltaTime;
+			//printf("Sube %f \n", sube);
+		}
+		else
+		{
+			subeTorso = true;
+		}
+	}
+
+
+	glm::mat4 model, modelauxPulga;
 
 	model = glm::mat4(1.0);
-	model = glm::translate(model, glm::vec3(170.0f, 0.0f, -85.0));
-	model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
+	model = glm::translate(model, glm::vec3(170.0f, 10.0f, -95.0));
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
 	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	laPulga.RenderModel();
+	modelauxPulga= model;
+	laPulgaInferior.RenderModel();
+
+	model = glm::translate(model, glm::vec3(0.0f, 0.5f, -1.0f));
+	model = glm::rotate(model, sube * toRadians, glm::vec3(1.0f, 0.0f, 0.0f));
+
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0));
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	laPulgaSuperior.RenderModel();
+	model = modelauxPulga;
 }
 
 
@@ -1847,7 +1997,7 @@ void renderMutantPlant() {
 	glm::mat4 model;
 
 	model = glm::mat4(1.0);
-	model = glm::translate(model, glm::vec3(-320.0f, 55.0f, 265.0f));
+	model = glm::translate(model, glm::vec3(-320.0f, 58.0f, 265.0f));
 	model = glm::scale(model, glm::vec3(12.0f));
 	//model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
@@ -1865,6 +2015,28 @@ void renderDoidle() {
 	doidle.RenderModel();
 }
 
+
+void renderBancas() {
+	glm::mat4 model;
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-185.0f, -0.5f, 375.0));
+	model = glm::scale(model, glm::vec3(22.0f));
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	banca.RenderModel();
+}
+
+void renderTrashcan() {
+	glm::mat4 model;
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-185.0f, -0.5f, 345.0));
+	model = glm::scale(model, glm::vec3(22.0f));
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	trashcan.RenderModel();
+}
 
 
 
@@ -1890,7 +2062,7 @@ void renderNaveDexter() {
 	if (avanzaNave) {
 		if (movNaveZ > -1275.0f) {
 			movNaveZ -= movNaveOffset * deltaTime;
-			printf("ValorZ1: %f \n", movNaveZ);
+			//printf("ValorZ1: %f \n", movNaveZ);
 			if (controlDeltaTimeDesborde) {
 				movNaveZ = 0.0f;
 				controlDeltaTimeDesborde = false;
@@ -2113,7 +2285,7 @@ void renderCamellon() {
 	camellon.RenderModel();
 
 	model = modelaux;
-
+	
 	model = glm::mat4(1.0);
 	model = glm::translate(model, glm::vec3(-3.0f, -1.0f, 365.0));
 	model = glm::scale(model, glm::vec3(6.0f, 10.0f, 10.0f));
@@ -2179,9 +2351,6 @@ void renderCamellon() {
 
 
 
-
-
-
 /*
 Código retirado del main que no sé si se va a necesitar en algun momento;.
 
@@ -2227,6 +2396,13 @@ Código retirado del main que no sé si se va a necesitar en algun momento;.
 		////Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
 		//meshList[3]->RenderMesh();
 		//glDisable(GL_BLEND);
+
+		asaDexter.setPos(letras_dimmsdale.getPos());
+		casaDexter.setUniformScale(5.0f);
+		casaDexter.renderModel();
+
+			casaDexter.setPos(glm::vec3(- 380.0f, -0.5f, 370.0));
+		casaDexter.setUniformScale(40.0f); //Codigo Para pruebas
 
 
 		DirectionalLight calcSunlight() {
