@@ -36,11 +36,10 @@ Window::Window(GLint windowWidth, GLint windowHeight)
 
 	//Movimiento Avatar
 
-	banderaCaminata = true;
+	banderaCaminata = false;
+
 	movimientoAvatar = 0.0f;
 	rotAvatar = 0.0f;
-	rotBrazoPiernas = 0.0f;
-	banderaRand = false;
 	banderaLuzActivable = false;
 
 	//Camaras
@@ -140,36 +139,16 @@ void Window::ManejaTeclado(GLFWwindow* window, int key, int code, int action, in
 	if (key == GLFW_KEY_V)
 	{
 		if (action == GLFW_PRESS) {
-			theWindow->movimientoAvatar = 0.1f;
-			theWindow->banderaRand = true;
+			theWindow->movimientoAvatar = 1.0f;
+			theWindow->banderaCaminata = true;
+			
 		}
 		if (action == GLFW_RELEASE) {
-			theWindow->rotBrazoPiernas = 0.0;
-			theWindow->banderaCaminata = true;
+			theWindow->banderaCaminata = false;
 			theWindow->movimientoAvatar = 0.0f;
-			theWindow->banderaRand = false;
 		}
-		if (theWindow->banderaRand) {
-			if (theWindow->banderaCaminata) {
-				if (theWindow->rotBrazoPiernas <= 30.0) {
-					theWindow->rotBrazoPiernas += 5.0f;
 
-				}
-				else {
-					theWindow->banderaCaminata = !theWindow->banderaCaminata;
-				}
-			}
-			else {
-				if (theWindow->rotBrazoPiernas >= -30.0) {
-					theWindow->rotBrazoPiernas -= 5.0f;
-				}
-				else {
-					theWindow->banderaCaminata = !theWindow->banderaCaminata;
-				}
 
-			}
-
-		}
 	}
 	if (key == GLFW_KEY_B)
 	{
@@ -177,7 +156,7 @@ void Window::ManejaTeclado(GLFWwindow* window, int key, int code, int action, in
 			theWindow->rotAvatar = 0.0;
 		}
 		else {
-			theWindow->rotAvatar = -5.0;
+			theWindow->rotAvatar = -3.0;
 		}
 
 
@@ -188,7 +167,7 @@ void Window::ManejaTeclado(GLFWwindow* window, int key, int code, int action, in
 			theWindow->rotAvatar = 0.0;
 		}
 		else {
-			theWindow->rotAvatar = 5.0;
+			theWindow->rotAvatar = 3.0;
 		}
 
 
