@@ -213,6 +213,7 @@ Model nave_extra;
 Model vespa;
 Edificio gusteaus;
 Edificio gusteau_sign;
+Edificio gusteaus_extra;
 
 //Mucha Lucha
 Model tienda_donas;
@@ -627,6 +628,8 @@ int main()
 		//Gusteau Sign
 		gusteau_sign.renderModel();
 
+		gusteaus_extra.renderModel();
+
 
 
 		//-------------------Modelos - Laboratorio de Dexter---------------------
@@ -969,13 +972,19 @@ void InitializeModels() {
 
 	//Gusteau's
 
-	gusteaus = Edificio("Models/Ratatouille/gusteaus.obj", &uniformModel, glm::vec3(-265.0f, 1.0f, 575.0), glm::vec3(13.0f));
-	gusteaus.setRotY(90.0f);
+	gusteaus = Edificio("Models/Ratatouille/gusteaus.obj", &uniformModel, glm::vec3(-390.0f, -6.0f, 575.0), glm::vec3(30.0f));
+	//gusteaus.setRotY(90.0f);
+
+	//Objetos extra Gusteau's
+	gusteaus_extra = Edificio("Models/Ratatouille/gusteaus_extra.obj", &uniformModel, glm::vec3(-350.0f, 2.0f, 575.0), glm::vec3(15.0f));
+	gusteaus_extra.setRotY(90.0f);
+
 
 	//Anuncio Gusteau's
 
-	gusteau_sign = Edificio("Models/Ratatouille/GusteauSign.obj", &uniformModel, glm::vec3(-255.0f, 145.0f, 575.0), glm::vec3(35.0f));
+	gusteau_sign = Edificio("Models/Ratatouille/GusteauSign.obj", &uniformModel, glm::vec3(-357.0f, 145.0f, 575.0), glm::vec3(35.0f));
 	gusteau_sign.setRotY(90.0f);
+
 
 
 
@@ -1206,9 +1215,9 @@ void renderVespa() {
 	glm::mat4 model;
 
 	model = glm::mat4(1.0);
-	model = glm::translate(model, glm::vec3(45.0f, -0.5f, -300.0));
+	model = glm::translate(model, glm::vec3(-335.0f, -0.5f, 650.0));
 	model = glm::scale(model, glm::vec3(15.0f, 15.0f, 15.0f));
-	model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	vespa.RenderModel();
 
