@@ -6,9 +6,9 @@ C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFi
 C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\Window.h(13,37): warning C4244: 'return': conversión de 'GLint' a 'GLfloat'; posible pérdida de datos
   (compilando archivo de origen "ProyectoFinal_main.cpp")
   
-C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(407,15): warning C4244: 'inicializando': conversión de 'double' a 'GLfloat'; posible pérdida de datos
-C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(409,33): warning C4244: '+=': conversión de 'double' a 'GLfloat'; posible pérdida de datos
-C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(1093,58): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
-C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(1713,26): warning C4244: '-=': conversión de 'double' a 'float'; posible pérdida de datos
-C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(1729,59): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(418,15): warning C4244: 'inicializando': conversión de 'double' a 'GLfloat'; posible pérdida de datos
+C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(420,33): warning C4244: '+=': conversión de 'double' a 'GLfloat'; posible pérdida de datos
+C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(1130,58): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(1750,26): warning C4244: '-=': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(1766,59): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
   P08_2-421124433.vcxproj -> C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\Debug\Proyecto_Final.exe
