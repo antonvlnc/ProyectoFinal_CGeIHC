@@ -170,7 +170,7 @@ Edificio casaDexter;
 
 Model nave_cabina;
 Model nave_extra;
-
+Model prueba;
 
 
 
@@ -348,6 +348,7 @@ void renderRoadBlock();
 
 void renderBusStop();
 
+void renderPrueba();
 
 
 int main()
@@ -603,7 +604,11 @@ int main()
 
 		//banqueta normal
 
+		
 		renderBanquetasGenerales();
+
+
+		renderPrueba();
 
 
 		if (esDeDia) {
@@ -946,6 +951,9 @@ void InitializeModels() {
 	//Metrobus - Llanta Derecha
 	metrobus_llanta_der = Model();
 	metrobus_llanta_der.LoadModel("Models/MetrobusLlantaDer.obj");
+
+	prueba = Model();
+	prueba.LoadModel("Models/prueba.obj");
 
 
 	//LUMINARIA PARA REPORTE 08
@@ -2169,6 +2177,19 @@ void renderDoidle() {
 	doidle.RenderModel();
 }
 
+
+void renderPrueba() {
+	glm::mat4 model;
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-180.0f, 0.5f, 485.0f));
+	model = glm::scale(model, glm::vec3(3.5f));
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	prueba.RenderModel();
+}
 
 void renderBancas() {
 	glm::mat4 model;
