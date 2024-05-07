@@ -182,6 +182,7 @@ Edificio dianaCazadora;
 Edificio BBVA_Pixies;
 Edificio estelaDeLuz;
 Model banqueta_trunca;
+Model jacaranda;
 
 
 
@@ -225,11 +226,11 @@ Edificio fountain;
 Model tienda_donas;
 Model laPulgaInferior;
 Model laPulgaSuperior;
-Edificio tokyo_tree;
+Model tokyo_tree;
 Edificio academy;
 Edificio poster1;
 Edificio poster2;
-Edificio cactus;
+Model cactus;
 Edificio ring;
 Model perro_ricochet;
 Model fish;
@@ -309,11 +310,17 @@ void renderFishyFish();
 
 void renderMutantPlant();
 
+void renderCactus();
+
 void renderDoidle();
 
 void renderBancas();
 
 void renderTrashcan();
+
+void renderJacarandas();
+
+void renderTokyoTree();
 
 
 
@@ -557,6 +564,8 @@ int main()
 
 		renderLuminarias();
 
+		//Jacarandas
+		renderJacarandas();
 
 		//Puerta con reja
 		/*renderPuertaReja();*/
@@ -584,7 +593,7 @@ int main()
 		poster2.renderModel();
 
 		//Cactus
-		cactus.renderModel();
+		renderCactus();
 
 		//Ring
 		ring.renderModel();
@@ -665,7 +674,7 @@ int main()
 
 
 		//tokyo tree
-		tokyo_tree.renderModel();
+		renderTokyoTree();
 
 		//nave dexter
 		renderNaveDexter();
@@ -882,6 +891,10 @@ void InitializeModels() {
 	street_lamp = Model();
 	street_lamp.LoadModel("Models/StreetLamp.obj");
 
+	//Árbol de jacarandas
+	jacaranda = Model();
+	jacaranda.LoadModel("Models/Jacaranda.obj");
+
 
 
 
@@ -900,8 +913,8 @@ void InitializeModels() {
 	laPulgaSuperior = Model();
 	laPulgaSuperior.LoadModel("Models/MuchaLucha/LaPulga_Superior.obj");
 
-	tokyo_tree = Edificio("Models/MuchaLucha/TokyoTree.obj", &uniformModel, glm::vec3(-180.0f, 0.0f, -225.0), glm::vec3(5.0f));
-	tokyo_tree.setRotY(90.0f);
+	tokyo_tree = Model();
+	tokyo_tree.LoadModel("Models/MuchaLucha/TokyoTree.obj");
 
 	academy = Edificio("Models/MuchaLucha/Academy.obj", &uniformModel, glm::vec3(-320.0f, 0.0f, -360.0), glm::vec3(12.0f));
 	academy.setRotY(90.0f);
@@ -912,8 +925,8 @@ void InitializeModels() {
 	poster2 = Edificio("Models/MuchaLucha/Poster2.obj", &uniformModel, glm::vec3(-246.0f, 100.0f, -430.0), glm::vec3(12.0f));
 	poster2.setRotY(90.0f);
 
-	cactus = Edificio("Models/MuchaLucha/Cactus.obj", &uniformModel, glm::vec3(185.0f, 3.5f, 270.0), glm::vec3(8.0f));
-	cactus.setRotY(90.0f);
+	cactus = Model();
+	cactus.LoadModel("Models/MuchaLucha/Cactus.obj");
 
 	ring = Edificio("Models/MuchaLucha/Ring.obj", &uniformModel, glm::vec3(220.0f, 1.0f, -30.0), glm::vec3(40.0f));
 	ring.setRotY(270.0f);
@@ -1252,7 +1265,7 @@ void renderVespa() {
 	glm::mat4 model;
 
 	model = glm::mat4(1.0);
-	model = glm::translate(model, glm::vec3(-335.0f, -0.5f, 610.0));
+	model = glm::translate(model, glm::vec3(-280.0f, -0.5f, 660.0));
 	model = glm::scale(model, glm::vec3(15.0f, 15.0f, 15.0f));
 	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
@@ -1585,7 +1598,7 @@ void renderMetrobus() {
 
 	model = glm::mat4(1.0);
 	//0.0f, -1.0f, 175.0f
-	model = glm::translate(model, glm::vec3(0.0f + sqrt(pow(100,2) - pow(metrobusZ,2)), 2.5f + metrobusY, 175.0f + metrobusZ));
+	model = glm::translate(model, glm::vec3(0.0f + sqrt(pow(100,2) - pow(metrobusZ,2)), 9.5f + metrobusY, 175.0f + metrobusZ));
 	modelaux = model;
 	model = glm::scale(model, glm::vec3(12.0f));
 	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -1812,6 +1825,19 @@ void renderTimmyBus() {
 
 }
 
+void renderCactus() {
+
+	glm::mat4 model;
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(250.0f, -0.5f, 260.0));
+	model = glm::scale(model, glm::vec3(10.0f));
+	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	cactus.RenderModel();
+
+}
+
 void renderLaPulga() {
 	
 
@@ -1900,11 +1926,19 @@ void renderMutantPlant() {
 	glm::mat4 model;
 
 	model = glm::mat4(1.0);
-	model = glm::translate(model, glm::vec3(-320.0f, 58.0f, 265.0f));
-	model = glm::scale(model, glm::vec3(12.0f));
-	//model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::translate(model, glm::vec3(270.0f, 58.0f, 410.0f));
+	model = glm::scale(model, glm::vec3(14.0f));
+	model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	mutant_plant.RenderModel();
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(270.0f, 58.0f, 455.0f));
+	model = glm::scale(model, glm::vec3(14.0f));
+	model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	mutant_plant.RenderModel();
+
 }
 
 void renderDoidle() {
@@ -1922,9 +1956,26 @@ void renderDoidle() {
 void renderBancas() {
 	glm::mat4 model;
 
+	//Lado izquierdo
 	model = glm::mat4(1.0);
-	model = glm::translate(model, glm::vec3(-185.0f, -0.5f, 375.0));
-	model = glm::scale(model, glm::vec3(22.0f));
+	model = glm::translate(model, glm::vec3(-170.0f, -0.5f, 375.0));
+	model = glm::scale(model, glm::vec3(24.0f));
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	banca.RenderModel();
+
+	//Lado derecho
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(170.0f, -0.5f, -175.0));
+	model = glm::scale(model, glm::vec3(24.0f));
+	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	banca.RenderModel();
+
+	//Frente a mucha lucha
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-210.0f, -0.5f, -530.0));
+	model = glm::scale(model, glm::vec3(24.0f));
 	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	banca.RenderModel();
@@ -1933,9 +1984,28 @@ void renderBancas() {
 void renderTrashcan() {
 	glm::mat4 model;
 
+	//frente a ratatouille
 	model = glm::mat4(1.0);
-	model = glm::translate(model, glm::vec3(-185.0f, -0.5f, 345.0));
+	model = glm::translate(model, glm::vec3(-170.0f, -0.5f, 340.0));
 	model = glm::scale(model, glm::vec3(22.0f));
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	trashcan.RenderModel();
+
+	//frente a Dimmadome
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(170.0f, -0.5f, -210.0));
+	model = glm::scale(model, glm::vec3(22.0f));
+	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	trashcan.RenderModel();
+
+
+
+	//frente a donuts
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-210.0f, -0.5f, -490.0));
+	model = glm::scale(model, glm::vec3(24.0f));
 	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	trashcan.RenderModel();
@@ -1949,13 +2019,85 @@ void renderTaxi() {
 	glm::mat4 model;
 
 	model = glm::mat4(1.0);
-	model = glm::translate(model, glm::vec3(35.0f, -0.5f, 375.0));
+	model = glm::translate(model, glm::vec3(35.0f, -0.5f, 375.0f));
 	model = glm::scale(model, glm::vec3(10.0f, 10.0f, 10.0f));
 	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	taxi.RenderModel();
 
 }
+
+void renderTokyoTree() {
+
+	glm::mat4 model;
+
+	//Lado derecho
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-185.0f, 0.0f, -230.0f));
+	model = glm::scale(model, glm::vec3(5.5f));
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	tokyo_tree.RenderModel();
+
+}
+
+
+void renderJacarandas() {
+
+	glm::mat4 model;
+
+	//Lado izquierdo
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(170.0f, 0.0f, 695.0f));
+	model = glm::scale(model, glm::vec3(34.0f, 42.0f, 30.0f));
+	//model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	jacaranda.RenderModel();
+
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(175.0f, 0.0f, 65.0f));
+	model = glm::scale(model, glm::vec3(34.0f, 42.0f, 30.0f));
+	//model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	jacaranda.RenderModel();
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(190.0f, 0.0f, -455.0f));
+	model = glm::scale(model, glm::vec3(34.0f, 42.0f, 30.0f));
+	//model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	jacaranda.RenderModel();
+
+	//----------------------------------Lado derecho-----------------------------------
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-170.0f, 0.0f, 695.0f));
+	model = glm::scale(model, glm::vec3(34.0f, 42.0f, 30.0f));
+	//model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	jacaranda.RenderModel();
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-175.0f, 0.0f, 85.0f));
+	model = glm::scale(model, glm::vec3(34.0f, 42.0f, 30.0f));
+	//model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	jacaranda.RenderModel();
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-190.0f, 0.0f, -455.0f));
+	model = glm::scale(model, glm::vec3(34.0f, 42.0f, 30.0f));
+	//model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	jacaranda.RenderModel();
+
+
+
+
+
+}
+
 
 void renderNaveDexter() {
 
