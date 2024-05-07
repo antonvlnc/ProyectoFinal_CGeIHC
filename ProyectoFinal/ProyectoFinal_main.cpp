@@ -208,6 +208,9 @@ Model jacaranda;
 
 Lampara luminariaP8;
 
+Model RoadBlock;
+Model BusStop;
+
 
 //Padrinos Magicos
 Model bus_padrinos;
@@ -341,6 +344,10 @@ void renderJacarandas();
 
 void renderTokyoTree();
 
+void renderRoadBlock();
+
+void renderBusStop();
+
 
 
 int main()
@@ -418,6 +425,8 @@ int main()
 	traslacionMetrobusOffSet = 0.01f;
 	metrobusX = metrobusY = metrobusZ = -10.0f;
 	controlDeltaTimeDesborde2 = true;
+
+
 	//------------------SONIDO-----------------------
 	//Sonido ambiental
 	//ISoundEngine* Ambiental = createIrrKlangDevice();
@@ -517,18 +526,18 @@ int main()
 		glm::mat4 modelaux(1.0);
 		glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
 
-		model = glm::mat4(1.0);
-		model = glm::translate(model, glm::vec3(0.0f, -1.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(450.0f, 1.0f, 700.0f));
-		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
+		//model = glm::mat4(1.0);
+		//model = glm::translate(model, glm::vec3(0.0f, -1.0f, 0.0f));
+		//model = glm::scale(model, glm::vec3(450.0f, 1.0f, 700.0f));
+		//glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		//glUniform3fv(uniformColor, 1, glm::value_ptr(color));
 
-		reforma_layout.UseTexture();
-		Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
+		//reforma_layout.UseTexture();
+		//Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
 
 
-		//RENDERIZAMOS EL PISO
-		meshList[2]->RenderMesh();
+		////RENDERIZAMOS EL PISO
+		//meshList[2]->RenderMesh();
 
 		model = modelaux;
 
@@ -599,13 +608,39 @@ int main()
 
 		if (esDeDia) {
 			renderBanquetaNormal();
+
+			model = glm::mat4(1.0);
+			model = glm::translate(model, glm::vec3(0.0f, -1.0f, 0.0f));
+			model = glm::scale(model, glm::vec3(450.0f, 1.0f, 700.0f));
+			glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+			glUniform3fv(uniformColor, 1, glm::value_ptr(color));
+
+			reforma_layout.UseTexture();
+			Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
+
+
+			//RENDERIZAMOS EL PISO
+			meshList[2]->RenderMesh();
 		}
 		else {
 			renderBanquetaBaked();
+
+			model = glm::mat4(1.0);
+			model = glm::translate(model, glm::vec3(0.0f, -1.0f, 0.0f));
+			model = glm::scale(model, glm::vec3(450.0f, 1.0f, 700.0f));
+			glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+			glUniform3fv(uniformColor, 1, glm::value_ptr(color));
+
+			reforma_layout_baked.UseTexture();
+			Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
+
+
+			//RENDERIZAMOS EL PISO
+			meshList[2]->RenderMesh();
 		}
-		
+
 		//Banqueta con luz cocinada
-		
+
 
 		//reflector
 		renderReflector();
@@ -614,6 +649,13 @@ int main()
 
 		//Jacarandas
 		renderJacarandas();
+
+		//Road Block}
+		renderRoadBlock();
+
+		//BusStop
+		renderBusStop();
+
 
 		//Puerta con reja
 		/*renderPuertaReja();*/
@@ -949,6 +991,14 @@ void InitializeModels() {
 	//Árbol de jacarandas
 	jacaranda = Model();
 	jacaranda.LoadModel("Models/Jacaranda.obj");
+
+	//Road Block
+	RoadBlock = Model();
+	RoadBlock.LoadModel("Models/RoadBlock.obj");
+
+	//BusStop
+	BusStop = Model();
+	BusStop.LoadModel("Models/BusStop.obj");
 
 
 
@@ -1933,6 +1983,78 @@ void renderCactus() {
 
 }
 
+void renderRoadBlock() {
+
+	glm::mat4 model;
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-150.0f, 0.0f, 130.0));
+	model = glm::scale(model, glm::vec3(0.2f));
+	model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	RoadBlock.RenderModel();
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-150.0f, 0.0f, 165.0));
+	model = glm::scale(model, glm::vec3(0.2f));
+	model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	RoadBlock.RenderModel();
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-150.0f, 0.0f, 200.0));
+	model = glm::scale(model, glm::vec3(0.2f));
+	model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	RoadBlock.RenderModel();
+
+	//Lado izquierdo
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(150.0f, 0.0f, 130.0));
+	model = glm::scale(model, glm::vec3(0.2f));
+	model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	RoadBlock.RenderModel();
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(150.0f, 0.0f, 165.0));
+	model = glm::scale(model, glm::vec3(0.2f));
+	model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	RoadBlock.RenderModel();
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(150.0f, 0.0f, 200.0));
+	model = glm::scale(model, glm::vec3(0.2f));
+	model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	RoadBlock.RenderModel();
+
+}
+
+void renderBusStop() {
+
+	glm::mat4 model;
+
+	//Ratatouille
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-122.0f, 0.0f, 368.0));
+	model = glm::scale(model, glm::vec3(0.7f));
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	BusStop.RenderModel();
+
+	//Dimmadome
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(122.0f, 0.0f, -175.0));
+	model = glm::scale(model, glm::vec3(0.7f));
+	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	BusStop.RenderModel();
+
+}
+
 void renderLaPulga() {
 	
 
@@ -2052,12 +2174,12 @@ void renderBancas() {
 	glm::mat4 model;
 
 	//Lado izquierdo
-	model = glm::mat4(1.0);
+	/*model = glm::mat4(1.0);
 	model = glm::translate(model, glm::vec3(-170.0f, -0.5f, 375.0));
 	model = glm::scale(model, glm::vec3(24.0f));
 	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	banca.RenderModel();
+	banca.RenderModel();*/
 
 	//Lado derecho
 	model = glm::mat4(1.0);
