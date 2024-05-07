@@ -10,10 +10,13 @@ class MainAvatar
 {
 public:
 	MainAvatar();
-	MainAvatar(glm::vec3 posInicial, GLfloat rotInicial, glm::vec3 scale);	
+	MainAvatar(glm::vec3 posInicial, GLfloat rotInicial, glm::vec3 scale, GLfloat velocidad);	
 	glm::vec3 getPos();
+
 	void setUniformModel(GLint uniform);
-	void setMovimiento(GLfloat movimientoAvatar, GLfloat rotacionAvatar, GLfloat rotacionBrazos);
+	void setMovimiento(GLfloat movimientoAvatar, GLfloat rotacionAvatar, GLboolean rotacionBrazos, GLfloat deltaTime);
+
+	float getRotY() { return rotacionInicial; }
 	void renderMainAvatar();
 
 private:
@@ -21,7 +24,9 @@ private:
 	glm::mat4 posAvatar;
 	GLint uniformModel;
 	glm::vec3  escala;
-	GLfloat movimiento, rotacionInicial,rotacion, rotacionExtremidades; //Para recibir valores de los datos que se modifican por teclado
+	GLfloat movimiento, rotacionInicial, rotacion, rotacionExtremidades; //Para recibir valores de los datos que se modifican por teclado
+	GLfloat velocidadMovimiento;
+	GLboolean banderaAnimacionCaminata;
 	void loadmodels();
 	
 	

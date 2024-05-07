@@ -108,16 +108,14 @@ float traslacionMetrobusOffSet;
 float tiempoTranscurrido;
 
 //para luces
-unsigned int pointLightCount = 0;
-unsigned int pointLightCount2 = 0;
-unsigned int spotLightCount = 0; //ARREGLO 0 -> TODAS LAS LUCES ENCENDIDAS
-unsigned int spotLightCount2 = 0;
-
-GLfloat duracionCicloDiayNoche = 40.0; //cantidad de segundos que va a durar el ciclo de dia/noche, el dia dura 2*duracionCicloDiaYNoche
-GLboolean esDeDia = false; //VAriable para controlar eventos ligados al ciclo de dia y de noche
-
+// luz direccional
+DirectionalLight mainLight;
 //Objeto para el manejo de todas las luces del escenario
 controladorLuces lightControl;
+
+GLfloat duracionCicloDiayNoche = 15.0;	//cantidad de segundos que va a durar el ciclo de dia/noche.
+GLboolean esDeDia = false;				//Variable para controlar eventos ligados al ciclo de dia y de noche
+
 
 
 
@@ -139,6 +137,16 @@ std::vector<Shader> shaderList;
 //CAMARAS
 Camera camera;
 
+Camera* currentCamera;
+Camera camaraAvatar;
+Camera camaraLibre;
+Camera camaraAerea;
+//Para ajustar la camara del avatar
+glm::vec4 camoffset(0.0f, 15.0f, -55.0f, 1.0f);
+glm::mat4 camRot(1.0);
+glm::vec3 camPos(0.0f);
+
+
 
 //Declcaración de texturas
 
@@ -156,13 +164,23 @@ Texture grass;
 //DECLARACION DE MODELOS
 
 
+//Dexter
+MainAvatar dexter;
+Edificio casaDexter;
+
+Model nave_cabina;
+Model nave_extra;
+
+
+
+
 
 //GENERAL
 Model luminaria;
 Model angel_independencia;
 Model angel_independencia_ala;
 Model bbva;
-//Model estela_de_luz;
+
 Model helicoptero_base;
 Model helicoptero_helice;
 Model camellon;
@@ -172,12 +190,15 @@ Model metrobus_llanta_der;
 Model puerta_reja;
 Model reja_izq;
 Model reja_der;
+
+
+
 Model banqueta;
 Model reflector;
 Model banqueta_luz;
 Model banqueta_esquina;
 Model street_lamp;
-Lampara luminariaP8;
+
 Edificio dianaCazadora;
 Edificio BBVA_Pixies;
 Edificio estelaDeLuz;
@@ -185,33 +206,35 @@ Model banqueta_trunca;
 Model jacaranda;
 
 
+Lampara luminariaP8;
+
 
 //Padrinos Magicos
 Model bus_padrinos;
+
 Model big_wand;
 Model letrero_dimsdale;
 Model letras_letrero_dimsdale;
 Edificio dimmadome;
+
 Model taxi;
+
+
 Edificio letras_dimmsdale;
 Edificio letrero_dimmsdale;
+
+Edificio bigWand;
+Edificio CasaTimmy;
+
 Edificio letrero_dimmsdale_baked;
 Model doidle;
-Edificio CasaTimmy;
-Edificio bigWand;
 
-
-
-//Dexter
-MainAvatar dexter;
-Edificio casaDexter;
-Model nave_cabina;
-Model nave_extra;
 
 
 
 //Ratatouille
 Model vespa;
+
 Edificio gusteaus;
 Edificio gusteau_sign;
 Edificio gusteaus_extra;
@@ -223,6 +246,11 @@ Edificio fountain;
 
 
 //Mucha Lucha
+Model laPulga;
+
+Edificio astrodomo;
+Edificio slamminDonuts;
+
 Model tienda_donas;
 Model laPulgaInferior;
 Model laPulgaSuperior;
@@ -235,32 +263,20 @@ Edificio ring;
 Model perro_ricochet;
 Model fish;
 Model mutant_plant;
-Edificio astrodomo;
-Edificio slamminDonuts;
 
 
 //SKYBOX
 Skybox skybox;	//Default
-Skybox current; //Skybox que se renderiza
+Skybox currentSkybox; //Skybox que se renderiza
 Skybox dia;
 Skybox noche;
 Skybox amanecer;
 Skybox atardecer;
 
-
-
 //MATERIALES
 Material Material_brillante;
 Material Material_opaco;
 
-//DECLARACION DE LAS LUCES
-
-// luz direccional
-DirectionalLight mainLight;
-PointLight pointLights[MAX_POINT_LIGHTS];
-PointLight pointLights2[MAX_POINT_LIGHTS];
-SpotLight spotLights[MAX_SPOT_LIGHTS];
-SpotLight spotLights2[MAX_SPOT_LIGHTS];
 
 
 //SHADERS
@@ -273,6 +289,7 @@ static const char* fShader = "shaders/shader_light.frag";
 
 void calcAverageNormals(unsigned int* indices, unsigned int indiceCount, GLfloat* vertices, unsigned int verticeCount,
 	unsigned int vLength, unsigned int normalOffset);
+
 void CreateObjects();
 void CreateShaders();
 
@@ -280,8 +297,10 @@ void InitializeModels();
 void InitializeTextures();
 void InitializeSkyboxes();
 void InitializeLights();
+void InitializeCameras();
 
 void selectSkybox(int skyboxNumber);
+void setCamera(GLint cameraNumber);
 
 void renderAngelIndependencia();
 void renderTimmyBus();
@@ -295,10 +314,10 @@ void renderMetrobus();
 //void renderPuertaReja();
 //void renderEstela(); //prueba para textura con iluminacion cocinada
 
-void renderBanquetasGenerales(); //Las que no cambiarán
+void renderBanquetasGenerales();	//Las que no cambiarán
 
-void renderBanquetaNormal();//Las que cambiarán en el día
-void renderBanquetaBaked(); //Las que cambiarán de noche
+void renderBanquetaNormal();		//Las que cambiarán en el día
+void renderBanquetaBaked();			//Las que cambiarán de noche
 
 void renderReflector();
 
@@ -335,9 +354,9 @@ int main()
 	InitializeTextures();
 	InitializeLights();
 	InitializeSkyboxes();
+	InitializeCameras();
 
-	//CAMARAS
-	camera = Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), -60.0f, 0.0f, 5.5f, 0.5f);
+	//camera = Camera(glm::vec3(0.0f, 100.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), -60.0f, 0.0f, 5.5f, 0.5f);
 
 
 	glm::mat4 model(1.0);
@@ -418,6 +437,8 @@ int main()
 	AstrodomoSound->play2D("Sound/Mucha_Lucha.wav", true);
 	AstrodomoSound->setSoundVolume(0.1f);*/
 
+	
+
 
 	////Loop mientras no se cierra la ventana
 	while (!mainWindow.getShouldClose())
@@ -435,13 +456,33 @@ int main()
 
 		//Recibir eventos del usuario
 		glfwPollEvents();
-		camera.keyControl(mainWindow.getsKeys(), deltaTime);
-		camera.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
+		/*camera.keyControl(mainWindow.getsKeys(), deltaTime);
+		camera.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());*/
+
+		setCamera(mainWindow.getTipoCamara());
+		/*camRot = glm::rotate(camRot, glm::radians(mainWindow.getRotacionAvatar()), glm::vec3(0.0f, 1.0f, 0.0f));
+		camPos = dexter.getPos() + glm::vec3(camRot * camoffset);
+		camaraAvatar.mouseControl( mainWindow.getRotacionAvatar(), 0.0f);
+		camaraAvatar.setPosicionX(camPos.x);
+		camaraAvatar.setPosicionY(camPos.y);
+		camaraAvatar.setPosicionZ(camPos.z);*/
+		//-------------------------------------------------------------------------
+
+		/*model = glm::mat4(1.0);
+		dexRotPos = glm::vec4(dexter.getPos(), 1.0);
+
+		model = glm::rotate(model, glm::radians(dexter.getRotY()), glm::vec3(0.0f, 1.0f, 0.0f));
+
+		dexRotPos = model * dexRotPos;*/
+
+		//
+
+		//-------------------------------------------------------------------------
 
 		// Clear the window
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		current.DrawSkybox(camera.calculateViewMatrix(), projection);
+		currentSkybox.DrawSkybox((*currentCamera).calculateViewMatrix(), projection);
 		shaderList[0].UseShader();
 
 		//---------INICIACILIZACION DE VARIABLES UNIFORM-------------
@@ -456,8 +497,8 @@ int main()
 		uniformShininess = shaderList[0].GetShininessLocation();
 
 		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
-		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
-		glUniform3f(uniformEyePosition, camera.getCameraPosition().x, camera.getCameraPosition().y, camera.getCameraPosition().z);
+		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr((*currentCamera).calculateViewMatrix()));
+		glUniform3f(uniformEyePosition, (*currentCamera).getCameraPosition().x, (*currentCamera).getCameraPosition().y, (*currentCamera).getCameraPosition().z);
 
 		//----------------LUCES-----------
 
@@ -554,10 +595,17 @@ int main()
 		//banqueta normal
 
 		renderBanquetasGenerales();
-		renderBanquetaNormal();
 
+
+		if (esDeDia) {
+			renderBanquetaNormal();
+		}
+		else {
+			renderBanquetaBaked();
+		}
+		
 		//Banqueta con luz cocinada
-		/*renderBanquetaBaked();*/
+		
 
 		//reflector
 		renderReflector();
@@ -630,8 +678,15 @@ int main()
 
 
 		//letrero dimmsdale
-		letrero_dimmsdale.renderModel();
-		letrero_dimmsdale_baked.renderModel();
+		if (esDeDia) {
+			letrero_dimmsdale.renderModel();
+		}
+		else
+		{
+			letrero_dimmsdale_baked.renderModel();
+		}
+		
+		
 
 		//Doidle
 		renderDoidle();
@@ -665,7 +720,7 @@ int main()
 
 		//-------------------Modelos - Laboratorio de Dexter---------------------
 		dexter.setUniformModel(uniformModel);
-		dexter.setMovimiento(mainWindow.getMovimientoAvatar(), mainWindow.getRotacionAvatar(), mainWindow.getrotBrazoPiernas());
+		dexter.setMovimiento(mainWindow.getMovimientoAvatar(), mainWindow.getRotacionAvatar(), mainWindow.getBanderaCaminata(), deltaTime);
 		dexter.renderMainAvatar();
 
 
@@ -744,7 +799,7 @@ void CreateObjects()
 
 
 	GLfloat floorVertices[] = {
-		-1.0f, 0.0f, -1.0f,		0.0f, 0.0f,			0.0f, -1.0f, 0.0f, //0
+		-1.0f, 0.0f, -1.0f,		0.0f, 0.0f,		0.0f, -1.0f, 0.0f, //0
 		1.0f, 0.0f, -1.0f,		1.0f, 0.0f,		0.0f, -1.0f, 0.0f, //1
 		-1.0f, 0.0f, 1.0f,		0.0f, 1.0f,		0.0f, -1.0f, 0.0f, //2
 		1.0f, 0.0f, 1.0f,		1.0f, 1.0f,		0.0f, -1.0f, 0.0f //3
@@ -969,7 +1024,7 @@ void InitializeModels() {
 	letrero_dimmsdale = Edificio("Models/Padrinos/DimsdaleSign.obj", &uniformModel, glm::vec3(230.0f, 1.0f, -620.0), glm::vec3(1.9f));
 	letrero_dimmsdale.setRotY(180.0f);
 
-	letrero_dimmsdale_baked = Edificio("Models/Padrinos/DimsdaleSignBaked.obj", &uniformModel, glm::vec3(100.0f, 1.0f, -620.0), glm::vec3(1.9f));
+	letrero_dimmsdale_baked = Edificio("Models/Padrinos/DimsdaleSignBaked.obj", &uniformModel, glm::vec3(230.0f, 1.0f, -620.0), glm::vec3(1.9f));
 	//letrero_dimmsdale_baked.setRotY(180.0f);
 
 	doidle = Model();
@@ -996,7 +1051,7 @@ void InitializeModels() {
 
 	//AVATAR (DEXTER)
 
-	dexter = MainAvatar(glm::vec3(0.0f, 0.5f, -650.0f), 15.0f, glm::vec3(3.0f, 3.0f, 3.0f));
+	dexter = MainAvatar(glm::vec3(0.0f, 0.5f, -650.0f), 0.0f, glm::vec3(3.0f, 3.0f, 3.0f), 0.3); //dexter = MainAvatar(glm::vec3(0.0f, 0.5f, -650.0f), 15.0f, glm::vec3(3.0f, 3.0f, 3.0f));
 
 
 	//-------------------------Modelos Ratatouille-----------------------------------------
@@ -1067,10 +1122,6 @@ void InitializeTextures() { //Texturas y skybox
 	grass.LoadTextureA();
 
 
-
-
-	//SKYBOX
-
 	Material_brillante = Material(4.0f, 256);
 	Material_opaco = Material(0.3f, 4);
 
@@ -1131,7 +1182,7 @@ void InitializeSkyboxes() {
 
 
 
-	current = noche;
+	currentSkybox = noche;
 
 }
 
@@ -1146,29 +1197,77 @@ void InitializeLights() {
 
 }
 
+void InitializeCameras() {
+	
+	camRot = glm::rotate(camRot, glm::radians(dexter.getRotY()), glm::vec3(0.0f ,1.0f, 0.0f));
+
+	camPos = dexter.getPos() + glm::vec3(camRot * camoffset);
+
+	camaraAvatar = Camera( camPos , glm::vec3(0.0f, 1.0f, 0.0f), 90.0f, 0.0f, 1.0f, -1.0f); //
+	camaraAerea = Camera(glm::vec3(0.0f, 400.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.0f, -90.0f, 5.5f, 0.5f);
+	camaraLibre = Camera(glm::vec3(0.0f, 200.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.0f, 90.0f, 5.5f, 0.5f);
+
+
+	currentCamera = &camaraLibre;
+}
+
 //Otros 
-//Asigna el skybox que se va a renderizar a current.
 void selectSkybox(int skyboxNumber) {
+	//Asigna el skybox que se va a renderizar a current.
 
 	switch (skyboxNumber) {
 	case 1:
-		current = amanecer;
+		currentSkybox = amanecer;
 		break;
 	case 2:
-		current = dia;
+		currentSkybox = dia;
 		break;
 	case 3:
-		current = atardecer;
+		currentSkybox = atardecer;
 		break;
 	case 4:
-		current = noche;
+		currentSkybox = noche;
 		break;
 	default:
-		current = skybox;
+		currentSkybox = skybox;
 		break;
 	}
 
 
+}
+
+void setCamera(GLint cameraNumber) {
+	//Camara 1 camara del avatar, camara 2 camara aerea, camara 3 camara libre
+
+	//Calculo de la rotacion del avatar
+	camRot = glm::rotate(camRot, glm::radians(mainWindow.getRotacionAvatar() * deltaTime), glm::vec3(0.0f, 1.0f, 0.0f));
+	camPos = dexter.getPos() + glm::vec3(camRot * camoffset);
+	camaraAvatar.mouseControl(mainWindow.getRotacionAvatar() * deltaTime, 0.0f);
+	switch (cameraNumber)
+	{
+	case 1:
+		
+		camaraAvatar.setPosicionX(camPos.x);
+		camaraAvatar.setPosicionY(camPos.y);
+		camaraAvatar.setPosicionZ(camPos.z);
+		currentCamera = &camaraAvatar;
+		break;
+	case 2:
+		camaraAerea.keyControlAerea(mainWindow.getsKeys(), deltaTime);
+		//camaraAerea.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
+		currentCamera = &camaraAerea;
+		break;
+	case 3:
+		camaraLibre.keyControl(mainWindow.getsKeys(), deltaTime);
+		camaraLibre.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
+		currentCamera = &camaraLibre;
+		break;
+	default:
+		camaraLibre.keyControl(mainWindow.getsKeys(), deltaTime);
+		camaraLibre.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
+		currentCamera = &camaraLibre;
+		break;
+	}
 }
 
 //Funciones para renderizado
@@ -1572,10 +1671,6 @@ void renderReflector() {
 	reflector.RenderModel();
 
 }
-
-
-
-
 
 
 
@@ -2397,8 +2492,25 @@ void renderCamellon() {
 
 
 /*
-Código retirado del main que no sé si se va a necesitar en algun momento;
+Código retirado del main que no sé si se va a necesitar en algun momento;.
 
+	glm::mat4 dexRotPos(1.0f);
+
+	dexRotPos = glm::rotate(dexRotPos, glm::radians(dexter.getRotY()), glm::vec3(0.0f, 1.0f, 0.0f));
+
+	glm::vec4 CamPos(dexter.getPos(), 1.0f);
+	glm::vec4 desp(0.0f, 15.0f, -35.0f,0.0f);
+
+	glm::vec4 CamPos(dexter.getPos(), 1.0f);
+
+		////dexRotPos = glm::rotate(dexRotPos, glm::radians(dexter.getRotY()), glm::vec3(0.0f, 1.0f, 0.0f));
+		//dexRotPos = glm::rotate(dexRotPos, glm::radians(mainWindow.getRotacionAvatar()), glm::vec3(0.0f, 1.0f, 0.0f));
+		//CamPos = dexRotPos * (CamPos + desp);
+
+
+		//camera.setPosicionX(CamPos.x);
+		//camera.setPosicionY(CamPos.y);
+		//camera.setPosicionZ(CamPos.z);
 
 	movCoche = 0.0f;
 	movOffset = 0.8f;

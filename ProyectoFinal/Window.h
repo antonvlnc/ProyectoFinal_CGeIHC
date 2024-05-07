@@ -27,10 +27,10 @@ public:
 	GLfloat getanguK() { return anguK; }
 
 	//Movimiento Avatar
-	GLfloat getDireccionCaminata() { return banderaCaminata; }
+	GLfloat getBanderaCaminata() { return banderaCaminata; }
+
 	GLfloat getMovimientoAvatar() { return movimientoAvatar; }
 	GLfloat getRotacionAvatar() { return rotAvatar; }
-	GLfloat getrotBrazoPiernas() { return rotBrazoPiernas; }
 
 	//Camara
 	GLint getTipoCamara() { return tipoCamara; }
@@ -75,8 +75,8 @@ private:
 	bool mouseFirstMoved;
 	GLboolean MusicaSi;
 	//Avatar
-	GLfloat movimientoAvatar, rotAvatar, rotBrazoPiernas;
-	GLboolean banderaCaminata, banderaRand;
+	GLfloat movimientoAvatar, rotAvatar;
+	GLboolean banderaCaminata;
 	//Camara
 	GLint tipoCamara; //1- camara ligada al avatar, 2 camara aerea, 3 la camara que hemos utilizado para las pr�cticas 
 	//Luces
