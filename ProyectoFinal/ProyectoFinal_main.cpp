@@ -190,6 +190,7 @@ Model metrobus_llanta_der;
 Model puerta_reja;
 Model reja_izq;
 Model reja_der;
+Model traffic_light;
 
 
 
@@ -349,6 +350,8 @@ void renderRoadBlock();
 void renderBusStop();
 
 void renderPrueba();
+
+void renderTrafficLight();
 
 
 int main()
@@ -608,7 +611,10 @@ int main()
 		renderBanquetasGenerales();
 
 
-		renderPrueba();
+		/*renderPrueba();*/ //Modelo de Rodrigo que me obligó a hacer
+		
+
+		renderTrafficLight();
 
 
 		if (esDeDia) {
@@ -952,8 +958,8 @@ void InitializeModels() {
 	metrobus_llanta_der = Model();
 	metrobus_llanta_der.LoadModel("Models/MetrobusLlantaDer.obj");
 
-	prueba = Model();
-	prueba.LoadModel("Models/prueba.obj");
+	traffic_light = Model();
+	traffic_light.LoadModel("Models/TrafficLight.obj");
 
 
 	//LUMINARIA PARA REPORTE 08
@@ -2166,6 +2172,28 @@ void renderMutantPlant() {
 
 }
 
+
+void renderTrafficLight() {
+	glm::mat4 model;
+
+	//desde el angel
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(75.0f, 0.0f, 55.0f));
+	model = glm::scale(model, glm::vec3(17.0f));
+	model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	traffic_light.RenderModel();
+
+	//desde la estela de luz
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-85.0f, 0.0f, 280.0f));
+	model = glm::scale(model, glm::vec3(17.0f));
+	//model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	traffic_light.RenderModel();
+
+}
+
 void renderDoidle() {
 	glm::mat4 model;
 
@@ -2203,12 +2231,12 @@ void renderBancas() {
 	banca.RenderModel();*/
 
 	//Lado derecho
-	model = glm::mat4(1.0);
+	/*model = glm::mat4(1.0);
 	model = glm::translate(model, glm::vec3(170.0f, -0.5f, -175.0));
 	model = glm::scale(model, glm::vec3(24.0f));
 	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	banca.RenderModel();
+	banca.RenderModel();*/
 
 	//Frente a mucha lucha
 	model = glm::mat4(1.0);
@@ -2223,20 +2251,20 @@ void renderTrashcan() {
 	glm::mat4 model;
 
 	//frente a ratatouille
-	model = glm::mat4(1.0);
+	/*model = glm::mat4(1.0);
 	model = glm::translate(model, glm::vec3(-170.0f, -0.5f, 340.0));
 	model = glm::scale(model, glm::vec3(22.0f));
 	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	trashcan.RenderModel();
+	trashcan.RenderModel();*/
 
 	//frente a Dimmadome
-	model = glm::mat4(1.0);
+	/*model = glm::mat4(1.0);
 	model = glm::translate(model, glm::vec3(170.0f, -0.5f, -210.0));
 	model = glm::scale(model, glm::vec3(22.0f));
 	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	trashcan.RenderModel();
+	trashcan.RenderModel();*/
 
 
 
