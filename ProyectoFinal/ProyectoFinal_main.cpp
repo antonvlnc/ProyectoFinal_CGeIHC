@@ -1099,7 +1099,7 @@ void InitializeModels() {
 
 	//----------Modelos Lab. de Dexter---------------------
 
-	casaDexter = Edificio("Models/DextersLab/CasaDexter.obj", &uniformModel, glm::vec3(-380.0f, -0.5f, 370.0), glm::vec3(40.0f));
+	casaDexter = Edificio("Models/DextersLab/CasaDexter.obj", &uniformModel, glm::vec3(-380.0f, -0.5f, 310.0), glm::vec3(40.0f));
 	casaDexter.setRotY(90.0f);
 
 	nave_cabina = Model();
@@ -2301,6 +2301,31 @@ void renderTokyoTree() {
 
 	model = glm::mat4(1.0);
 	model = glm::translate(model, glm::vec3(-185.0f, 0.0f, -230.0f));
+	model = glm::scale(model, glm::vec3(5.5f));
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	tokyo_tree.RenderModel();
+
+
+	//al lado de Dexter's House
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-365.0f, 0.0f, 435.0f));
+	model = glm::scale(model, glm::vec3(5.5f));
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	tokyo_tree.RenderModel();
+
+	//Frente a casa timmy
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(260.0f, 0.0f, 545.0f));
+	model = glm::scale(model, glm::vec3(5.5f));
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	tokyo_tree.RenderModel();
+
+	//atrás de rampa dimmadome
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(215.0f, 0.0f, -130.0f));
 	model = glm::scale(model, glm::vec3(5.5f));
 	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
