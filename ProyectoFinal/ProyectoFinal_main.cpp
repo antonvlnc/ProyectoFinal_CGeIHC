@@ -113,7 +113,7 @@ DirectionalLight mainLight;
 //Objeto para el manejo de todas las luces del escenario
 controladorLuces lightControl;
 
-GLfloat duracionCicloDiayNoche = 15.0;	//cantidad de segundos que va a durar el ciclo de dia/noche.
+GLfloat duracionCicloDiayNoche = 25.0f;	//cantidad de segundos que va a durar el ciclo de dia/noche.
 GLboolean esDeDia = false;				//Variable para controlar eventos ligados al ciclo de dia y de noche
 
 
@@ -460,6 +460,7 @@ int main()
 		//Luz Direccional, seleccion de skybox
 		esDeDia = lightControl.recalculateDirectionalLight(deltaTime);
 		lightControl.setSkyboxNumber();
+		//lightControl.animateDianaSpotLight(deltaTime);
 		selectSkybox(lightControl.getSkyboxNumber());
 
 
@@ -514,6 +515,7 @@ int main()
 
 		lightControl.chooseSpotLightsArray(esDeDia);
 		lightControl.choosePointLightsArray(mainWindow.getLuzActivable());
+
 
 		//informaci�n al shader de fuentes de iluminaci�n
 		shaderList[0].SetDirectionalLight(&mainLight); //referencia a la mainlight del objeto light control;
@@ -1255,7 +1257,7 @@ void InitializeCameras() {
 
 	camaraAvatar = Camera( camPos , glm::vec3(0.0f, 1.0f, 0.0f), 90.0f, 0.0f, 1.0f, -1.0f); //
 	camaraAerea = Camera(glm::vec3(0.0f, 400.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.0f, -90.0f, 5.5f, 0.5f);
-	camaraLibre = Camera(glm::vec3(0.0f, 200.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.0f, 90.0f, 5.5f, 0.5f);
+	camaraLibre = Camera(glm::vec3(0.0f, 200.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.0f, -45.0f, 5.5f, 0.5f);
 
 
 	currentCamera = &camaraLibre;
@@ -2613,103 +2615,3 @@ void renderCamellon() {
 
 
 
-/*
-Código retirado del main que no sé si se va a necesitar en algun momento;.
-
-	glm::mat4 dexRotPos(1.0f);
-
-	dexRotPos = glm::rotate(dexRotPos, glm::radians(dexter.getRotY()), glm::vec3(0.0f, 1.0f, 0.0f));
-
-	glm::vec4 CamPos(dexter.getPos(), 1.0f);
-	glm::vec4 desp(0.0f, 15.0f, -35.0f,0.0f);
-
-	glm::vec4 CamPos(dexter.getPos(), 1.0f);
-
-		////dexRotPos = glm::rotate(dexRotPos, glm::radians(dexter.getRotY()), glm::vec3(0.0f, 1.0f, 0.0f));
-		//dexRotPos = glm::rotate(dexRotPos, glm::radians(mainWindow.getRotacionAvatar()), glm::vec3(0.0f, 1.0f, 0.0f));
-		//CamPos = dexRotPos * (CamPos + desp);
-
-
-		//camera.setPosicionX(CamPos.x);
-		//camera.setPosicionY(CamPos.y);
-		//camera.setPosicionZ(CamPos.z);
-
-	movCoche = 0.0f;
-	movOffset = 0.8f;
-	rotllanta = 0.0f;
-	rotllantaOffset = 5.0f;
-	rotPuertaOffset = 5.0f;
-	avanza = true;
-	abre = true;
-	rotPuerta = 0.5f;
-
-	//DEJO COMENTADO EL INSTANCIAMIENTO DEL AGAVE PARA PRUEBAS DE BLENDING
-
-		////Agave �qu� sucede si lo renderizan antes del coche y el helic�ptero?
-		//model = glm::mat4(1.0);
-		//model = glm::translate(model, glm::vec3(0.0f, 1.0f, -4.0f));
-		//model = glm::scale(model, glm::vec3(4.0f, 4.0f, 4.0f));
-		//glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-
-		////blending: transparencia o traslucidez
-		//glEnable(GL_BLEND);
-		//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		//AgaveTexture.UseTexture();
-		////Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
-		//meshList[3]->RenderMesh();
-		//glDisable(GL_BLEND);
-
-		asaDexter.setPos(letras_dimmsdale.getPos());
-		casaDexter.setUniformScale(5.0f);
-		casaDexter.renderModel();
-
-			casaDexter.setPos(glm::vec3(- 380.0f, -0.5f, 370.0));
-		casaDexter.setUniformScale(40.0f); //Codigo Para pruebas
-
-
-		DirectionalLight calcSunlight() {
-	GLfloat intensity = 0.4f , dintensity = 0.5f;
-	GLfloat xDir, yDir, red, green, blue;
-	xDir = 0.0f;
-	yDir = 0.0f;
-
-
-
-
-	if (anguloLuz >= 180.0) {
-		anguloLuz = 0.0f;
-		esDeDia = !esDeDia;
-	}
-	else {
-		anguloLuz += lightDirectionIncrement * deltaTime;
-	}
-
-	xDir = cos(glm::radians(anguloLuz));
-	yDir = (-1.0) * sin(glm::radians(anguloLuz));
-
-	if (esDeDia) {
-		red = 0.8f + 0.2 * sin(glm::radians(anguloLuz));
-		green = 0.6f + 0.4 * sin(glm::radians(anguloLuz));
-		blue = 0.6f + 0.4 * sin(glm::radians(anguloLuz));
-		intensity = 0.6f;
-		dintensity = 0.5f;
-	}
-	else {
-		red = 0.6f - 0.1 * sin(glm::radians(anguloLuz));
-		green = 0.6f - 0.1 * sin(glm::radians(anguloLuz));
-		blue = 0.6f + (0.4 * sin(glm::radians(anguloLuz)));
-		intensity = 0.2f;
-		dintensity = 0.2f;
-	}
-
-
-
-	DirectionalLight sol = DirectionalLight(red, green, blue,
-		intensity, dintensity,
-		xDir, yDir, 0.0f);
-
-	return sol;
-}
-
-
-*/

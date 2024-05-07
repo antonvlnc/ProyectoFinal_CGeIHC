@@ -10,6 +10,7 @@ controladorLuces::controladorLuces() {
 	currentPointlightCount = 1;
 	incrementoAngulo = 0;
 	angulo = 0;
+
 }
 controladorLuces::controladorLuces(float duracionDia, float fps, GLboolean esDia, DirectionalLight* luzDireccional) {
 	maxAngle = 180.0f;
@@ -19,6 +20,11 @@ controladorLuces::controladorLuces(float duracionDia, float fps, GLboolean esDia
 
 	spotlightCount = 0;
 	currentSpolightCount = 0;
+	anguloSpot = 90.0;
+	banderaAnimacion = true;
+	velocidadSpot = 3.0f / 60.0f;
+	
+
 	for (int i = 0; i < (sizeof(pointlightCount) / sizeof(unsigned int)); i++) {
 		pointlightCount[i] = 0;
 	}
@@ -68,7 +74,6 @@ GLboolean controladorLuces::recalculateDirectionalLight(GLfloat deltaTime) {
 		blue = 0.6f + 0.4 * sin(glm::radians(angulo));
 		intensity = 0.6f;
 		dintensity = 0.5f;
-		skyboxNumber = 1;
 	}
 	else {
 		red = 0.6f - 0.1 * sin(glm::radians(angulo));
@@ -76,14 +81,14 @@ GLboolean controladorLuces::recalculateDirectionalLight(GLfloat deltaTime) {
 		blue = 0.6f + (0.4 * sin(glm::radians(angulo)));
 		intensity = 0.2f;
 		dintensity = 0.2f;
-		skyboxNumber = 2;
 	}
 
+	(*mainLight).setAmbientIntensity(intensity);
+	(*mainLight).setDiffuseIntensity(dintensity);
 
-	//Agregar setters a directional light para no crear nuevos objetos con cada llamada.
-	*mainLight = DirectionalLight(red, green, blue,
-		intensity, dintensity,
-		xDir, yDir, 0.0f);
+	(*mainLight).setColor(red, green, blue);
+	(*mainLight).setDirection(xDir, yDir, 0.0f);
+
 	return esDeDia;
 }
 
@@ -146,6 +151,40 @@ void controladorLuces::initializeSpotlights(glm::vec3 posLuz1, glm::vec3 posLuz2
 
 }
 
+void controladorLuces::animateDianaSpotLight(GLfloat deltaTime) {
+
+	GLfloat xDir = 0.0f, yDir = 0.0f;;
+	GLfloat red, blue;
+
+	if (!esDeDia) {
+		if (banderaAnimacion) {
+			if (anguloSpot <= 100.0f) {
+				anguloSpot += velocidadSpot * deltaTime;
+			}
+			else {
+				banderaAnimacion != banderaAnimacion;
+			}
+		}
+		else {
+			if (anguloSpot >= 80.0f) {
+				anguloSpot -= velocidadSpot * deltaTime;
+			}
+			else {
+				banderaAnimacion != banderaAnimacion;
+			}
+		}
+
+		xDir = cos(glm::radians(anguloSpot));
+		yDir = sin(glm::radians(anguloSpot));
+
+
+	}
+	else {
+		xDir = 0.0f;
+		yDir = 0.0f;
+	}
+	spotlights[0].setDirection(glm::vec3(xDir,yDir, 0.0f));
+}
 
 void controladorLuces::chooseSpotLightsArray(GLboolean esDia) {
 
@@ -161,6 +200,9 @@ void controladorLuces::chooseSpotLightsArray(GLboolean esDia) {
 void controladorLuces::initializePointlights(glm::vec3 posLuz1, glm::vec3 posLuz2, glm::vec3 posLuz3) {
 
 	//NOTA: Numero entre par�ntesis es la altura a la que esta la fuente de iluminacion en el modelo original por la escala en y del modelo
+	
+	//agregar luz para semaforo animada
+	
 	PointLight letrasDimmsdale = PointLight(0.8f, 0.8f, 0.0f, //0.0f, 0.2f, 1.0f
 		1.0f, 1.0f,
 		posLuz1.x, posLuz1.y + (25.0 * 2.0f), posLuz1.z - 10.0f,
@@ -179,7 +221,7 @@ void controladorLuces::initializePointlights(glm::vec3 posLuz1, glm::vec3 posLuz
 	PointLight defaultPointlight = PointLight(0.0f, 0.0f, 0.0f,
 		1.0f, 1.0f,
 		posLuz1.x, posLuz1.y, posLuz1.z,
-		1.0f, 0.01f, 0.0f);;
+		1.0f, 0.01f, 0.001f);
 
 	//Para la noche
 	pointLights[0][0] = letrasDimmsdale;

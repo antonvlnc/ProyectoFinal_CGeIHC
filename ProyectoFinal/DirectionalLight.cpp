@@ -22,6 +22,27 @@ void DirectionalLight::UseLight(GLfloat ambientIntensityLocation, GLfloat ambien
 	glUniform1f(diffuseIntensityLocation, diffuseIntensity);
 }
 
+void DirectionalLight::setDirection(GLfloat xDireccion, GLfloat yDirection, GLfloat zDirection) {
+	direction.x = xDireccion;
+	direction.y = yDirection;
+	direction.z = zDirection;
+}
+
+void DirectionalLight::setColor(GLfloat red, GLfloat green, GLfloat blue) {
+	color.x = red;
+	color.y = green;
+	color.z = blue;
+}
+
+void DirectionalLight::setAmbientIntensity(GLfloat ambient) {
+	ambientIntensity = ambient;
+
+}
+
+void DirectionalLight::setDiffuseIntensity(GLfloat diffuse) {
+	diffuseIntensity = diffuse;
+}
+
 DirectionalLight::~DirectionalLight()
 {
 }

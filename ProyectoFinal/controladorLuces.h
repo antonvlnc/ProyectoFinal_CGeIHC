@@ -21,10 +21,12 @@ public:
 	//Inicializan y a�aden a los arreglos necesarios las luces. Reciben como argumento los vectores de posicion de los objetos a los cuales se les va a ligar la luz.
 	void initializeSpotlights(glm::vec3 posLuz1, glm::vec3 posLuz2, glm::vec3 posLuz3);
 	void initializePointlights(glm::vec3 posLuz1, glm::vec3 posLuz2, glm::vec3 posLuz3);
+	void animateDianaSpotLight(GLfloat deltaTime);
 
 	//escoge el arreglo y la cuenta de luces que se va a utilizar 
 	void chooseSpotLightsArray(GLboolean esDia);
 	void choosePointLightsArray(GLboolean luzActivableEncendida);
+
 	GLboolean recalculateDirectionalLight(GLfloat deltaTime);
 	void setSkyboxNumber();
 
@@ -54,6 +56,9 @@ private:
 	SpotLight spotlights[MAX_SPOT_LIGHTS]; // Un solo arreglo p/ luces prendidas, mandar count = 0 para apagadas
 	unsigned int spotlightCount = 0; //Cuenta de luces en el arreglo
 	unsigned int currentSpolightCount; // Cuenta de luces que se manda al shader
+	//Para animacion de la spotlight
+	GLfloat anguloSpot, velocidadSpot;
+	bool banderaAnimacion;
 
 	PointLight pointLights[2][3];
 	PointLight* currentPointlight;

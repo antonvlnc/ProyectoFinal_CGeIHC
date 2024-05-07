@@ -18,8 +18,10 @@ public:
 		GLuint constantLocation, GLuint linearLocation, GLuint exponentLocation,
 		GLuint edgeLocation);
 
+
 	void SetFlash(glm::vec3 pos, glm::vec3 dir);
-	//void setColor();
+	void setDirection(glm::vec3 dir);
+	void setColor(GLfloat red, GLfloat green, GLfloat blue);
 	void SetPos(glm::vec3 pos);
 	~SpotLight();
 

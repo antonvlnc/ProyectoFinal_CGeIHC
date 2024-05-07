@@ -8,10 +8,10 @@ C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFi
   
 C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(455,15): warning C4244: 'inicializando': conversión de 'double' a 'GLfloat'; posible pérdida de datos
 C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(457,33): warning C4244: '+=': conversión de 'double' a 'GLfloat'; posible pérdida de datos
-C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(765,119): warning C4244: 'argumento': conversión de 'GLfloat' a 'GLboolean'; posible pérdida de datos
-C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(1104,89): warning C4305: 'argumento': truncamiento de 'double' a 'GLfloat'
-C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(1244,58): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
-C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(1908,26): warning C4244: '-=': conversión de 'double' a 'float'; posible pérdida de datos
-C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(1924,59): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(767,119): warning C4244: 'argumento': conversión de 'GLfloat' a 'GLboolean'; posible pérdida de datos
+C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(1106,89): warning C4305: 'argumento': truncamiento de 'double' a 'GLfloat'
+C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(1246,58): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(1910,26): warning C4244: '-=': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(1926,59): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
 LINK : warning LNK4098: la biblioteca predeterminada'MSVCRT' entra en conflicto con otras bibliotecas; use la biblioteca /NODEFAULTLIB:biblioteca
   P08_2-421124433.vcxproj -> C:\Users\anton\OneDrive\Documentos\LabCGeiHC_ToledoValencia\LabCGeiHC\ProyectoFinal_CGeIHC\ProyectoFinal\Debug\Proyecto_Final.exe

@@ -15,6 +15,10 @@ public:
 		GLfloat diffuseIntensityLocation, GLfloat positionLocation,
 		GLfloat constantLocation, GLfloat linearLocation, GLfloat exponentLocation);
 
+
+	//void setAmbientIntensity(GLfloat ambient);
+	//void setDiffuseIntensity(GLfloat diffuse);
+
 	~PointLight();
 
 protected:
