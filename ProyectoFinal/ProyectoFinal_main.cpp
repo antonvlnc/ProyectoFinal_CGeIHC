@@ -1860,7 +1860,7 @@ void renderMetrobus() {
 		//metrobusX = valorUnitario * sqrt(pow(radioCircunferencia, 2) - pow(diferenciaParaCalcularOrigen, 2));
 		preview = valorUnitario * sqrt(pow(radioCircunferencia, 2) - pow(diferenciaParaCalcularOrigen, 2));
 		
-		if (preview < -30.0f) {
+		if (preview < -60.0f) {
 			metrobusX = preview;
 			//(,0)
 			if (metrobusZ >= 0.0f && metrobusZ < 100.0f) {
@@ -1869,9 +1869,11 @@ void renderMetrobus() {
 				printf("VERDADERO%f------", giroDeMB);
 			}
 			else {
-				giroDeMBOffSet = 0.2f;
-				giroDeMB -= giroDeMBOffSet * deltaTime;
-				printf("FALSO%f------", giroDeMB);
+				if (preview < -60.0f) {
+					giroDeMBOffSet = 0.2f;
+					giroDeMB -= giroDeMBOffSet * deltaTime;
+					printf("FALSO%f------", giroDeMB);
+				}
 			}
 			printf("METROBUS: %f\n", metrobusZ);
 		}

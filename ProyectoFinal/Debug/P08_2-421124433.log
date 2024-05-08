@@ -15,7 +15,8 @@ C:\Users\Arturo\Desktop\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cp
 C:\Users\Arturo\Desktop\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(1789,21): warning C4305: '=': truncamiento de 'double' a 'float'
 C:\Users\Arturo\Desktop\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(1839,105): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
 C:\Users\Arturo\Desktop\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(1861,27): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
-C:\Users\Arturo\Desktop\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(1968,26): warning C4244: '-=': conversión de 'double' a 'float'; posible pérdida de datos
-C:\Users\Arturo\Desktop\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(1984,59): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\Arturo\Desktop\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(1970,26): warning C4244: '-=': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\Arturo\Desktop\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(1986,59): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
+  LINK : no se encontró C:\Users\Arturo\Desktop\ProyectoFinal_CGeIHC\ProyectoFinal\Debug\Proyecto_Final.exe o no lo generó el último vínculo incremental; ejecutando vínculo completo
 LINK : warning LNK4098: la biblioteca predeterminada'MSVCRT' entra en conflicto con otras bibliotecas; use la biblioteca /NODEFAULTLIB:biblioteca
   P08_2-421124433.vcxproj -> C:\Users\Arturo\Desktop\ProyectoFinal_CGeIHC\ProyectoFinal\Debug\Proyecto_Final.exe
