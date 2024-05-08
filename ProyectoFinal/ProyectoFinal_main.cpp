@@ -112,7 +112,9 @@ float radioCircunferencia;
 float auxiliarDesbordamiento;
 float diferenciaParaCalcularOrigen;
 float valorUnitario;
-
+float preview;
+float giroDeMB;
+float giroDeMBOffSet;
 //Animacion AE86
 float movAE86;
 float giraAE86Offset;
@@ -360,7 +362,7 @@ int main()
 	InitializeSkyboxes();
 
 	//CAMARAS
-	camera = Camera(glm::vec3(-189.508026f, 87.584869f, 663.147034f), glm::vec3(0.0f, 1.0f, 0.0f), -60.0f, 0.0f, 5.5f, 0.5f);
+	camera = Camera(glm::vec3(0.0f, 100.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), -60.0f, 0.0f, 5.5f, 0.5f);
 
 
 	glm::mat4 model(1.0);
@@ -450,12 +452,15 @@ int main()
 	flagBus1 = flagBus2 = flagBus3 = flagBus5 = flagBus6 = flagBus7 = flagBus8 = flagBus9 = flagBus10 = flagBus11 = flagBus12 = flagBus13 = false;
 	rotacionAutomaticaRuedaZ = 0.0f;
 	rotacionAutomaticaRuedaOffSet = 3.0f;
-	traslacionMetrobusOffSet = 1.0f;
+	traslacionMetrobusOffSet = 0.5f;
 	metrobusX = metrobusY = 0.0f;
-	metrobusZ = -100.0f;
+	metrobusZ = -350.0f;
 	controlDeltaTimeDesborde2 = true;
 	radioCircunferencia = 0.0f;
 	valorUnitario = 1.0f;
+	preview = 0.0f;
+	giroDeMB = 0.0f;
+	giroDeMBOffSet = 0.0f;
 	//------------------SONIDO-----------------------
 	////Ambiental
 	//ISoundEngine* Ambiental = createIrrKlangDevice();
@@ -992,7 +997,7 @@ void InitializeModels() {
 	bus_padrinos = Model();
 	bus_padrinos.LoadModel("Models/Padrinos/Bus.obj");
 
-	dianaCazadora = Edificio("Models/DianaCupido.obj", &uniformModel, glm::vec3(0.0f, -1.0f, 175.0f), glm::vec3(4.0f, 5.0f, 4.0f));
+	dianaCazadora = Edificio("Models/DianaCupido.obj", &uniformModel, glm::vec3(0.0f, -1.0f, 175.0f), glm::vec3(3.5f, 4.5f, 3.5f));
 	dianaCazadora.setRotY(-180.0f);
 
 	bigWand = Edificio("Models/Padrinos/BigWand.obj", &uniformModel, glm::vec3(-190.0f, -0.5f, 265.0), glm::vec3(20.0f));
@@ -1664,7 +1669,7 @@ void renderMetrobus() {
 	//printf("(%f,%f,%f)\n", sqrt(pow(radioCircunferencia, 2) - pow(metrobusZ, 2)), 2.5f + metrobusY, metrobusZ);
 	model = glm::translate(model, glm::vec3(0.0f + metrobusX, 2.5f + metrobusY, 175.0f + metrobusZ));
 	model = glm::scale(model, glm::vec3(0.6f));
-	//model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, giroDeMB * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	modelaux = model;
 	model = glm::scale(model, glm::vec3(12.0f));
 	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -1740,22 +1745,52 @@ void renderMetrobus() {
 	metrobus_llanta_izq.RenderModel();
 
 	model = modelaux;
-	//<>
+	
 	//printf("\t---------> %d (%f < %f)\n", metrobusZ < radioCircunferencia, metrobusZ, radioCircunferencia);
-	/*if (flagBus0) {
-		 
-	}*/
-
-	if (flagBus1) {
-		if (metrobusZ + 1 < radioCircunferencia - 8) {
+	//metrobusZ = -200.0f;
+	//printf("Estamos en: (%f,\t%f,\t%f)\n", camera.getCameraPosition().x, camera.getCameraPosition().y, camera.getCameraPosition().z);
+	if (flagBus0) {
+		printf("\t------->%.2f\n", metrobusZ);
+		if (metrobusZ <= -100.0f) {
 			auxiliarDesbordamiento = metrobusZ;
-			metrobusX = sqrt(pow(radioCircunferencia, 2) - pow(metrobusZ, 2));
 			metrobusZ += traslacionMetrobusOffSet * deltaTime;
 			if (controlDeltaTimeDesborde2) {
 				//printf("\t\t%f", auxiliarDesbordamiento);
 				metrobusZ = auxiliarDesbordamiento;
+				metrobusX = 30.0f;
 				controlDeltaTimeDesborde2 = false;
 			}
+			giroDeMBOffSet = 0.8;
+			printf("METROBUS: %f\n", metrobusZ);
+			if (metrobusZ >= -120.0f && metrobusZ < -55.0f) {
+				giroDeMB += giroDeMBOffSet * deltaTime;
+			}
+		}
+		else {
+			flagBus0 = false;
+			flagBus1 = true;
+		}
+	}
+
+	if (flagBus1) {
+
+		if (metrobusZ + 1 < radioCircunferencia - 4) {
+			preview = sqrt(pow(radioCircunferencia, 2) - pow(metrobusZ, 2));
+			metrobusX = (preview >= 30.0f) ? preview : 30.0f;
+			metrobusZ += traslacionMetrobusOffSet * deltaTime;
+			//<>
+			giroDeMBOffSet = 0.4;
+			if (metrobusZ < -55.0f) {
+				giroDeMB += giroDeMBOffSet * deltaTime;
+			}
+			if (metrobusZ >= -55.0f && metrobusZ < 75.0f) {
+				giroDeMB -= giroDeMBOffSet * deltaTime;
+			}
+			giroDeMBOffSet = 0.9;
+			if (metrobusZ >= 75.0f && metrobusZ < 95.0f) {
+				giroDeMB += giroDeMBOffSet * deltaTime;
+			}
+
 		}
 		else {
 			flagBus1 = false;
@@ -1771,9 +1806,6 @@ void renderMetrobus() {
 		else {
 			flagBus2 = false;
 			flagBus3 = true;
-			printf("(%f,%f,%f)\n", camera.getCameraPosition().x, camera.getCameraPosition().y, camera.getCameraPosition().z);
-			printf("\n>>>>>>>>(%f,\t%f)\n", metrobusX, metrobusZ);
-			
 		}
 	}
 
@@ -1807,15 +1839,50 @@ void renderMetrobus() {
 			metrobusX = valorUnitario * sqrt(pow(radioCircunferencia, 2) - pow(diferenciaParaCalcularOrigen, 2)) + 12;
 			printf("\n>>>>>>>>(%f(%f),\t%f)\n", metrobusX, diferenciaParaCalcularOrigen, metrobusZ);
 		}
-	
+		giroDeMBOffSet =1.5;
+		giroDeMB -= giroDeMBOffSet * deltaTime;
 	}
 
 	if (flagBus6) {
 		if (metrobusZ > 91.0f) {
 			metrobusZ -= traslacionMetrobusOffSet * deltaTime;
 		}
+		else {
+			flagBus6 = false;
+			flagBus7 = true;
+		}
 	}
-
+	//<>
+	if (flagBus7) {
+		radioCircunferencia = 100.0f;
+		diferenciaParaCalcularOrigen = radioCircunferencia - (radioCircunferencia - metrobusZ);
+		printf("......................(%f,%f,%f) = %f\n", metrobusX, metrobusY, metrobusZ, diferenciaParaCalcularOrigen);
+		//metrobusX = valorUnitario * sqrt(pow(radioCircunferencia, 2) - pow(diferenciaParaCalcularOrigen, 2));
+		preview = valorUnitario * sqrt(pow(radioCircunferencia, 2) - pow(diferenciaParaCalcularOrigen, 2));
+		
+		if (preview < -30.0f) {
+			metrobusX = preview;
+			//(,0)
+			if (metrobusZ >= 0.0f && metrobusZ < 100.0f) {
+				giroDeMBOffSet = 0.2f;
+				giroDeMB += giroDeMBOffSet * deltaTime;
+				printf("VERDADERO%f------", giroDeMB);
+			}
+			else {
+				giroDeMBOffSet = 0.2f;
+				giroDeMB -= giroDeMBOffSet * deltaTime;
+				printf("FALSO%f------", giroDeMB);
+			}
+			printf("METROBUS: %f\n", metrobusZ);
+		}
+		if (metrobusZ > -450.0f) {
+			metrobusZ -= traslacionMetrobusOffSet * deltaTime;
+		}
+		else {
+			flagBus7 = false;
+		}
+		
+	}
 }
 
 void renderHelicoptero() {
@@ -2229,7 +2296,7 @@ void renderNaveDexter() {
 	glm::mat4 model, modelauxNave;
 
 	model = glm::mat4(1.0);
-	model = glm::translate(model, glm::vec3(120.0f + movNaveX, 100.0f, 600.0 + movNaveZ));
+	model = glm::translate(model, glm::vec3(120.0f + movNaveX, 150.0f, 600.0 + movNaveZ));
 	model = glm::scale(model, glm::vec3(18.0f, 18.0f, 18.0f));
 	model = glm::rotate(model, rotacionNave * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	model = glm::rotate(model, -inclinacionNave * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
