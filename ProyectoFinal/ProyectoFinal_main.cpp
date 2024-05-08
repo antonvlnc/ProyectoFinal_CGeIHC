@@ -170,7 +170,7 @@ Edificio casaDexter;
 
 Model nave_cabina;
 Model nave_extra;
-
+Model prueba;
 
 
 
@@ -190,7 +190,10 @@ Model metrobus_llanta_der;
 Model puerta_reja;
 Model reja_izq;
 Model reja_der;
+Model traffic_light;
 
+Model brick_wall;
+Model brick_wall_corner;
 
 
 Model banqueta;
@@ -314,7 +317,7 @@ void renderTaxi();
 void renderNaveDexter();
 void renderCamellon();
 void renderMetrobus();
-//void renderPuertaReja();
+void renderPuertaReja();
 //void renderEstela(); //prueba para textura con iluminacion cocinada
 
 void renderBanquetasGenerales();	//Las que no cambiarán
@@ -323,6 +326,8 @@ void renderBanquetaNormal();		//Las que cambiarán en el día
 void renderBanquetaBaked();			//Las que cambiarán de noche
 
 void renderReflector();
+
+void renderBrickWall();
 
 void renderLuminarias();
 
@@ -348,6 +353,9 @@ void renderRoadBlock();
 
 void renderBusStop();
 
+void renderPrueba();
+
+void renderTrafficLight();
 
 
 int main()
@@ -603,7 +611,16 @@ int main()
 
 		//banqueta normal
 
+		
 		renderBanquetasGenerales();
+
+
+		renderBrickWall();
+
+		/*renderPrueba();*/ //Modelo de Rodrigo que me obligó a hacer
+		
+
+		renderTrafficLight();
 
 
 		if (esDeDia) {
@@ -658,7 +675,7 @@ int main()
 
 
 		//Puerta con reja
-		/*renderPuertaReja();*/
+		renderPuertaReja();
 
 
 
@@ -917,7 +934,7 @@ void InitializeModels() {
 	BBVA_Pixies.setRotY(270.0f);
 
 	//Estela de luz
-	estelaDeLuz = Edificio("Models/Estela.obj", &uniformModel, glm::vec3(315.0f, -1.0f, 805.0f), glm::vec3(5.0f));
+	estelaDeLuz = Edificio("Models/Estela.obj", &uniformModel, glm::vec3(245.0f, -1.0f, 740.0f), glm::vec3(5.0f));
 	/*estela_de_luz = Model();
 	estela_de_luz.LoadModel("Models/Estela.obj");*/
 
@@ -947,20 +964,31 @@ void InitializeModels() {
 	metrobus_llanta_der = Model();
 	metrobus_llanta_der.LoadModel("Models/MetrobusLlantaDer.obj");
 
+	traffic_light = Model();
+	traffic_light.LoadModel("Models/TrafficLight.obj");
+
 
 	//LUMINARIA PARA REPORTE 08
 
 	luminariaP8 = Lampara("Models/luminaria_text.obj", &uniformModel, glm::vec3(-90.0f, -0.95f, -100.0f), glm::vec3(4.0f));
 
 	//Puerta con reja
-	/*puerta_reja = Model();
+	puerta_reja = Model();
 	puerta_reja.LoadModel("Models/PuertaReja.obj");
 
 	reja_der = Model();
 	reja_der.LoadModel("Models/RejaDer.obj");
 
 	reja_izq = Model();
-	reja_izq.LoadModel("Models/RejaIzq.obj");*/
+	reja_izq.LoadModel("Models/RejaIzq.obj");
+
+	//barda de ladrillo
+
+	brick_wall = Model();
+	brick_wall.LoadModel("Models/BrickWall.obj");
+
+	brick_wall_corner = Model();
+	brick_wall_corner.LoadModel("Models/BrickWallCorner.obj");
 
 	//Banqueta normal
 	banqueta = Model();
@@ -1085,7 +1113,7 @@ void InitializeModels() {
 
 	//----------Modelos Lab. de Dexter---------------------
 
-	casaDexter = Edificio("Models/DextersLab/CasaDexter.obj", &uniformModel, glm::vec3(-380.0f, -0.5f, 370.0), glm::vec3(40.0f));
+	casaDexter = Edificio("Models/DextersLab/CasaDexter.obj", &uniformModel, glm::vec3(-380.0f, -0.5f, 310.0), glm::vec3(40.0f));
 	casaDexter.setRotY(90.0f);
 
 	nave_cabina = Model();
@@ -1127,7 +1155,7 @@ void InitializeModels() {
 
 	//Torre Eiffel
 
-	eiffel = Edificio("Models/Ratatouille/eiffel.obj", &uniformModel, glm::vec3(-357.0f, 0.0f, 735.0), glm::vec3(2.0f));
+	eiffel = Edificio("Models/Ratatouille/eiffel.obj", &uniformModel, glm::vec3(-357.0f, 0.0f, 720.0), glm::vec3(2.0f));
 	eiffel.setRotY(90.0f);
 
 	trashcan = Model();
@@ -1320,7 +1348,7 @@ void setCamera(GLint cameraNumber) {
 	}
 }
 
-//Funciones para renderizado
+//------------------------------------Funciones para renderizado--------------------------------
 void renderAngelIndependencia() {
 
 	if (alaIzq && alaDer)
@@ -2037,17 +2065,17 @@ void renderBusStop() {
 
 	glm::mat4 model;
 
-	//Ratatouille
+	//Astrodomo
 	model = glm::mat4(1.0);
-	model = glm::translate(model, glm::vec3(-122.0f, 0.0f, 368.0));
+	model = glm::translate(model, glm::vec3(-122.0f, 0.0f, -230.0));
 	model = glm::scale(model, glm::vec3(0.7f));
 	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	BusStop.RenderModel();
 
-	//Dimmadome
+	//Casa de Timmy
 	model = glm::mat4(1.0);
-	model = glm::translate(model, glm::vec3(122.0f, 0.0f, -175.0));
+	model = glm::translate(model, glm::vec3(122.0f, 0.0f, 435.0));
 	model = glm::scale(model, glm::vec3(0.7f));
 	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
@@ -2096,8 +2124,8 @@ void renderLaPulga() {
 	glm::mat4 model, modelauxPulga;
 
 	model = glm::mat4(1.0);
-	model = glm::translate(model, glm::vec3(170.0f, 10.0f, -95.0));
-	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+	model = glm::translate(model, glm::vec3(170.0f, 10.0f, -90.0));
+	model = glm::scale(model, glm::vec3(0.7f, 0.7f, 0.7f));
 	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	modelauxPulga= model;
@@ -2107,7 +2135,7 @@ void renderLaPulga() {
 	model = glm::rotate(model, sube * toRadians, glm::vec3(1.0f, 0.0f, 0.0f));
 
 	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0));
-	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+	model = glm::scale(model, glm::vec3(1.0f, 0.5f, 1.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	laPulgaSuperior.RenderModel();
 	model = modelauxPulga;
@@ -2119,12 +2147,43 @@ void renderPerroRicochet() {
 	glm::mat4 model;
 
 	model = glm::mat4(1.0);
-	model = glm::translate(model, glm::vec3(170.0f, 0.5f, -105.0));
+	model = glm::translate(model, glm::vec3(170.0f, 0.5f, -115.0));
 	model = glm::scale(model, glm::vec3(4.0f));
 	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	perro_ricochet.RenderModel();
 }
+
+
+
+void renderBrickWall() {
+	glm::mat4 model,modelaux;
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(262.0f, 0.5f, -780.0));
+	model = glm::scale(model, glm::vec3(184.0f, 50.0f, 12.0f));
+	//model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	brick_wall.RenderModel();
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-265.0f, 0.5f, -780.0));
+	model = glm::scale(model, glm::vec3(185.0f, 50.0f, 12.0f));
+	//model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	brick_wall.RenderModel();
+
+
+	//model = glm::mat4(1.0);
+	//model = glm::translate(model, glm::vec3(380.0f, 0.5f, -750.0));
+	//model = glm::scale(model, glm::vec3(10.0f, 30.0f, 10.0f));
+	////model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	//glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	//brick_wall_corner.RenderModel();
+
+
+}
+
 
 void renderFishyFish() {
 	glm::mat4 model;
@@ -2158,6 +2217,28 @@ void renderMutantPlant() {
 
 }
 
+
+void renderTrafficLight() {
+	glm::mat4 model;
+
+	//desde el angel
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(75.0f, 0.0f, 55.0f));
+	model = glm::scale(model, glm::vec3(17.0f));
+	model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	traffic_light.RenderModel();
+
+	//desde la estela de luz
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-80.0f, 0.0f, 275.0f));
+	model = glm::scale(model, glm::vec3(17.0f));
+	//model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	traffic_light.RenderModel();
+
+}
+
 void renderDoidle() {
 	glm::mat4 model;
 
@@ -2169,6 +2250,19 @@ void renderDoidle() {
 	doidle.RenderModel();
 }
 
+
+void renderPrueba() {
+	glm::mat4 model;
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-180.0f, 0.5f, 485.0f));
+	model = glm::scale(model, glm::vec3(3.5f));
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	prueba.RenderModel();
+}
 
 void renderBancas() {
 	glm::mat4 model;
@@ -2182,12 +2276,12 @@ void renderBancas() {
 	banca.RenderModel();*/
 
 	//Lado derecho
-	model = glm::mat4(1.0);
+	/*model = glm::mat4(1.0);
 	model = glm::translate(model, glm::vec3(170.0f, -0.5f, -175.0));
 	model = glm::scale(model, glm::vec3(24.0f));
 	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	banca.RenderModel();
+	banca.RenderModel();*/
 
 	//Frente a mucha lucha
 	model = glm::mat4(1.0);
@@ -2202,27 +2296,27 @@ void renderTrashcan() {
 	glm::mat4 model;
 
 	//frente a ratatouille
-	model = glm::mat4(1.0);
+	/*model = glm::mat4(1.0);
 	model = glm::translate(model, glm::vec3(-170.0f, -0.5f, 340.0));
 	model = glm::scale(model, glm::vec3(22.0f));
 	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	trashcan.RenderModel();
+	trashcan.RenderModel();*/
 
 	//frente a Dimmadome
-	model = glm::mat4(1.0);
+	/*model = glm::mat4(1.0);
 	model = glm::translate(model, glm::vec3(170.0f, -0.5f, -210.0));
 	model = glm::scale(model, glm::vec3(22.0f));
 	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	trashcan.RenderModel();
+	trashcan.RenderModel();*/
 
 
 
 	//frente a donuts
 	model = glm::mat4(1.0);
 	model = glm::translate(model, glm::vec3(-210.0f, -0.5f, -490.0));
-	model = glm::scale(model, glm::vec3(24.0f));
+	model = glm::scale(model, glm::vec3(19.0f));
 	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	trashcan.RenderModel();
@@ -2252,6 +2346,31 @@ void renderTokyoTree() {
 
 	model = glm::mat4(1.0);
 	model = glm::translate(model, glm::vec3(-185.0f, 0.0f, -230.0f));
+	model = glm::scale(model, glm::vec3(5.5f));
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	tokyo_tree.RenderModel();
+
+
+	//al lado de Dexter's House
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-365.0f, 0.0f, 435.0f));
+	model = glm::scale(model, glm::vec3(5.5f));
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	tokyo_tree.RenderModel();
+
+	//Frente a casa timmy
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(260.0f, 0.0f, 545.0f));
+	model = glm::scale(model, glm::vec3(5.5f));
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	tokyo_tree.RenderModel();
+
+	//atrás de rampa dimmadome
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(215.0f, 0.0f, -130.0f));
 	model = glm::scale(model, glm::vec3(5.5f));
 	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
@@ -2408,7 +2527,7 @@ void renderPuertaReja() {
 	model = glm::mat4(1.0);
 	modelaux = model;
 
-	model = glm::translate(model, glm::vec3(-3.0f, -0.95f, -815.0f));
+	model = glm::translate(model, glm::vec3(-3.0f, -0.95f, -780.0f));
 	modelaux = model;
 	model = glm::scale(model, glm::vec3(65.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
