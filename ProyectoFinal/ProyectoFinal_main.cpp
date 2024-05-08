@@ -2065,17 +2065,17 @@ void renderBusStop() {
 
 	glm::mat4 model;
 
-	//Ratatouille
+	//Astrodomo
 	model = glm::mat4(1.0);
-	model = glm::translate(model, glm::vec3(-122.0f, 0.0f, 368.0));
+	model = glm::translate(model, glm::vec3(-122.0f, 0.0f, -230.0));
 	model = glm::scale(model, glm::vec3(0.7f));
 	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	BusStop.RenderModel();
 
-	//Dimmadome
+	//Casa de Timmy
 	model = glm::mat4(1.0);
-	model = glm::translate(model, glm::vec3(122.0f, 0.0f, -175.0));
+	model = glm::translate(model, glm::vec3(122.0f, 0.0f, 435.0));
 	model = glm::scale(model, glm::vec3(0.7f));
 	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
@@ -2160,15 +2160,15 @@ void renderBrickWall() {
 	glm::mat4 model,modelaux;
 
 	model = glm::mat4(1.0);
-	model = glm::translate(model, glm::vec3(270.0f, 0.5f, -780.0));
-	model = glm::scale(model, glm::vec3(188.0f, 50.0f, 12.0f));
+	model = glm::translate(model, glm::vec3(262.0f, 0.5f, -780.0));
+	model = glm::scale(model, glm::vec3(184.0f, 50.0f, 12.0f));
 	//model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	brick_wall.RenderModel();
 
 	model = glm::mat4(1.0);
-	model = glm::translate(model, glm::vec3(-270.0f, 0.5f, -780.0));
-	model = glm::scale(model, glm::vec3(188.0f, 50.0f, 12.0f));
+	model = glm::translate(model, glm::vec3(-265.0f, 0.5f, -780.0));
+	model = glm::scale(model, glm::vec3(185.0f, 50.0f, 12.0f));
 	//model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	brick_wall.RenderModel();
