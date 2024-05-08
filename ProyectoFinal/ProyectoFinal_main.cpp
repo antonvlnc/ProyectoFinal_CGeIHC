@@ -297,22 +297,34 @@ void CreateObjects();
 void CreateShaders();
 
 void InitializeModels();
+
 void InitializeTextures();
+
 void InitializeSkyboxes();
+
 void InitializeLights();
+
 void InitializeCameras();
 
 void selectSkybox(int skyboxNumber);
 void setCamera(GLint cameraNumber);
 
 void renderAngelIndependencia();
+
 void renderTimmyBus();
+
 void renderVespa();
+
 void renderHelicoptero();
+
 void renderLaPulga();
+
 void renderTaxi();
+
 void renderNaveDexter();
+
 void renderCamellon();
+
 void renderMetrobus();
 //void renderPuertaReja();
 //void renderEstela(); //prueba para textura con iluminacion cocinada
@@ -320,6 +332,7 @@ void renderMetrobus();
 void renderBanquetasGenerales();	//Las que no cambiarán
 
 void renderBanquetaNormal();		//Las que cambiarán en el día
+
 void renderBanquetaBaked();			//Las que cambiarán de noche
 
 void renderReflector();
@@ -458,7 +471,10 @@ int main()
 		lastTime = now;
 
 		//Luz Direccional, seleccion de skybox
+
 		esDeDia = lightControl.recalculateDirectionalLight(deltaTime);
+
+
 		lightControl.setSkyboxNumber();
 		selectSkybox(lightControl.getSkyboxNumber());
 
@@ -962,9 +978,7 @@ void InitializeModels() {
 	reja_izq = Model();
 	reja_izq.LoadModel("Models/RejaIzq.obj");*/
 
-	//Banqueta normal
-	banqueta = Model();
-	banqueta.LoadModel("Models/Banqueta.obj");
+
 
 
 	//Banqueta esquina
@@ -974,6 +988,10 @@ void InitializeModels() {
 	//Banqueta trunca
 	banqueta_trunca = Model();
 	banqueta_trunca.LoadModel("Models/BanquetaTrunca.obj");
+
+	//Banqueta normal
+	banqueta = Model();
+	banqueta.LoadModel("Models/Banqueta.obj");
 
 	//Banqueta con luz cocinada
 	banqueta_luz = Model();
@@ -1075,6 +1093,7 @@ void InitializeModels() {
 	letrero_dimmsdale.setRotY(180.0f);
 
 	letrero_dimmsdale_baked = Edificio("Models/Padrinos/DimsdaleSignBaked.obj", &uniformModel, glm::vec3(230.0f, 1.0f, -620.0), glm::vec3(1.9f));
+
 	//letrero_dimmsdale_baked.setRotY(180.0f);
 
 	doidle = Model();
@@ -1594,8 +1613,6 @@ void renderBanquetaNormal() {
 	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	banqueta.RenderModel();
-
-
 
 	//lado izquierdo, abajo
 	model = glm::mat4(1.0);
