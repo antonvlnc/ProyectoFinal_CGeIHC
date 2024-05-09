@@ -17,6 +17,7 @@ Window::Window(GLint windowWidth, GLint windowHeight)
 	articulacion_capo = 0.0f;
 
 	articulacion_puerta = 0.0f;
+	articulacion_puerta2 = 0.0f;
 
 	articulacion_avanza = 0.0f;
 	articulacion_reversa = 0.0f;
@@ -228,7 +229,7 @@ void Window::ManejaTeclado(GLFWwindow* window, int key, int code, int action, in
 
 
 	//CAPO ARRIBA
-	if (key == GLFW_KEY_Y)
+	if (key == GLFW_KEY_E)
 	{
 		if (theWindow->articulacion_capo > 45)
 		{
@@ -256,33 +257,27 @@ void Window::ManejaTeclado(GLFWwindow* window, int key, int code, int action, in
 
 
 
-	////PUERTA ABRIR
-	//if (key == GLFW_KEY_O)
-	//{
-	//	if (theWindow->articulacion_puerta > -5)
-	//	{
-
-	//	}
-	//	else
-	//	{
-	//		theWindow->articulacion_puerta += 10.0;
-	//	}
-
-	//}
-	//PUERTA CERRAR
+	
+	//PUERTA Abrir
 	if (key == GLFW_KEY_P)
 	{
-		if (theWindow->articulacion_puerta < -55)
+		if (theWindow->articulacion_puerta <= 100)
 		{
-
+			theWindow->articulacion_puerta += 1.0;
+			theWindow->articulacion_puerta2 -= 1.0;
 		}
-		else
-		{
-			theWindow->articulacion_puerta -= 10.0;
-		}
-
+		
 	}
 
+	//PUERTA cerrar
+	if (key == GLFW_KEY_O)
+	{
+		if (theWindow->articulacion_puerta >= 00)
+		{
+			theWindow->articulacion_puerta -= 1.0;
+			theWindow->articulacion_puerta2 += 1.0;
+		}
+	}
 
 
 

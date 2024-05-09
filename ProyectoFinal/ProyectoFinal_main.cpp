@@ -243,11 +243,9 @@ Edificio dianaCazadora;
 Edificio BBVA_Pixies;
 Edificio estelaDeLuz;
 Model banqueta_trunca;
-<<<<<<< HEAD
 Model AE86;
 Model AE86_Llanta;
 Model AE86_LlantaI;
-=======
 Model jacaranda;
 
 
@@ -256,7 +254,6 @@ Lampara luminariaP8;
 Model RoadBlock;
 Model BusStop;
 
->>>>>>> f23afa024e922ceaaf25be821c36123c9325c7fe
 
 //Padrinos Magicos
 Model bus_padrinos;
@@ -312,15 +309,12 @@ Edificio ring;
 Model perro_ricochet;
 Model fish;
 Model mutant_plant;
-<<<<<<< HEAD
 Model mutant_tallo;
 Model mutant_Sup;
 Model mutant_Inf;
 Model Astrodomo;
 Model AstrodomoLetras;
-Edificio slamminDonuts;
-=======
->>>>>>> f23afa024e922ceaaf25be821c36123c9325c7fe
+
 
 
 //SKYBOX
@@ -393,11 +387,9 @@ void renderCactus();
 
 void renderDoidle();
 
-<<<<<<< HEAD
 //void renderAE86();
 
 void renderLetrasAstrodomo();
-=======
 void renderBancas();
 
 void renderTrashcan();
@@ -414,7 +406,6 @@ void renderPrueba();
 
 void renderTrafficLight();
 
->>>>>>> f23afa024e922ceaaf25be821c36123c9325c7fe
 
 int main()
 {
@@ -429,12 +420,7 @@ int main()
 	InitializeSkyboxes();
 	InitializeCameras();
 
-<<<<<<< HEAD
-	//CAMARAS
-	camera = Camera(glm::vec3(0.0f, 100.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), -60.0f, 0.0f, 5.5f, 0.5f);
-=======
 	//camera = Camera(glm::vec3(0.0f, 100.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), -60.0f, 0.0f, 5.5f, 0.5f);
->>>>>>> f23afa024e922ceaaf25be821c36123c9325c7fe
 
 
 	glm::mat4 model(1.0);
@@ -529,16 +515,11 @@ int main()
 	metrobusX = metrobusY = 0.0f;
 	metrobusZ = -350.0f;
 	controlDeltaTimeDesborde2 = true;
-<<<<<<< HEAD
 	radioCircunferencia = 0.0f;
 	valorUnitario = 1.0f;
 	preview = 0.0f;
 	giroDeMB = 0.0f;
 	giroDeMBOffSet = 0.0f;
-=======
-
-
->>>>>>> f23afa024e922ceaaf25be821c36123c9325c7fe
 	//------------------SONIDO-----------------------
 	////Ambiental
 	//ISoundEngine* Ambiental = createIrrKlangDevice();
@@ -1116,11 +1097,10 @@ void InitializeModels() {
 	street_lamp = Model();
 	street_lamp.LoadModel("Models/StreetLamp.obj");
 
-<<<<<<< HEAD
 	//AE86
 	AE86 = Model();
 	AE86.LoadModel("Models/AE86.obj");
-=======
+	
 	//Árbol de jacarandas
 	jacaranda = Model();
 	jacaranda.LoadModel("Models/Jacaranda.obj");
@@ -1133,7 +1113,6 @@ void InitializeModels() {
 	BusStop = Model();
 	BusStop.LoadModel("Models/BusStop.obj");
 
->>>>>>> f23afa024e922ceaaf25be821c36123c9325c7fe
 
 	//AE86_Neumatico
 	AE86_Llanta = Model();
@@ -1475,7 +1454,7 @@ void renderAngelIndependencia() {
 
 	giraRotonda -= giraRotondaOffset * deltaTime;
 
-	if (alaIzq && alaDer)
+	if (alaIzq)
 	{
 		if (anguloAlaIzq >= 0.0f)
 		{
@@ -1490,7 +1469,7 @@ void renderAngelIndependencia() {
 				controlDeltaTimeDesborde = false;
 			}
 		}
-		
+
 		else
 		{
 			alaIzq = false;
@@ -1526,7 +1505,7 @@ void renderAngelIndependencia() {
 	angel_independencia.RenderModel();
 
 	model = glm::translate(model, glm::vec3(0.0f, 28.5f, -0.5f));
-	model = glm::rotate(model, -120 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, -70 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	model = glm::rotate(model, giraAlaIzq * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 
 	//Ala del angel 1
@@ -1539,7 +1518,7 @@ void renderAngelIndependencia() {
 	model = modelaux2;
 
 	model = glm::translate(model, glm::vec3(0.0f, 28.5f, -0.5f));
-	model = glm::rotate(model, 120 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, 70 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	model = glm::rotate(model, giraAlaDer * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 
 	//Ala del angel 2
@@ -1928,26 +1907,15 @@ void renderReflector() {
 
 }
 
-<<<<<<< HEAD
-//<>
-=======
-
-
->>>>>>> f23afa024e922ceaaf25be821c36123c9325c7fe
 void renderMetrobus() {
 	radioCircunferencia = 100.0f;
 	glm::mat4 model, modelaux;
 
 	model = glm::mat4(1.0);
-<<<<<<< HEAD
 	//printf("(%f,%f,%f)\n", sqrt(pow(radioCircunferencia, 2) - pow(metrobusZ, 2)), 2.5f + metrobusY, metrobusZ);
 	model = glm::translate(model, glm::vec3(0.0f + metrobusX, 2.5f + metrobusY, 175.0f + metrobusZ));
 	model = glm::scale(model, glm::vec3(0.6f));
 	model = glm::rotate(model, giroDeMB * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
-=======
-	//0.0f, -1.0f, 175.0f
-	model = glm::translate(model, glm::vec3(0.0f + sqrt(pow(100,2) - pow(metrobusZ,2)), 9.5f + metrobusY, 175.0f + metrobusZ));
->>>>>>> f23afa024e922ceaaf25be821c36123c9325c7fe
 	modelaux = model;
 	model = glm::scale(model, glm::vec3(12.0f));
 	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -2428,13 +2396,8 @@ void renderLaPulga() {
 	glm::mat4 model, modelauxPulga;
 
 	model = glm::mat4(1.0);
-<<<<<<< HEAD
-	model = glm::translate(model, glm::vec3(170.0f, 10.0f, -95.0));
-	model = glm::scale(model, glm::vec3(0.8f, 0.8f, 0.8f));
-=======
 	model = glm::translate(model, glm::vec3(170.0f, 10.0f, -90.0));
 	model = glm::scale(model, glm::vec3(0.7f, 0.7f, 0.7f));
->>>>>>> f23afa024e922ceaaf25be821c36123c9325c7fe
 	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	modelauxPulga = model;
@@ -2578,10 +2541,8 @@ void renderMutantPlant() {
 	glm::mat4 model,modelAuxInf,modelAuxSup;
 
 	model = glm::mat4(1.0);
-<<<<<<< HEAD
 	model = glm::translate(model, glm::vec3(-320.0f, 0.0f, 265.0f));
 	model = glm::scale(model, glm::vec3(12.0f));
-	//model = glm::rotate(model, 20 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	modelAuxInf = modelAuxSup = model;
 	mutant_tallo.RenderModel();
@@ -2604,19 +2565,63 @@ void renderMutantPlant() {
 	model = glm::scale(model, glm::vec3(1.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	mutant_Sup.RenderModel();
-=======
-	model = glm::translate(model, glm::vec3(270.0f, 58.0f, 410.0f));
-	model = glm::scale(model, glm::vec3(14.0f));
-	model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
-	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	mutant_plant.RenderModel();
+
+	//planta 2
 
 	model = glm::mat4(1.0);
-	model = glm::translate(model, glm::vec3(270.0f, 58.0f, 455.0f));
-	model = glm::scale(model, glm::vec3(14.0f));
+	model = glm::translate(model, glm::vec3(270.0f, 0.0f, 410.0f));
+	model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(12.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	modelAuxInf = modelAuxSup = model;
+	mutant_tallo.RenderModel();
+
+	model = glm::translate(model, glm::vec3(-0.7f, 2.1f, 0.0f));
+	model = glm::rotate(model, 40 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, giraCabeza * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(1.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	modelAuxSup = model;
+	mutant_Inf.RenderModel();
+
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::rotate(model, giraMandibula * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
+
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(1.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	mutant_Sup.RenderModel();
+
+	//Planta 3
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(270.0f, 0.0f, 455.0f));
+	model = glm::scale(model, glm::vec3(12.0f));
 	model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	mutant_plant.RenderModel();
+	modelAuxInf = modelAuxSup = model;
+	mutant_tallo.RenderModel();
+
+	model = glm::translate(model, glm::vec3(-0.7f, 2.1f, 0.0f));
+	model = glm::rotate(model, 40 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, giraCabeza * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(1.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	modelAuxSup = model;
+	mutant_Inf.RenderModel();
+
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::rotate(model, giraMandibula * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
+
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(1.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	mutant_Sup.RenderModel();
 
 }
 
@@ -2640,7 +2645,6 @@ void renderTrafficLight() {
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	traffic_light.RenderModel();
 
->>>>>>> f23afa024e922ceaaf25be821c36123c9325c7fe
 }
 
 void renderDoidle() {
@@ -2654,8 +2658,6 @@ void renderDoidle() {
 	doidle.RenderModel();
 }
 
-<<<<<<< HEAD
-=======
 
 void renderPrueba() {
 	glm::mat4 model;
@@ -2731,7 +2733,6 @@ void renderTrashcan() {
 
 
 
->>>>>>> f23afa024e922ceaaf25be821c36123c9325c7fe
 void renderTaxi() {
 
 	glm::mat4 model;
@@ -2928,40 +2929,36 @@ void renderNaveDexter() {
 
 void renderPuertaReja() {
 	//PUERTA METÁLICA CON MARCO PARA LETRERO, PARA PRACTICA 08
-	glm::mat4 model, modelaux;
-
+	glm::mat4 model, modelauxPuerta;
 
 	model = glm::mat4(1.0);
-	modelaux = model;
-
 	model = glm::translate(model, glm::vec3(-3.0f, -0.95f, -780.0f));
-	modelaux = model;
 	model = glm::scale(model, glm::vec3(65.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	modelauxPuerta = model;
 	puerta_reja.RenderModel();
 
-	model = modelaux;
+	model = glm::translate(model, glm::vec3(-1.05f, 0.8f, 0.0f));
+	model = glm::rotate(model, glm::radians(mainWindow.getarticulacion_puerta()), glm::vec3(0.0f, 1.0f, 0.0f));
 
-	//REJA DERECHA (esta es la que rotaba)
-	model = glm::translate(model, glm::vec3(-65.5f, 52.6f, 0.0f)); //52.5 en y antes, 65.0 en x
-	model = glm::scale(model, glm::vec3(65.0f));
+	//REJA DERECHA
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); //52.5 en y antes, 65.0 en x
+	model = glm::scale(model, glm::vec3(1.0f));
 	model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	reja_der.RenderModel();
 
-	model = modelaux;
-
-
+	model = modelauxPuerta;
 
 	//REJA IZQUIERDA
-	model = glm::translate(model, glm::vec3(36.5f, 1.0f, 0.0f)); //40 en x antes
-	model = glm::scale(model, glm::vec3(65.0f));
+	model = glm::translate(model, glm::vec3(1.05f, 0.85f, 0.0f));
+	model = glm::rotate(model, glm::radians(mainWindow.getarticulacion_puerta2()), glm::vec3(0.0f, 1.0f, 0.0f));
+	
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); //40 en x antes
+	model = glm::scale(model, glm::vec3(1.0f));
 	model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	reja_izq.RenderModel();
-
-	model = modelaux;
-
 }
 
 void renderCamellon() {
