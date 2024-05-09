@@ -15,6 +15,10 @@ public:
 
 	~DirectionalLight();
 
+	void setDirection(GLfloat xdirection, GLfloat ydirection, GLfloat zDirection);
+	void setIntensity(GLfloat ambient, GLfloat diffuse);
+	void setColor(GLfloat red,GLfloat green, GLfloat blue);
+
 private:
 	glm::vec3 direction;
 };

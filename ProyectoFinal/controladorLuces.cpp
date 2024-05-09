@@ -15,7 +15,7 @@ controladorLuces::controladorLuces(float duracionDia, float fps, GLboolean esDia
 	maxAngle = 180.0f;
 	esDeDia = esDia;
 	incrementoAngulo = (maxAngle / duracionDia) * fps;
-	angulo = 0;
+	angulo = 0.0f;
 
 	spotlightCount = 0;
 	currentSpolightCount = 0;
@@ -31,6 +31,24 @@ controladorLuces::controladorLuces(float duracionDia, float fps, GLboolean esDia
 	else {
 		skyboxNumber = 2;
 	}
+
+	banderaAnimacionSpotlight = true;
+	anguloSpot = 90.0f;
+	velocidadSpot = 0.2;
+	xDirSpot = cos(glm::radians(anguloSpot));
+	yDirSpot = sin(glm::radians(anguloSpot));
+	blue = 0.5;
+	red = 0.8f;
+
+	now = 0;
+	lastTime = clock();
+	tiempoTranscurrido = 0.0;
+	trafficRed = 0.0f;
+	green = 0.0f;
+	trafficBlue = 0.0f;
+	xPosOffset = 0.4f * 17.0f;
+	trafficLightState = 0;
+	trafficLightStartingPos = glm::vec3(0.0f);
 
 	initializeDirectionalLight();
 }
@@ -68,7 +86,6 @@ GLboolean controladorLuces::recalculateDirectionalLight(GLfloat deltaTime) {
 		blue = 0.6f + 0.4 * sin(glm::radians(angulo));
 		intensity = 0.6f;
 		dintensity = 0.5f;
-		skyboxNumber = 1;
 	}
 	else {
 		red = 0.6f - 0.1 * sin(glm::radians(angulo));
@@ -76,14 +93,12 @@ GLboolean controladorLuces::recalculateDirectionalLight(GLfloat deltaTime) {
 		blue = 0.6f + (0.4 * sin(glm::radians(angulo)));
 		intensity = 0.2f;
 		dintensity = 0.2f;
-		skyboxNumber = 2;
 	}
 
+	(*mainLight).setColor(red, green, blue);
+	(*mainLight).setDirection(xDir, yDir, 0.0f);
+	(*mainLight).setIntensity(intensity, dintensity);
 
-	//Agregar setters a directional light para no crear nuevos objetos con cada llamada.
-	*mainLight = DirectionalLight(red, green, blue,
-		intensity, dintensity,
-		xDir, yDir, 0.0f);
 	return esDeDia;
 }
 
@@ -118,19 +133,19 @@ void controladorLuces::initializeSpotlights(glm::vec3 posLuz1, glm::vec3 posLuz2
 
 	// agregar algo que tome en cuenta la escala y el desplazamiento de la luz con respecto al centro del modelo.
 	//NOTA: Numero entre par�ntesis es la altura a la que esta la fuente de iluminacion en el modelo original por la escala en y del modelo
-	SpotLight diana = SpotLight(0.5f, 0.0f, 0.8f, //Diana rojo
+	SpotLight diana = SpotLight(1.0f, 0.0f, 1.0f, //Diana rojo
 		1.0f, 1.0f,
-		posLuz1.x, posLuz1.y + (1.0 * 5.0), posLuz1.z - 35.0,
+		posLuz1.x, posLuz1.y + (1.0 * 5.0), posLuz1.z - 20.0,
 		0.0f, 1.0f, 0.0f,
 		1.0f, 0.01f, 0.0f,
-		80.0f);
+		50.0f);
 
-	SpotLight angel = SpotLight(0.0f, 0.0f, 0.7f, //Angel 0.7f ,0.0f ,0.7f
+	SpotLight angel = SpotLight(0.7f, 0.7f, 0.0f, //Angel 0.7f ,0.0f ,0.7f
 		1.0f, 1.0f,
 		posLuz2.x, posLuz2.y, posLuz2.z,
 		0.0f, 1.0f, 0.0f,
-		1.0f, 0.01f, 0.0f,
-		80.0f);
+		1.0f, 0.005f, 0.0f,
+		70.0f);
 
 	SpotLight ring = SpotLight(0.7f, 0.7f, 0.0f, // Ring 0.7f, 0.7f, 0.0f
 		1.0f, 1.0f,
@@ -158,41 +173,141 @@ void controladorLuces::chooseSpotLightsArray(GLboolean esDia) {
 
 }
 
+
+void controladorLuces::animateSpotlight(GLfloat deltaTime) {
+
+	if (!esDeDia) {
+		
+		if (banderaAnimacionSpotlight) {
+			if (anguloSpot <= 100.0f) {
+				anguloSpot += velocidadSpot * deltaTime;
+				
+			}
+			else {
+				banderaAnimacionSpotlight = !banderaAnimacionSpotlight;
+			}
+		}
+		else {
+			if (anguloSpot >= 80.0f) {
+				anguloSpot -= velocidadSpot * deltaTime;
+			}
+			else {
+				banderaAnimacionSpotlight = !banderaAnimacionSpotlight;
+			}
+		}
+
+
+		if (banderaColor) {
+			if (blue <= 1.0) {
+				blue += 0.01f * deltaTime;
+			}
+			else {
+				banderaColor = !banderaColor;
+			}
+			
+		}
+		else {
+			if (blue >= 0.1) {
+				blue -= 0.01f * deltaTime;
+			}
+			else {
+				banderaColor = !banderaColor;
+			}
+
+		}
+
+		xDirSpot = cos(glm::radians(anguloSpot));
+		yDirSpot = sin(glm::radians(anguloSpot));
+		spotlights[0].setDirection(xDirSpot, yDirSpot, 0.0f);
+		spotlights[0].setColor(red, 0.2f, blue);
+	}
+	else {
+		anguloSpot = 90.0f;
+	}
+
+}
+
+
 void controladorLuces::initializePointlights(glm::vec3 posLuz1, glm::vec3 posLuz2, glm::vec3 posLuz3) {
 
 	//NOTA: Numero entre par�ntesis es la altura a la que esta la fuente de iluminacion en el modelo original por la escala en y del modelo
-	PointLight letrasDimmsdale = PointLight(0.8f, 0.8f, 0.0f, //0.0f, 0.2f, 1.0f
+
+	trafficLightStartingPos = posLuz1;
+
+	PointLight semaforo = PointLight(1.0f, 0.0f, 0.0f, //0.0f, 0.2f, 1.0f
 		1.0f, 1.0f,
-		posLuz1.x, posLuz1.y + (25.0 * 2.0f), posLuz1.z - 10.0f,
-		1.0f, 0.03f, 0.0f);
+		posLuz1.x , posLuz1.y , posLuz1.z,
+		0.8f, 0.1f, 0.01f);
 
 	PointLight estelaLuz = PointLight(0.8f, 0.8f, 0.8f,
-		1.0f, 1.0f,
+		0.8f, 1.0f,
 		posLuz2.x, posLuz2.y + (45.0 * 5.0f), posLuz2.z,
-		1.0f, 0.02f, 0.0f);
+		1.0f, 0.01f, 0.0001f);
 
 	PointLight bigWand = PointLight(1.0f, 1.0f, 0.0f,
 		1.0f, 1.0f,
 		posLuz3.x, posLuz3.y + (12.0 * 20.0), posLuz3.z,
-		1.0f, 0.01f, 0.0f);
-	//Para que no se envie un arreglo vacio
-	PointLight defaultPointlight = PointLight(0.0f, 0.0f, 0.0f,
-		1.0f, 1.0f,
-		posLuz1.x, posLuz1.y, posLuz1.z,
-		1.0f, 0.01f, 0.0f);;
+		1.0f, 0.05f, 0.0f);
+
 
 	//Para la noche
-	pointLights[0][0] = letrasDimmsdale;
+	pointLights[0][0] = semaforo;
 	pointLights[0][1] = estelaLuz;
 	pointLights[0][2] = bigWand;
 	pointlightCount[0] = 3;
 
 	//Luz puntual apagada (negra) para que nunca se mande un arreglo "vacio"
-	pointLights[1][0] = defaultPointlight;
+	pointLights[1][0] = semaforo;
 	pointlightCount[1]++;
 	//Segunda luz big wand para que se puede activar por teclado durante el dia tambien
 	pointLights[1][1] = bigWand;
 	pointlightCount[1]++;
+}
+
+void controladorLuces::animateTrafficLight() {
+
+	float xOffset = 0.0f;
+	glm::vec3 newPosition(0.0);
+	now = clock();
+	tiempoTranscurrido = (float)(now - lastTime) / CLOCKS_PER_SEC;
+	if (tiempoTranscurrido >= 4.0f) {
+		lastTime = now;
+		trafficLightState = (trafficLightState + 1) % 3;
+	}
+
+	switch (trafficLightState)
+	{
+	case 0:
+		trafficRed = 1.0f;
+		green = 0.0f;
+		trafficBlue = 0.0f;
+		break;
+	case 1:
+		trafficRed = 1.0f;
+		green = 0.55f;
+		trafficBlue = 0.0f;
+		break;
+	case 2:
+		trafficRed = 0.0f;
+		green = 1.0f;
+		trafficBlue = 0.0f;
+		break;
+	default:
+		trafficRed = 1.0f;
+		green = 0.0f;
+		trafficBlue = 0.0f;
+		break;
+	}
+
+	xOffset = ((float)trafficLightState) * xPosOffset;
+
+	newPosition = trafficLightStartingPos + glm::vec3(xOffset, 0.0f, 0.0f);
+
+	pointLights[0][0].setPosition(newPosition);
+	pointLights[0][0].setColor(trafficRed, green, trafficBlue);
+
+	pointLights[1][0].setPosition(newPosition);
+	pointLights[1][0].setColor(trafficRed, green, trafficBlue);
 }
 
 void controladorLuces::choosePointLightsArray(GLboolean luzActivableEncendida) {
@@ -219,3 +334,4 @@ void controladorLuces::choosePointLightsArray(GLboolean luzActivableEncendida) {
 	}
 
 }
+
