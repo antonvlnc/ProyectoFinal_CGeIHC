@@ -51,6 +51,14 @@ void SpotLight::SetPos(glm::vec3 pos)
 	position = pos;
 }
 
+void SpotLight::setDirection(GLfloat xDirection, GLfloat yDirection, GLfloat zDirection) {
+	direction = glm::vec3(xDirection,  yDirection, zDirection);
+}
+
+void SpotLight::setColor(GLfloat red, GLfloat green, GLfloat blue) {
+	color = glm::vec3(red, green, blue);
+}
+
 SpotLight::~SpotLight()
 {
 }

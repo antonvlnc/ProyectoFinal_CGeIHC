@@ -15,6 +15,11 @@ public:
 		GLfloat diffuseIntensityLocation, GLfloat positionLocation,
 		GLfloat constantLocation, GLfloat linearLocation, GLfloat exponentLocation);
 
+	void setPosition(glm::vec3 pos);
+	void setColor(GLfloat red, GLfloat green, GLfloat blue);
+
+	glm::vec3 getPosition() { return position; }
+
 	~PointLight();
 
 protected:

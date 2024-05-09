@@ -50,6 +50,7 @@ Integrantes:
 #include "Material.h"
 #include "controladorLuces.h"
 
+Edificio casaDexter2;
 //Para sonido
 #include <irrklang.h>
 using namespace irrklang;
@@ -170,7 +171,7 @@ Edificio casaDexter;
 
 Model nave_cabina;
 Model nave_extra;
-Model prueba;
+
 
 
 
@@ -190,7 +191,10 @@ Model metrobus_llanta_der;
 Model puerta_reja;
 Model reja_izq;
 Model reja_der;
-Model traffic_light;
+
+Lampara trafficLightAngel;
+Lampara trafficLightEstela;
+//Model traffic_light;
 
 Model brick_wall;
 Model brick_wall_corner;
@@ -366,7 +370,6 @@ void renderRoadBlock();
 
 void renderBusStop();
 
-void renderPrueba();
 
 void renderTrafficLight();
 
@@ -481,6 +484,7 @@ int main()
 		//Luz Direccional, seleccion de skybox
 
 		esDeDia = lightControl.recalculateDirectionalLight(deltaTime);
+		
 
 
 		lightControl.setSkyboxNumber();
@@ -535,8 +539,10 @@ int main()
 
 		//----------------LUCES-----------
 
-
+		lightControl.animateSpotlight(deltaTime);
+		lightControl.animateTrafficLight();
 		lightControl.chooseSpotLightsArray(esDeDia);
+
 		lightControl.choosePointLightsArray(mainWindow.getLuzActivable());
 
 		//informaci�n al shader de fuentes de iluminaci�n
@@ -550,18 +556,6 @@ int main()
 		glm::mat4 modelaux(1.0);
 		glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
 
-		//model = glm::mat4(1.0);
-		//model = glm::translate(model, glm::vec3(0.0f, -1.0f, 0.0f));
-		//model = glm::scale(model, glm::vec3(450.0f, 1.0f, 700.0f));
-		//glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-		//glUniform3fv(uniformColor, 1, glm::value_ptr(color));
-
-		//reforma_layout.UseTexture();
-		//Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
-
-
-		////RENDERIZAMOS EL PISO
-		//meshList[2]->RenderMesh();
 
 		model = modelaux;
 
@@ -633,10 +627,15 @@ int main()
 
 		renderBrickWall();
 
-		/*renderPrueba();*/ //Modelo de Rodrigo que me obligó a hacer
 		
 
-		renderTrafficLight();
+		//renderTrafficLight();
+
+		trafficLightAngel.renderModel();
+		trafficLightEstela.renderModel();
+
+
+
 
 
 		if (esDeDia) {
@@ -980,8 +979,17 @@ void InitializeModels() {
 	metrobus_llanta_der = Model();
 	metrobus_llanta_der.LoadModel("Models/MetrobusLlantaDer.obj");
 
-	traffic_light = Model();
+	/*traffic_light = Model();
 	traffic_light.LoadModel("Models/TrafficLight.obj");
+		model = glm::mat4(1.0);*/
+
+
+
+	trafficLightAngel = Lampara("Models/TrafficLight.obj", &uniformModel, glm::vec3(75.0f, 0.0f, 55.0f), glm::vec3(17.0f));
+	trafficLightAngel.setRotY(180.0);
+
+	trafficLightEstela = Lampara("Models/TrafficLight.obj", &uniformModel, glm::vec3(-80.0f, 0.0f, 275.0f), glm::vec3(17.0f));
+
 
 
 	//LUMINARIA PARA REPORTE 08
@@ -1290,7 +1298,8 @@ void InitializeLights() {
 	//contador de luces puntuales
 	lightControl = controladorLuces(duracionCicloDiayNoche, limitFPS, esDeDia, &mainLight);
 	lightControl.initializeSpotlights(dianaCazadora.getPos(), glm::vec3(5.0f, -1.0f, -530.0), ring.getPos());
-	lightControl.initializePointlights(letras_dimmsdale.getPos(), estelaDeLuz.getPos(), bigWand.getPos());
+	lightControl.initializePointlights(trafficLightEstela.getPos() + glm::vec3((1.95f * 17.0f), (5.2 * 17.0f), (0.3f * 17.0f)), estelaDeLuz.getPos(), bigWand.getPos());
+	
 
 }
 
@@ -1301,8 +1310,8 @@ void InitializeCameras() {
 	camPos = dexter.getPos() + glm::vec3(camRot * camoffset);
 
 	camaraAvatar = Camera( camPos , glm::vec3(0.0f, 1.0f, 0.0f), 90.0f, 0.0f, 1.0f, -1.0f); //
-	camaraAerea = Camera(glm::vec3(0.0f, 400.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.0f, -90.0f, 5.5f, 0.5f);
-	camaraLibre = Camera(glm::vec3(0.0f, 200.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.0f, 90.0f, 5.5f, 0.5f);
+	camaraAerea = Camera(glm::vec3(0.0f, 800.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.0f, -90.0f, 8.5f, 0.0f);
+	camaraLibre = Camera(glm::vec3(0.0f, 200.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.0f, -45.0f, 5.5f, 0.5f);
 
 
 	currentCamera = &camaraLibre;
@@ -1338,8 +1347,11 @@ void setCamera(GLint cameraNumber) {
 
 	//Calculo de la rotacion del avatar
 	camRot = glm::rotate(camRot, glm::radians(mainWindow.getRotacionAvatar() * deltaTime), glm::vec3(0.0f, 1.0f, 0.0f));
+
 	camPos = dexter.getPos() + glm::vec3(camRot * camoffset);
+
 	camaraAvatar.mouseControl(mainWindow.getRotacionAvatar() * deltaTime, 0.0f);
+
 	switch (cameraNumber)
 	{
 	case 1:
@@ -1351,7 +1363,6 @@ void setCamera(GLint cameraNumber) {
 		break;
 	case 2:
 		camaraAerea.keyControlAerea(mainWindow.getsKeys(), deltaTime);
-		//camaraAerea.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
 		currentCamera = &camaraAerea;
 		break;
 	case 3:
@@ -1438,22 +1449,7 @@ void renderAngelIndependencia() {
 
 
 
-//void renderEstela() {
-//	glm::mat4 model, modelaux;
-//
-//	model = glm::mat4(1.0);
-//
-//	model = glm::translate(model, glm::vec3(315.0f, -1.0f, 805.0f));
-//	modelaux = model;
-//	model = glm::scale(model, glm::vec3(5.0f));
-//	/*model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));*/
-//	//material brillante
-//	//Material_brillante.UseMaterial(uniformSpecularIntensity, uniformShininess); //esto afecta a todo el mundo
-//	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-//	estela_de_luz.RenderModel();
-//
-//	model = modelaux;
-//}
+
 
 
 void renderVespa() {
@@ -2082,7 +2078,6 @@ void renderBusStop() {
 
 	glm::mat4 model;
 
-	//Astrodomo
 	model = glm::mat4(1.0);
 	model = glm::translate(model, glm::vec3(-122.0f, 0.0f, -230.0));
 	model = glm::scale(model, glm::vec3(0.7f));
@@ -2090,7 +2085,6 @@ void renderBusStop() {
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	BusStop.RenderModel();
 
-	//Casa de Timmy
 	model = glm::mat4(1.0);
 	model = glm::translate(model, glm::vec3(122.0f, 0.0f, 435.0));
 	model = glm::scale(model, glm::vec3(0.7f));
@@ -2235,26 +2229,7 @@ void renderMutantPlant() {
 }
 
 
-void renderTrafficLight() {
-	glm::mat4 model;
 
-	//desde el angel
-	model = glm::mat4(1.0);
-	model = glm::translate(model, glm::vec3(75.0f, 0.0f, 55.0f));
-	model = glm::scale(model, glm::vec3(17.0f));
-	model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
-	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	traffic_light.RenderModel();
-
-	//desde la estela de luz
-	model = glm::mat4(1.0);
-	model = glm::translate(model, glm::vec3(-80.0f, 0.0f, 275.0f));
-	model = glm::scale(model, glm::vec3(17.0f));
-	//model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
-	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	traffic_light.RenderModel();
-
-}
 
 void renderDoidle() {
 	glm::mat4 model;
@@ -2265,20 +2240,6 @@ void renderDoidle() {
 	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	doidle.RenderModel();
-}
-
-
-void renderPrueba() {
-	glm::mat4 model;
-
-	model = glm::mat4(1.0);
-	model = glm::translate(model, glm::vec3(-180.0f, 0.5f, 485.0f));
-	model = glm::scale(model, glm::vec3(3.5f));
-	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
-	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	prueba.RenderModel();
 }
 
 void renderBancas() {
@@ -2803,49 +2764,39 @@ Código retirado del main que no sé si se va a necesitar en algun momento;.
 		casaDexter.setUniformScale(40.0f); //Codigo Para pruebas
 
 
-		DirectionalLight calcSunlight() {
-	GLfloat intensity = 0.4f , dintensity = 0.5f;
-	GLfloat xDir, yDir, red, green, blue;
-	xDir = 0.0f;
-	yDir = 0.0f;
 
 
+void renderTrafficLight() {
+	glm::mat4 model;
+
+	//desde el angel
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(75.0f, 0.0f, 55.0f));
+	model = glm::scale(model, glm::vec3(17.0f));
+	model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	traffic_light.RenderModel();
+
+	//desde la estela de luz
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-80.0f, 0.0f, 275.0f));
+	model = glm::scale(model, glm::vec3(17.0f));
+	//model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	traffic_light.RenderModel();
 
 
-	if (anguloLuz >= 180.0) {
-		anguloLuz = 0.0f;
-		esDeDia = !esDeDia;
-	}
-	else {
-		anguloLuz += lightDirectionIncrement * deltaTime;
-	}
+void renderEstela() {
+	glm::mat4 model, modelaux;
 
-	xDir = cos(glm::radians(anguloLuz));
-	yDir = (-1.0) * sin(glm::radians(anguloLuz));
+	model = glm::mat4(1.0);
 
-	if (esDeDia) {
-		red = 0.8f + 0.2 * sin(glm::radians(anguloLuz));
-		green = 0.6f + 0.4 * sin(glm::radians(anguloLuz));
-		blue = 0.6f + 0.4 * sin(glm::radians(anguloLuz));
-		intensity = 0.6f;
-		dintensity = 0.5f;
-	}
-	else {
-		red = 0.6f - 0.1 * sin(glm::radians(anguloLuz));
-		green = 0.6f - 0.1 * sin(glm::radians(anguloLuz));
-		blue = 0.6f + (0.4 * sin(glm::radians(anguloLuz)));
-		intensity = 0.2f;
-		dintensity = 0.2f;
-	}
+	model = glm::translate(model, glm::vec3(315.0f, -1.0f, 805.0f));
+	modelaux = model;
+	model = glm::scale(model, glm::vec3(5.0f));
+	//material brillante
+	//Material_brillante.UseMaterial(uniformSpecularIntensity, uniformShininess); //esto afecta a todo el mundo
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	estela_de_luz.RenderModel();
 
-
-
-	DirectionalLight sol = DirectionalLight(red, green, blue,
-		intensity, dintensity,
-		xDir, yDir, 0.0f);
-
-	return sol;
-}
-
-
-*/
+	model = modelaux; */

@@ -4,6 +4,8 @@
 #include "DirectionalLight.h"
 #include "CommonValues.h"
 
+#include <time.h>
+
 #include <glm.hpp>
 #include <gtc\matrix_transform.hpp>
 #include <gtc\type_ptr.hpp>
@@ -21,6 +23,7 @@ public:
 	//Inicializan y a�aden a los arreglos necesarios las luces. Reciben como argumento los vectores de posicion de los objetos a los cuales se les va a ligar la luz.
 	void initializeSpotlights(glm::vec3 posLuz1, glm::vec3 posLuz2, glm::vec3 posLuz3);
 	void initializePointlights(glm::vec3 posLuz1, glm::vec3 posLuz2, glm::vec3 posLuz3);
+	void animateSpotlight(GLfloat deltaTime); //Animar la luz de la diana
 
 	//escoge el arreglo y la cuenta de luces que se va a utilizar 
 	void chooseSpotLightsArray(GLboolean esDia);
@@ -33,6 +36,7 @@ public:
 
 	PointLight* getPointlightArray() { return currentPointlight; }
 	unsigned int getPointlightCount() { return currentPointlightCount; }
+	void animateTrafficLight();
 	int getSkyboxNumber() { return skyboxNumber; }
 
 
@@ -55,10 +59,28 @@ private:
 	unsigned int spotlightCount = 0; //Cuenta de luces en el arreglo
 	unsigned int currentSpolightCount; // Cuenta de luces que se manda al shader
 
+	//Variables para spotlight animada
+	bool banderaAnimacionSpotlight;
+	float anguloSpot;
+	float velocidadSpot;
+	float xDirSpot, yDirSpot;
+	bool banderaColor;
+	float blue, red;
+
+
 	PointLight pointLights[2][3];
 	PointLight* currentPointlight;
 	unsigned int pointlightCount[2];
 	unsigned int currentPointlightCount;
+
+	//Variables para semaforo
+	clock_t now, lastTime;
+	float tiempoTranscurrido;
+	float trafficRed, green, trafficBlue, xPosOffset;
+	int trafficLightState;
+	glm::vec3 trafficLightStartingPos;
+
+
 
 	//Metodos
 	//Para garantizar que siempre se inicializa una directional light en caso de cualquier error.

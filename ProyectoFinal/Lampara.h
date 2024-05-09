@@ -16,7 +16,8 @@ public:
 	Lampara();
 	Lampara(std::string fileName, GLuint* uniform, glm::vec3 posInicial, glm::vec3 scale);
 	void setUniform(GLuint* uniform);
-	glm::vec3 getPos() { return posicion; };
+	glm::vec3 getPos() { return posicion; }
+	glm::vec3 getScale() { return escala; }
 	//void changeModel(std::string fileName); // La luces de las Lamparas van a ser cocinadas, con esta funcion se cambia el modelo
 	// 
 	//setters
