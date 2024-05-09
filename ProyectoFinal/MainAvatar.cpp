@@ -8,18 +8,27 @@ MainAvatar::MainAvatar() {
 //Constructor del avatar
 // vec3 Posicion incial: traslación incial del personaje
 // vec3 Rotacion inicial: rotacion inicial del personaje
-MainAvatar::MainAvatar(glm::vec3 posInicial, GLfloat rotInicial, glm::vec3 scale) { 
+MainAvatar::MainAvatar(glm::vec3 posInicial, GLfloat rotInicial, glm::vec3 scale, GLfloat velocidad) { 
 
 	posAvatar = glm::mat4(1.0);
 	posAvatar = glm::translate(posAvatar, posInicial);
 	posAvatar = glm::rotate(posAvatar, glm::radians(rotInicial), glm::vec3(0.0f, 1.0f, 0.0f));
 	posAvatar = glm::scale(posAvatar, scale);
+
 	uniformModel = 0;
+
+
 	movimiento = 0;
+	velocidadMovimiento = velocidad;
+	//velocidad movimiento
 	rotacion = 0;
+
+	
+
 	rotacionExtremidades = 0;
 	rotacionInicial = rotInicial;
 	escala = scale;
+	banderaAnimacionCaminata = true;
 	loadmodels();
 }
 
@@ -39,10 +48,31 @@ void MainAvatar::setUniformModel(GLint uniform) {
 	uniformModel = uniform;
 }
 
-void MainAvatar::setMovimiento(GLfloat movimientoAvatar, GLfloat rotacionAvatar, GLfloat rotacionBrazos) {
-	movimiento = movimientoAvatar;
-	rotacion = rotacionAvatar;
-	rotacionExtremidades = rotacionBrazos;
+void MainAvatar::setMovimiento(GLfloat movimientoAvatar, GLfloat rotacionAvatar, GLboolean rotacionBrazos, GLfloat deltaTime) {
+	movimiento = velocidadMovimiento * movimientoAvatar * deltaTime;
+	rotacion = rotacionAvatar * deltaTime;
+	if (rotacionBrazos) {
+		if (banderaAnimacionCaminata) {
+			if (rotacionExtremidades <= 30.0) {
+				rotacionExtremidades += 3.0f * deltaTime;
+			}
+			else {
+				banderaAnimacionCaminata = !banderaAnimacionCaminata;
+			}
+		}
+		else {
+			if (rotacionExtremidades >= -30.0) {
+				rotacionExtremidades -= 3.0f * deltaTime;
+			}
+			else {
+				banderaAnimacionCaminata = !banderaAnimacionCaminata;
+			}
+		}
+		
+	}
+	else {
+		rotacionExtremidades = 0.0;
+	}
 }
 
 glm::vec3 MainAvatar::getPos() {
