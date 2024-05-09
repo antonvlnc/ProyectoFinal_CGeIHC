@@ -62,8 +62,9 @@ GLfloat lastTime = 0.0f;
 static double limitFPS = 1.0 / 60.0;
 
 //Para animaci n
-bool alaIzq = true;
-bool alaDer = true;
+bool alaIzq;
+bool alaDer;
+bool controlDeltaTimeDesborde0;
 float giraAlaIzq;
 float giraAlaDer;
 float anguloAlaIzq;
@@ -380,6 +381,7 @@ int main()
 	//Animaciones
 	alaIzq = true;
 	alaDer = true;
+	controlDeltaTimeDesborde0 = true;
 	giraAlaIzq = 0.0f;
 	giraAlaDer = 0.0f;
 	anguloAlaIzq = 90.0f;
@@ -1221,7 +1223,14 @@ void renderAngelIndependencia() {
 			giraAlaIzq += giraAlaOffset * deltaTime;
 			anguloAlaDer -= movAlaOffset * deltaTime;
 			giraAlaDer -= giraAlaOffset * deltaTime;
+
+			if (controlDeltaTimeDesborde0) {
+				anguloAlaIzq = 90.0f;
+				anguloAlaDer = 90.0f;
+				controlDeltaTimeDesborde = false;
+			}
 		}
+		
 		else
 		{
 			alaIzq = false;
@@ -1257,6 +1266,7 @@ void renderAngelIndependencia() {
 	angel_independencia.RenderModel();
 
 	model = glm::translate(model, glm::vec3(0.0f, 28.5f, -0.5f));
+	model = glm::rotate(model, -120 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	model = glm::rotate(model, giraAlaIzq * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 
 	//Ala del angel 1
@@ -1269,6 +1279,7 @@ void renderAngelIndependencia() {
 	model = modelaux2;
 
 	model = glm::translate(model, glm::vec3(0.0f, 28.5f, -0.5f));
+	model = glm::rotate(model, 120 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	model = glm::rotate(model, giraAlaDer * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 
 	//Ala del angel 2
@@ -1510,9 +1521,6 @@ void renderBanquetasGenerales() {
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	banqueta.RenderModel();
 
-
-
-
 }
 
 void renderBanquetaNormal() {
@@ -1750,7 +1758,6 @@ void renderMetrobus() {
 	//metrobusZ = -200.0f;
 	//printf("Estamos en: (%f,\t%f,\t%f)\n", camera.getCameraPosition().x, camera.getCameraPosition().y, camera.getCameraPosition().z);
 	if (flagBus0) {
-		printf("\t------->%.2f\n", metrobusZ);
 		if (metrobusZ <= -100.0f) {
 			auxiliarDesbordamiento = metrobusZ;
 			metrobusZ += traslacionMetrobusOffSet * deltaTime;
@@ -1761,7 +1768,6 @@ void renderMetrobus() {
 				controlDeltaTimeDesborde2 = false;
 			}
 			giroDeMBOffSet = 0.8;
-			printf("METROBUS: %f\n", metrobusZ);
 			if (metrobusZ >= -120.0f && metrobusZ < -55.0f) {
 				giroDeMB += giroDeMBOffSet * deltaTime;
 			}
@@ -1828,7 +1834,6 @@ void renderMetrobus() {
 			else {
 				flagBus3 = false;
 				flagBus6 = true;
-				printf("\nmzmzmzmz (%f,\t%f)\n", metrobusX, metrobusZ);
 			}
 		}
 
@@ -1837,7 +1842,6 @@ void renderMetrobus() {
 		//metrobusZ + 1 < radioCircunferencia - 8
 		if (diferenciaParaCalcularOrigen + 1 < radioCircunferencia) {
 			metrobusX = valorUnitario * sqrt(pow(radioCircunferencia, 2) - pow(diferenciaParaCalcularOrigen, 2)) + 12;
-			printf("\n>>>>>>>>(%f(%f),\t%f)\n", metrobusX, diferenciaParaCalcularOrigen, metrobusZ);
 		}
 		giroDeMBOffSet =1.5;
 		giroDeMB -= giroDeMBOffSet * deltaTime;
@@ -1856,8 +1860,6 @@ void renderMetrobus() {
 	if (flagBus7) {
 		radioCircunferencia = 100.0f;
 		diferenciaParaCalcularOrigen = radioCircunferencia - (radioCircunferencia - metrobusZ);
-		printf("......................(%f,%f,%f) = %f\n", metrobusX, metrobusY, metrobusZ, diferenciaParaCalcularOrigen);
-		//metrobusX = valorUnitario * sqrt(pow(radioCircunferencia, 2) - pow(diferenciaParaCalcularOrigen, 2));
 		preview = valorUnitario * sqrt(pow(radioCircunferencia, 2) - pow(diferenciaParaCalcularOrigen, 2));
 		
 		if (preview < -60.0f) {
@@ -1866,16 +1868,14 @@ void renderMetrobus() {
 			if (metrobusZ >= 0.0f && metrobusZ < 100.0f) {
 				giroDeMBOffSet = 0.2f;
 				giroDeMB += giroDeMBOffSet * deltaTime;
-				printf("VERDADERO%f------", giroDeMB);
 			}
 			else {
 				if (preview < -60.0f) {
 					giroDeMBOffSet = 0.2f;
 					giroDeMB -= giroDeMBOffSet * deltaTime;
-					printf("FALSO%f------", giroDeMB);
 				}
 			}
-			printf("METROBUS: %f\n", metrobusZ);
+	
 		}
 		if (metrobusZ > -450.0f) {
 			metrobusZ -= traslacionMetrobusOffSet * deltaTime;
@@ -2074,7 +2074,7 @@ void renderLaPulga() {
 
 	model = glm::mat4(1.0);
 	model = glm::translate(model, glm::vec3(170.0f, 10.0f, -95.0));
-	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+	model = glm::scale(model, glm::vec3(0.8f, 0.8f, 0.8f));
 	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	modelauxPulga = model;
@@ -2094,7 +2094,7 @@ void renderPerroRicochet() {
 	glm::mat4 model;
 
 	model = glm::mat4(1.0);
-	model = glm::translate(model, glm::vec3(170.0f, 0.5f, -105.0));
+	model = glm::translate(model, glm::vec3(170.0f, 0.5f, -115.0));
 	model = glm::scale(model, glm::vec3(4.0f));
 	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
@@ -2247,9 +2247,9 @@ void renderNaveDexter() {
 		if (movNaveZ > -1275.0f) {
 			movNaveZ -= movNaveOffset * deltaTime;
 			//printf("ValorZ1: %f \n", movNaveZ);
-			if (controlDeltaTimeDesborde) {
+			if (controlDeltaTimeDesborde0) {
 				movNaveZ = 0.0f;
-				controlDeltaTimeDesborde = false;
+				controlDeltaTimeDesborde0 = false;
 			}
 		}
 		else {
