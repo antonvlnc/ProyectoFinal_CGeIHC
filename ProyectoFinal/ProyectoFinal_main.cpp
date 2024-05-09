@@ -42,7 +42,7 @@ Integrantes:
 #include "Edificio.h"
 #include "Lampara.h"
 
-//para iluminaci�n
+//para iluminaci n
 #include "CommonValues.h"
 #include "DirectionalLight.h"
 #include "PointLight.h"
@@ -62,15 +62,18 @@ GLfloat deltaTime = 0.0f;
 GLfloat lastTime = 0.0f;
 static double limitFPS = 1.0 / 60.0;
 
-//Para animaci�n
-bool alaIzq = true;
-bool alaDer = true;
+//Para animaci n
+bool alaIzq;
+bool alaDer;
+bool controlDeltaTimeDesborde0;
 float giraAlaIzq;
 float giraAlaDer;
 float anguloAlaIzq;
 float anguloAlaDer;
 float giraAlaOffset;
 float movAlaOffset;
+float giraRotonda;
+float giraRotondaOffset;
 
 //Para la animación del helicoptero
 bool avanzaHelicoptero, avanzaHelicoptero2, avanzaHelicoptero3, avanzaHelicoptero4, avanzaHelicoptero5, avanzaHelicoptero6;
@@ -102,11 +105,45 @@ float anguloTorso;
 
 
 //Animacion metrobus -----------------------------------------------------------------------------------------------------------------------------------------------
-bool flagBus1, flagBus2, flagBus3, flagBus4, flagBus5, flagBus6, flagBus7, flagBus8, flagBus9, flagBus10, flagBus11, flagBus12, flagBus13;
+bool  flagBus0, flagBus1, flagBus2, flagBus3, flagBus4, flagBus5, flagBus6, flagBus7, flagBus8, flagBus9, flagBus10, flagBus11, flagBus12, flagBus13;
 float rotacionAutomaticaRuedaZ, rotacionAutomaticaRuedaOffSet;
 float metrobusX, metrobusY, metrobusZ;
 float traslacionMetrobusOffSet;
 float tiempoTranscurrido;
+float radioCircunferencia;
+float auxiliarDesbordamiento;
+float diferenciaParaCalcularOrigen;
+float valorUnitario;
+float preview;
+float giroDeMB;
+float giroDeMBOffSet;
+//Animacion AE86
+float movAE86;
+float giraAE86Offset;
+float giraAE86LlantaOffset;
+float movAE86Llantas;
+
+//Animacion Letras
+float rotacionLetras;
+float rotacionLetrasOffset;
+bool giraLetras;
+
+//Animacion planta
+bool MueveCabeza;
+float anguloCabeza;
+float giraCabeza;
+float movCabezaOffset;
+float giraCabezaOffset;
+bool MueveMandibula;
+float anguloMandibula;
+float giraMandibula;
+float movMandibulaOffset;
+float giraMandibulaOffset;
+
+//Animacion bus
+bool mueveBus;
+float busZ;
+float busOffset;
 
 //para luces
 // luz direccional
@@ -210,6 +247,9 @@ Edificio dianaCazadora;
 Edificio BBVA_Pixies;
 Edificio estelaDeLuz;
 Model banqueta_trunca;
+Model AE86;
+Model AE86_Llanta;
+Model AE86_LlantaI;
 Model jacaranda;
 
 
@@ -273,6 +313,12 @@ Edificio ring;
 Model perro_ricochet;
 Model fish;
 Model mutant_plant;
+Model mutant_tallo;
+Model mutant_Sup;
+Model mutant_Inf;
+Model Astrodomo;
+Model AstrodomoLetras;
+
 
 
 //SKYBOX
@@ -358,6 +404,9 @@ void renderCactus();
 
 void renderDoidle();
 
+//void renderAE86();
+
+void renderLetrasAstrodomo();
 void renderBancas();
 
 void renderTrashcan();
@@ -405,12 +454,15 @@ int main()
 	//Animaciones
 	alaIzq = true;
 	alaDer = true;
+	controlDeltaTimeDesborde0 = true;
 	giraAlaIzq = 0.0f;
 	giraAlaDer = 0.0f;
 	anguloAlaIzq = 90.0f;
 	anguloAlaDer = 90.0f;
 	giraAlaOffset = 1.0f;
 	movAlaOffset = 1.0f;
+	giraRotonda = 0.0f; 
+	giraRotondaOffset = 0.5f;
 
 	//Animacion helicoptero
 	avanzaHelicoptero = controlDeltaTimeDesborde = true;
@@ -441,29 +493,59 @@ int main()
 	giraTorsoOffset = 0.5f;
 	movTorsoOffset = 0.5f;
 
-	//Animacion metrobus
-	flagBus1 = true;
-	flagBus2 = flagBus3 = flagBus4 = flagBus5 = flagBus6 = flagBus7 = flagBus8 = flagBus9 = flagBus10 = flagBus11 = flagBus12 = flagBus13 = false;
+	//Animacion AE86
+	movAE86 = 0.0f;
+	giraAE86Offset = 1.5f;
+	giraAE86LlantaOffset = 5.0f;
+	movAE86Llantas = 0.0f;
+
+	//Animacion Letras Astrodomo
+	rotacionLetras = 0.0f;
+	rotacionLetrasOffset = 0.5;
+	giraLetras = true;
+
+	//Animacion planta
+	MueveCabeza = true;
+	anguloCabeza = 0.0f;
+	giraCabeza = 0.0f;
+	movCabezaOffset = 1.0f;
+	giraCabezaOffset = 1.0;
+	MueveMandibula = true;
+	anguloMandibula = 0.0f;
+	giraMandibula = 0.0f ;
+	movMandibulaOffset = 3.0;
+	giraMandibulaOffset = 3.0;
+
+	//Animacion Bus
+	mueveBus = true;
+	busZ = 0.0f;
+	busOffset = 1.0f;
+
+	//Animacion metrobus //------------------SONIDO-----------------------//------------------SONIDO-----------------------//------------------SONIDO-----------------------//------------------SONIDO-----------------------//------------------SONIDO-----------------------//------------------SONIDO-----------------------//------------------SONIDO-----------------------//------------------SONIDO-----------------------
+	flagBus0 = true;
+	flagBus4 = true;
+	flagBus1 = flagBus2 = flagBus3 = flagBus5 = flagBus6 = flagBus7 = flagBus8 = flagBus9 = flagBus10 = flagBus11 = flagBus12 = flagBus13 = false;
 	rotacionAutomaticaRuedaZ = 0.0f;
 	rotacionAutomaticaRuedaOffSet = 3.0f;
-	traslacionMetrobusOffSet = 0.01f;
-	metrobusX = metrobusY = metrobusZ = -10.0f;
+	traslacionMetrobusOffSet = 0.5f;
+	metrobusX = metrobusY = 0.0f;
+	metrobusZ = -350.0f;
 	controlDeltaTimeDesborde2 = true;
-
-
+	radioCircunferencia = 0.0f;
+	valorUnitario = 1.0f;
+	preview = 0.0f;
+	giroDeMB = 0.0f;
+	giroDeMBOffSet = 0.0f;
 	//------------------SONIDO-----------------------
-	//Sonido ambiental
+	////Ambiental
 	//ISoundEngine* Ambiental = createIrrKlangDevice();
-	//Ambiental->play2D("Sound/Ambiental.wav", true); 
-	//Ambiental->setSoundVolume(0.2f);
-	ISoundEngine* Ambiental = createIrrKlangDevice();
-	Ambiental->play2D("Sound/Ambiental.wav", true);
-	Ambiental->setSoundVolume(0.2f);
+	//Ambiental->play2D("Sound/Ambiental.wav", true);
+	//Ambiental->setSoundVolume(0.8f);
 
-	////Pista de fondo
-	ISoundEngine* Intro = createIrrKlangDevice();
-	Intro->play2D("Sound/Dexter_Pista.wav", true); //cambiar a cancion en loop sin la voz
-	Intro->setSoundVolume(0.15f);
+	//////Pista de fondo
+	//ISoundEngine* Intro = createIrrKlangDevice();
+	//Intro->play2D("Sound/Dexter_Pista.wav", true); //cambiar a cancion en loop sin la voz
+	//Intro->setSoundVolume(0.1f);
 
 	////Sonido con teclado (Pendiente)
 	/*ISoundEngine* AstrodomoSound = createIrrKlangDevice();
@@ -529,7 +611,7 @@ int main()
 		uniformEyePosition = shaderList[0].GetEyePositionLocation();
 		uniformColor = shaderList[0].getColorLocation();
 
-		//informaci�n en el shader de intensidad especular y brillo
+		//informaci n en el shader de intensidad especular y brillo
 		uniformSpecularIntensity = shaderList[0].GetSpecularIntensityLocation();
 		uniformShininess = shaderList[0].GetShininessLocation();
 
@@ -545,7 +627,7 @@ int main()
 
 		lightControl.choosePointLightsArray(mainWindow.getLuzActivable());
 
-		//informaci�n al shader de fuentes de iluminaci�n
+		//informaci n al shader de fuentes de iluminaci n
 		shaderList[0].SetDirectionalLight(&mainLight); //referencia a la mainlight del objeto light control;
 		shaderList[0].SetPointLights(lightControl.getPointlightArray(), lightControl.getPointlightCount());
 		shaderList[0].SetSpotLights(lightControl.getSpotlightArray(), lightControl.getSpotLightCount());
@@ -692,12 +774,11 @@ int main()
 		//Puerta con reja
 		renderPuertaReja();
 
-
-
+		
 		//-------------Modelos Mucha Lucha------------------
 
 		//ASTRODOMO
-		astrodomo.renderModel();
+		renderLetrasAstrodomo();
 
 		//La pulga
 		renderLaPulga();
@@ -764,7 +845,7 @@ int main()
 
 		//Doidle
 		renderDoidle();
-		
+
 
 		//------------------Modelos - Ratatouille------------
 
@@ -1042,6 +1123,10 @@ void InitializeModels() {
 	street_lamp = Model();
 	street_lamp.LoadModel("Models/StreetLamp.obj");
 
+	//AE86
+	AE86 = Model();
+	AE86.LoadModel("Models/AE86.obj");
+	
 	//Árbol de jacarandas
 	jacaranda = Model();
 	jacaranda.LoadModel("Models/Jacaranda.obj");
@@ -1055,12 +1140,23 @@ void InitializeModels() {
 	BusStop.LoadModel("Models/BusStop.obj");
 
 
+	//AE86_Neumatico
+	AE86_Llanta = Model();
+	AE86_Llanta.LoadModel("Models/Llanta_AE86.obj");
+
+	//AE86_Neumatico
+	AE86_LlantaI = Model();
+	AE86_LlantaI.LoadModel("Models/Llanta_AE86I.obj");
 
 
 	//----------Modelos Mucha Lucha---------------------
 
-	astrodomo = Edificio("Models/MuchaLucha/Astrodomo.obj", &uniformModel, glm::vec3(-295.0f, -2.0f, -50.0f), glm::vec3(5.0f));
-	astrodomo.setRotY(-270.0f);
+	Astrodomo = Model();
+	Astrodomo.LoadModel("Models/MuchaLucha/Astrodomo.obj");
+
+	AstrodomoLetras = Model();
+	AstrodomoLetras.LoadModel("Models/MuchaLucha/AstrodomoLetras.obj");
+
 
 	slamminDonuts = Edificio("Models/MuchaLucha/SlamminDonuts.obj", &uniformModel, glm::vec3(-275.0f, 0.5f, -580.0), glm::vec3(1.6f));
 	slamminDonuts.setRotY(90.0f);
@@ -1097,17 +1193,13 @@ void InitializeModels() {
 	fish.LoadModel("Models/MuchaLucha/FishyFish.obj");
 
 
-
-
-
-
 	//----------Modelos Padrinos Magicos---------------------
 
 
 	bus_padrinos = Model();
 	bus_padrinos.LoadModel("Models/Padrinos/Bus.obj");
 
-	dianaCazadora = Edificio("Models/DianaCupido.obj", &uniformModel, glm::vec3(0.0f, -1.0f, 175.0f), glm::vec3(4.0f, 5.0f, 4.0f));
+	dianaCazadora = Edificio("Models/DianaCupido.obj", &uniformModel, glm::vec3(0.0f, -1.0f, 175.0f), glm::vec3(3.5f, 4.5f, 3.5f));
 	dianaCazadora.setRotY(-180.0f);
 
 	bigWand = Edificio("Models/Padrinos/BigWand.obj", &uniformModel, glm::vec3(-190.0f, -0.5f, 265.0), glm::vec3(20.0f));
@@ -1152,7 +1244,14 @@ void InitializeModels() {
 	mutant_plant = Model();
 	mutant_plant.LoadModel("Models/DextersLab/MutantPlant.obj");
 
+	mutant_tallo = Model();
+	mutant_tallo.LoadModel("Models/DextersLab/Tallo_Prueba.obj");
 
+	mutant_Sup = Model();
+	mutant_Sup.LoadModel("Models/DextersLab/Mand_Sup_Prueba.obj");
+
+	mutant_Inf = Model();
+	mutant_Inf.LoadModel("Models/DextersLab/Mand_Inf_Prueba.obj");
 
 	//AVATAR (DEXTER)
 
@@ -1293,7 +1392,7 @@ void InitializeSkyboxes() {
 
 void InitializeLights() {
 	//APARTADO DE LUCES
-	//luz direccional, s�lo 1 y siempre debe de existir
+	//luz direccional, s lo 1 y siempre debe de existir
 
 	//contador de luces puntuales
 	lightControl = controladorLuces(duracionCicloDiayNoche, limitFPS, esDeDia, &mainLight);
@@ -1381,7 +1480,11 @@ void setCamera(GLint cameraNumber) {
 //------------------------------------Funciones para renderizado--------------------------------
 void renderAngelIndependencia() {
 
-	if (alaIzq && alaDer)
+	movAE86Llantas += giraAE86LlantaOffset * deltaTime;
+
+	giraRotonda -= giraRotondaOffset * deltaTime;
+
+	if (alaIzq)
 	{
 		if (anguloAlaIzq >= 0.0f)
 		{
@@ -1389,7 +1492,14 @@ void renderAngelIndependencia() {
 			giraAlaIzq += giraAlaOffset * deltaTime;
 			anguloAlaDer -= movAlaOffset * deltaTime;
 			giraAlaDer -= giraAlaOffset * deltaTime;
+
+			if (controlDeltaTimeDesborde0) {
+				anguloAlaIzq = 90.0f;
+				anguloAlaDer = 90.0f;
+				controlDeltaTimeDesborde = false;
+			}
 		}
+
 		else
 		{
 			alaIzq = false;
@@ -1414,7 +1524,7 @@ void renderAngelIndependencia() {
 	}
 
 	//Angel de la independencia
-	glm::mat4 model, modelaux2;
+	glm::mat4 model, modelaux2, modelauxAE86;
 
 	model = glm::mat4(1.0);
 	model = glm::translate(model, glm::vec3(5.0f, -1.0f, -530.0));
@@ -1425,6 +1535,7 @@ void renderAngelIndependencia() {
 	angel_independencia.RenderModel();
 
 	model = glm::translate(model, glm::vec3(0.0f, 28.5f, -0.5f));
+	model = glm::rotate(model, -70 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	model = glm::rotate(model, giraAlaIzq * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 
 	//Ala del angel 1
@@ -1437,6 +1548,7 @@ void renderAngelIndependencia() {
 	model = modelaux2;
 
 	model = glm::translate(model, glm::vec3(0.0f, 28.5f, -0.5f));
+	model = glm::rotate(model, 70 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	model = glm::rotate(model, giraAlaDer * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 
 	//Ala del angel 2
@@ -1444,6 +1556,61 @@ void renderAngelIndependencia() {
 	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	angel_independencia_ala.RenderModel();
+
+	model = modelaux2;
+
+	//AE86
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+	model = glm::rotate(model, giraRotonda * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+
+	model = glm::translate(model, glm::vec3(12.0f, 0.6f, 12.0));
+	model = glm::scale(model, glm::vec3(1.5f, 1.5f, 1.5f));
+	model = glm::rotate(model, -190 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	modelauxAE86 = model;
+	AE86.RenderModel();
+
+	model = glm::translate(model, glm::vec3(-0.25f, -0.15f, 0.6f));
+	model = glm::rotate(model, 135 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, movAE86Llantas * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
+
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0));
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	AE86_Llanta.RenderModel();
+
+	model = modelauxAE86;
+
+	model = glm::translate(model, glm::vec3(-0.25f, -0.15f, -0.65f));
+	model = glm::rotate(model, 135 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, movAE86Llantas * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
+
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0));
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	AE86_LlantaI.RenderModel();
+
+	model = modelauxAE86;
+
+	model = glm::translate(model, glm::vec3(-2.37f, -0.15f, 0.6f));
+	model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, movAE86Llantas * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
+
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0));
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	AE86_Llanta.RenderModel();
+
+	model = modelauxAE86;
+
+	model = glm::translate(model, glm::vec3(-2.37f, -0.15f, -0.65f));
+	model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, movAE86Llantas * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
+
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0));
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	AE86_LlantaI.RenderModel();
 
 }
 
@@ -1465,7 +1632,6 @@ void renderVespa() {
 
 }
 
-
 void renderBanquetasGenerales() {
 
 	//26 para largo es lo óptimo
@@ -1480,7 +1646,7 @@ void renderBanquetasGenerales() {
 	model = glm::rotate(model, 180 * toRadians, glm::vec3(1.0f, 0.0f, 0.0f));*/
 
 	//son solo las truncas?
-	glm::mat4 model,modelaux;
+	glm::mat4 model, modelaux;
 
 
 	//-----------------------Lado Izquierdo-----------------------------
@@ -1609,12 +1775,7 @@ void renderBanquetasGenerales() {
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	banqueta.RenderModel();
 
-
-
-
 }
-
-
 
 void renderBanquetaNormal() {
 
@@ -1658,8 +1819,6 @@ void renderBanquetaNormal() {
 	banqueta.RenderModel();
 
 }
-
-
 
 void renderBanquetaBaked() {
 
@@ -1708,7 +1867,6 @@ void renderBanquetaBaked() {
 
 }
 
-
 void renderLuminarias() {
 	glm::mat4 model;
 
@@ -1749,7 +1907,6 @@ void renderLuminarias() {
 
 }
 
-
 void renderReflector() {
 
 	glm::mat4 model;
@@ -1763,28 +1920,15 @@ void renderReflector() {
 
 }
 
-
-
 void renderMetrobus() {
-	//
-	//// Esto será indefinido
-	//rotacionAutomaticaRuedaZ += rotacionAutomaticaRuedaOffSet * deltaTime;
-	//float radio1 = 10.0f;
-	////metrobus rutina circunferencia
-	////metrobusZ = sqrt(double(pow(metrobusX, 2)) + double(pow(radio1, 2)));
-	//if (metrobusZ < 10.0f) {
-	//	//metrobusZ += traslacionMetrobusOffSet * deltaTime;
-	//}
-	//if (controlDeltaTimeDesborde2) {
-	//	metrobusZ = metrobusX = 0.0f;
-	//	controlDeltaTimeDesborde2 = false;
-	//}
-	//printf("(%f,%f,%f)\n", sqrt(pow(metrobusZ, 2)), metrobusY, metrobusZ);
-	glm::mat4 model,modelaux;
+	radioCircunferencia = 100.0f;
+	glm::mat4 model, modelaux;
 
 	model = glm::mat4(1.0);
-	//0.0f, -1.0f, 175.0f
-	model = glm::translate(model, glm::vec3(0.0f + sqrt(pow(100,2) - pow(metrobusZ,2)), 9.5f + metrobusY, 175.0f + metrobusZ));
+	//printf("(%f,%f,%f)\n", sqrt(pow(radioCircunferencia, 2) - pow(metrobusZ, 2)), 2.5f + metrobusY, metrobusZ);
+	model = glm::translate(model, glm::vec3(0.0f + metrobusX, 2.5f + metrobusY, 175.0f + metrobusZ));
+	model = glm::scale(model, glm::vec3(0.6f));
+	model = glm::rotate(model, giroDeMB * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	modelaux = model;
 	model = glm::scale(model, glm::vec3(12.0f));
 	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -1860,11 +2004,139 @@ void renderMetrobus() {
 	metrobus_llanta_izq.RenderModel();
 
 	model = modelaux;
+	
+	//printf("\t---------> %d (%f < %f)\n", metrobusZ < radioCircunferencia, metrobusZ, radioCircunferencia);
+	//metrobusZ = -200.0f;
+	//printf("Estamos en: (%f,\t%f,\t%f)\n", camera.getCameraPosition().x, camera.getCameraPosition().y, camera.getCameraPosition().z);
+	if (flagBus0) {
+		if (metrobusZ <= -100.0f) {
+			auxiliarDesbordamiento = metrobusZ;
+			metrobusZ += traslacionMetrobusOffSet * deltaTime;
+			if (controlDeltaTimeDesborde2) {
+				//printf("\t\t%f", auxiliarDesbordamiento);
+				metrobusZ = auxiliarDesbordamiento;
+				metrobusX = 30.0f;
+				controlDeltaTimeDesborde2 = false;
+			}
+			giroDeMBOffSet = 0.8;
+			if (metrobusZ >= -120.0f && metrobusZ < -55.0f) {
+				giroDeMB += giroDeMBOffSet * deltaTime;
+			}
+		}
+		else {
+			flagBus0 = false;
+			flagBus1 = true;
+		}
+	}
 
+	if (flagBus1) {
 
+		if (metrobusZ + 1 < radioCircunferencia - 4) {
+			preview = sqrt(pow(radioCircunferencia, 2) - pow(metrobusZ, 2));
+			metrobusX = (preview >= 30.0f) ? preview : 30.0f;
+			metrobusZ += traslacionMetrobusOffSet * deltaTime;
+			//<>
+			giroDeMBOffSet = 0.4;
+			if (metrobusZ < -55.0f) {
+				giroDeMB += giroDeMBOffSet * deltaTime;
+			}
+			if (metrobusZ >= -55.0f && metrobusZ < 75.0f) {
+				giroDeMB -= giroDeMBOffSet * deltaTime;
+			}
+			giroDeMBOffSet = 0.9;
+			if (metrobusZ >= 75.0f && metrobusZ < 95.0f) {
+				giroDeMB += giroDeMBOffSet * deltaTime;
+			}
+
+		}
+		else {
+			flagBus1 = false;
+			flagBus2 = true;
+		}
+	}
+	// -26 a 41 //33 de radio
+//<>
+	if (flagBus2) {
+		if (metrobusZ < 460.0f) {
+			metrobusZ += traslacionMetrobusOffSet * deltaTime;
+		}
+		else {
+			flagBus2 = false;
+			flagBus3 = true;
+		}
+	}
+
+	if (flagBus3) {
+		if (metrobusZ < 490.0f && flagBus4) {
+			metrobusZ += traslacionMetrobusOffSet * deltaTime;
+		}
+		else {
+			flagBus4 = false;
+			flagBus5 = true;
+			
+		}
+		
+
+		if (flagBus5) {
+			if (metrobusZ > 460.0f) {
+				metrobusZ -= traslacionMetrobusOffSet * deltaTime;
+				valorUnitario = -1.0f;
+			}
+			else {
+				flagBus3 = false;
+				flagBus6 = true;
+			}
+		}
+
+		diferenciaParaCalcularOrigen = metrobusZ - 460.0f;
+		radioCircunferencia = 30;
+		//metrobusZ + 1 < radioCircunferencia - 8
+		if (diferenciaParaCalcularOrigen + 1 < radioCircunferencia) {
+			metrobusX = valorUnitario * sqrt(pow(radioCircunferencia, 2) - pow(diferenciaParaCalcularOrigen, 2)) + 12;
+		}
+		giroDeMBOffSet =1.5;
+		giroDeMB -= giroDeMBOffSet * deltaTime;
+	}
+
+	if (flagBus6) {
+		if (metrobusZ > 91.0f) {
+			metrobusZ -= traslacionMetrobusOffSet * deltaTime;
+		}
+		else {
+			flagBus6 = false;
+			flagBus7 = true;
+		}
+	}
+	//<>
+	if (flagBus7) {
+		radioCircunferencia = 100.0f;
+		diferenciaParaCalcularOrigen = radioCircunferencia - (radioCircunferencia - metrobusZ);
+		preview = valorUnitario * sqrt(pow(radioCircunferencia, 2) - pow(diferenciaParaCalcularOrigen, 2));
+		
+		if (preview < -60.0f) {
+			metrobusX = preview;
+			//(,0)
+			if (metrobusZ >= 0.0f && metrobusZ < 100.0f) {
+				giroDeMBOffSet = 0.2f;
+				giroDeMB += giroDeMBOffSet * deltaTime;
+			}
+			else {
+				if (preview < -60.0f) {
+					giroDeMBOffSet = 0.2f;
+					giroDeMB -= giroDeMBOffSet * deltaTime;
+				}
+			}
+	
+		}
+		if (metrobusZ > -450.0f) {
+			metrobusZ -= traslacionMetrobusOffSet * deltaTime;
+		}
+		else {
+			flagBus7 = false;
+		}
+		
+	}
 }
-
-
 
 void renderHelicoptero() {
 
@@ -1887,10 +2159,10 @@ void renderHelicoptero() {
 		}
 	}
 	if (avanzaHelicoptero2) {
-		if (movHelicopteroX > -300.0f) {
+		if (movHelicopteroX > -400.0f) {
 			inclinacion = 0.4f;
 			movHelicopteroX -= movHelicopteroOffset * deltaTime;
-			if (movHelicopteroX < -50.0f) {
+			if (movHelicopteroX < -20.0f) {
 				movHelicopteroY -= movHelicopteroOffset * deltaTime;
 			}
 
@@ -2003,9 +2275,9 @@ void renderTimmyBus() {
 	glm::mat4 model;
 
 	model = glm::mat4(1.0);
-	model = glm::translate(model, glm::vec3(-35.0f, -0.5f, -260.0));
+	model = glm::translate(model, glm::vec3(-400, -0.5f, 190.0));
 	model = glm::scale(model, glm::vec3(15.0f, 15.0f, 15.0f));
-	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	//model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	bus_padrinos.RenderModel();
 
@@ -2095,13 +2367,13 @@ void renderBusStop() {
 }
 
 void renderLaPulga() {
-	
+
 
 	if (subeTorso)
 	{
 		if (anguloTorso > 0.0f)
 		{
-			
+
 			anguloTorso -= movTorsoOffset * deltaTime;
 			sube -= giraTorsoOffset * deltaTime;
 			//printf("Sube %f \n", sube);
@@ -2139,7 +2411,7 @@ void renderLaPulga() {
 	model = glm::scale(model, glm::vec3(0.7f, 0.7f, 0.7f));
 	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	modelauxPulga= model;
+	modelauxPulga = model;
 	laPulgaInferior.RenderModel();
 
 	model = glm::translate(model, glm::vec3(0.0f, 0.5f, -1.0f));
@@ -2151,8 +2423,6 @@ void renderLaPulga() {
 	laPulgaSuperior.RenderModel();
 	model = modelauxPulga;
 }
-
-
 
 void renderPerroRicochet() {
 	glm::mat4 model;
@@ -2197,6 +2467,7 @@ void renderBrickWall() {
 
 
 void renderFishyFish() {
+
 	glm::mat4 model;
 
 	model = glm::mat4(1.0);
@@ -2207,24 +2478,161 @@ void renderFishyFish() {
 	fish.RenderModel();
 }
 
-
-
 void renderMutantPlant() {
-	glm::mat4 model;
+	
+	if (MueveCabeza)
+	{
+		if (anguloCabeza > 0.0f)
+		{
+
+			anguloCabeza -= movCabezaOffset * deltaTime;
+			giraCabeza += giraCabezaOffset * deltaTime;
+			//printf("gira1 %f \n", anguloCabeza);
+
+			if (controlDeltaTimeDesborde) {
+				sube = 0.0f;
+				controlDeltaTimeDesborde = false;
+			}
+		}
+		else
+		{
+			MueveCabeza = false;
+		}
+	}
+
+	else
+	{
+		if (anguloCabeza < 90.0f)
+		{
+			anguloCabeza += movCabezaOffset * deltaTime;
+			giraCabeza -= giraCabezaOffset * deltaTime;
+			//printf("gira2 %f \n", anguloCabeza);
+		}
+		else
+		{
+			MueveCabeza = true;
+		}
+	}
+
+	if (MueveMandibula)
+	{
+		if (anguloMandibula > 55.0f)
+		{
+
+			anguloMandibula -= movMandibulaOffset * deltaTime;
+			giraMandibula += giraMandibulaOffset * deltaTime;
+			//printf("gira1 %f \n", anguloMandibula);
+
+			if (controlDeltaTimeDesborde) {
+				sube = 0.0f;
+				controlDeltaTimeDesborde = false;
+			}
+		}
+		else
+		{
+			MueveMandibula = false;
+		}
+	}
+
+	else
+	{
+		if (anguloMandibula < 100.0f)
+		{
+			anguloMandibula += movMandibulaOffset * deltaTime;
+			giraMandibula -= giraMandibulaOffset * deltaTime;
+			//printf("gira2 %f \n", anguloMandibula);
+		}
+		else
+		{
+			MueveMandibula = true;
+		}
+	}
+
+
+	glm::mat4 model,modelAuxInf,modelAuxSup;
 
 	model = glm::mat4(1.0);
-	model = glm::translate(model, glm::vec3(270.0f, 58.0f, 410.0f));
-	model = glm::scale(model, glm::vec3(14.0f));
-	model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::translate(model, glm::vec3(-320.0f, 0.0f, 265.0f));
+	model = glm::scale(model, glm::vec3(12.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	mutant_plant.RenderModel();
+	modelAuxInf = modelAuxSup = model;
+	mutant_tallo.RenderModel();
+
+	model = glm::translate(model, glm::vec3(-0.7f, 2.1f, 0.0f));
+	model = glm::rotate(model, 40 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, giraCabeza * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(1.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	modelAuxSup = model;
+	mutant_Inf.RenderModel();
+
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::rotate(model, giraMandibula * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
+
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(1.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	mutant_Sup.RenderModel();
+
+	//planta 2
 
 	model = glm::mat4(1.0);
-	model = glm::translate(model, glm::vec3(270.0f, 58.0f, 455.0f));
-	model = glm::scale(model, glm::vec3(14.0f));
+	model = glm::translate(model, glm::vec3(270.0f, 0.0f, 410.0f));
+	model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(12.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	modelAuxInf = modelAuxSup = model;
+	mutant_tallo.RenderModel();
+
+	model = glm::translate(model, glm::vec3(-0.7f, 2.1f, 0.0f));
+	model = glm::rotate(model, 40 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, giraCabeza * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(1.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	modelAuxSup = model;
+	mutant_Inf.RenderModel();
+
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::rotate(model, giraMandibula * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
+
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(1.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	mutant_Sup.RenderModel();
+
+	//Planta 3
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(270.0f, 0.0f, 455.0f));
+	model = glm::scale(model, glm::vec3(12.0f));
 	model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	mutant_plant.RenderModel();
+	modelAuxInf = modelAuxSup = model;
+	mutant_tallo.RenderModel();
+
+	model = glm::translate(model, glm::vec3(-0.7f, 2.1f, 0.0f));
+	model = glm::rotate(model, 40 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, giraCabeza * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(1.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	modelAuxSup = model;
+	mutant_Inf.RenderModel();
+
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::rotate(model, giraMandibula * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
+
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(1.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	mutant_Sup.RenderModel();
 
 }
 
@@ -2422,9 +2830,9 @@ void renderNaveDexter() {
 		if (movNaveZ > -1275.0f) {
 			movNaveZ -= movNaveOffset * deltaTime;
 			//printf("ValorZ1: %f \n", movNaveZ);
-			if (controlDeltaTimeDesborde) {
+			if (controlDeltaTimeDesborde0) {
 				movNaveZ = 0.0f;
-				controlDeltaTimeDesborde = false;
+				controlDeltaTimeDesborde0 = false;
 			}
 		}
 		else {
@@ -2473,7 +2881,7 @@ void renderNaveDexter() {
 	glm::mat4 model, modelauxNave;
 
 	model = glm::mat4(1.0);
-	model = glm::translate(model, glm::vec3(120.0f + movNaveX, 100.0f, 600.0 + movNaveZ));
+	model = glm::translate(model, glm::vec3(120.0f + movNaveX, 150.0f, 600.0 + movNaveZ));
 	model = glm::scale(model, glm::vec3(18.0f, 18.0f, 18.0f));
 	model = glm::rotate(model, rotacionNave * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	model = glm::rotate(model, -inclinacionNave * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
@@ -2499,40 +2907,36 @@ void renderNaveDexter() {
 
 void renderPuertaReja() {
 	//PUERTA METÁLICA CON MARCO PARA LETRERO, PARA PRACTICA 08
-	glm::mat4 model, modelaux;
-
+	glm::mat4 model, modelauxPuerta;
 
 	model = glm::mat4(1.0);
-	modelaux = model;
-
 	model = glm::translate(model, glm::vec3(-3.0f, -0.95f, -780.0f));
-	modelaux = model;
 	model = glm::scale(model, glm::vec3(65.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	modelauxPuerta = model;
 	puerta_reja.RenderModel();
 
-	model = modelaux;
+	model = glm::translate(model, glm::vec3(-1.05f, 0.8f, 0.0f));
+	model = glm::rotate(model, glm::radians(mainWindow.getarticulacion_puerta()), glm::vec3(0.0f, 1.0f, 0.0f));
 
-	//REJA DERECHA (esta es la que rotaba)
-	model = glm::translate(model, glm::vec3(-65.5f, 52.6f, 0.0f)); //52.5 en y antes, 65.0 en x
-	model = glm::scale(model, glm::vec3(65.0f));
+	//REJA DERECHA
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); //52.5 en y antes, 65.0 en x
+	model = glm::scale(model, glm::vec3(1.0f));
 	model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	reja_der.RenderModel();
 
-	model = modelaux;
-
-
+	model = modelauxPuerta;
 
 	//REJA IZQUIERDA
-	model = glm::translate(model, glm::vec3(36.5f, 1.0f, 0.0f)); //40 en x antes
-	model = glm::scale(model, glm::vec3(65.0f));
+	model = glm::translate(model, glm::vec3(1.05f, 0.85f, 0.0f));
+	model = glm::rotate(model, glm::radians(mainWindow.getarticulacion_puerta2()), glm::vec3(0.0f, 1.0f, 0.0f));
+	
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); //40 en x antes
+	model = glm::scale(model, glm::vec3(1.0f));
 	model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	reja_izq.RenderModel();
-
-	model = modelaux;
-
 }
 
 void renderCamellon() {
@@ -2644,7 +3048,7 @@ void renderCamellon() {
 	camellon.RenderModel();
 
 	model = modelaux;
-	
+
 	model = glm::mat4(1.0);
 	model = glm::translate(model, glm::vec3(-3.0f, -1.0f, 365.0));
 	model = glm::scale(model, glm::vec3(6.0f, 10.0f, 10.0f));
@@ -2708,8 +3112,29 @@ void renderCamellon() {
 	camellon.RenderModel();
 }
 
+void renderLetrasAstrodomo() {
+	
+	rotacionLetras += rotacionLetrasOffset * deltaTime;
 
+	glm::mat4 model, modelauxAstrodomo;
 
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-305.0f, -2.0f, -55.0f));
+	model = glm::scale(model, glm::vec3(4.8f, 4.8f, 4.8f));
+	model = glm::rotate(model, 90.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	modelauxAstrodomo = model;
+	Astrodomo.RenderModel();
+
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+	model = glm::rotate(model, rotacionLetras * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+
+	model = glm::translate(model, glm::vec3(1.0f, 0.0f, 1.0));
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	AstrodomoLetras.RenderModel();
+
+}
 /*
 Código retirado del main que no sé si se va a necesitar en algun momento;.
 
@@ -2742,7 +3167,7 @@ Código retirado del main que no sé si se va a necesitar en algun momento;.
 
 	//DEJO COMENTADO EL INSTANCIAMIENTO DEL AGAVE PARA PRUEBAS DE BLENDING
 
-		////Agave �qu� sucede si lo renderizan antes del coche y el helic�ptero?
+		////Agave  qu  sucede si lo renderizan antes del coche y el helic ptero?
 		//model = glm::mat4(1.0);
 		//model = glm::translate(model, glm::vec3(0.0f, 1.0f, -4.0f));
 		//model = glm::scale(model, glm::vec3(4.0f, 4.0f, 4.0f));

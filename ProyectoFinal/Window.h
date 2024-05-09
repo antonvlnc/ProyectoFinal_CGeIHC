@@ -16,6 +16,7 @@ public:
 	GLfloat getmuevex() { return muevex; }
 	GLfloat getarticulacion_capo() { return articulacion_capo; }
 	GLfloat getarticulacion_puerta() { return articulacion_puerta; }
+	GLfloat getarticulacion_puerta2() { return articulacion_puerta2; }
 	GLfloat getarticulacion_avanza() { return articulacion_avanza; }
 	GLfloat getarticulacion_reversa() { return articulacion_reversa; }
 	GLfloat getarticulacion_gira_der() { return articulacion_gira_der; }
@@ -71,7 +72,7 @@ private:
 	GLint luz_del = 1;
 	GLint luz_tras = 0;
 	GLfloat anguK = 0.0f;
-	GLfloat muevex, articulacion_capo, articulacion_puerta, articulacion_avanza, articulacion_reversa, articulacion_gira_der, articulacion_gira_izq, avanza_retrocede, avanza_retrocede_helicoptero, avanza_helicoptero, retrocede_helicoptero;
+	GLfloat muevex, articulacion_capo, articulacion_puerta,articulacion_puerta2, articulacion_avanza, articulacion_reversa, articulacion_gira_der, articulacion_gira_izq, avanza_retrocede, avanza_retrocede_helicoptero, avanza_helicoptero, retrocede_helicoptero;
 	bool mouseFirstMoved;
 	GLboolean MusicaSi;
 	//Avatar
