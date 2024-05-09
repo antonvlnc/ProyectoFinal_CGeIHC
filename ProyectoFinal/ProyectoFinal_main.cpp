@@ -291,7 +291,7 @@ Edificio fountain;
 Model laPulga;
 
 Edificio astrodomo;
-Edificio slamminDonuts;
+Model slamminDonuts;
 
 Model tienda_donas;
 Model laPulgaInferior;
@@ -412,6 +412,7 @@ void renderRoadBlock();
 
 void renderBusStop();
 
+void renderSlamminDonuts();
 
 void renderTrafficLight();
 
@@ -664,6 +665,9 @@ int main()
 
 		renderBrickWall();
 
+
+
+
 		trafficLightAngel.renderModel();
 		trafficLightEstela.renderModel();
 
@@ -722,7 +726,9 @@ int main()
 		renderLaPulga();
 
 		//Slammin Donuts
-		slamminDonuts.renderModel();
+		/*slamminDonuts.renderModel();*/
+
+		renderSlamminDonuts();
 
 		//Academy
 		academy.renderModel();
@@ -1071,8 +1077,12 @@ void InitializeModels() {
 	AstrodomoLetras = Model();
 	AstrodomoLetras.LoadModel("Models/MuchaLucha/AstrodomoLetras.obj");
 
-	slamminDonuts = Edificio("Models/MuchaLucha/SlamminDonuts.obj", &uniformModel, glm::vec3(-275.0f, 0.5f, -580.0), glm::vec3(1.6f));
-	slamminDonuts.setRotY(90.0f);
+	/*slamminDonuts = Edificio("Models/MuchaLucha/SlamminDonuts.obj", &uniformModel, glm::vec3(-275.0f, 0.5f, -580.0), glm::vec3(1.6f));
+	slamminDonuts.setRotY(90.0f);*/
+
+	slamminDonuts = Model();
+	slamminDonuts.LoadModel("Models/MuchaLucha/SlamminDonuts.obj");
+
 
 	laPulgaInferior = Model();
 	laPulgaInferior.LoadModel("Models/MuchaLucha/LaPulga_Inferior.obj");
@@ -1162,7 +1172,7 @@ void InitializeModels() {
 	mutant_Inf.LoadModel("Models/DextersLab/Mand_Inf_Prueba.obj");
 
 	//AVATAR (DEXTER)
-	dexter = MainAvatar(glm::vec3(0.0f, 0.5f, -700.0f), 0.0f, glm::vec3(3.0f, 3.0f, 3.0f), 0.3); 
+	dexter = MainAvatar(glm::vec3(0.0f, 0.5f, -850.0f), 0.0f, glm::vec3(3.0f, 3.0f, 3.0f), 0.3); 
 
 
 	//-------------------------Modelos Ratatouille-----------------------------------------
@@ -1373,24 +1383,22 @@ void renderAngelIndependencia() {
 
 	if (alaIzq)
 	{
-		if (anguloAlaIzq >= 0.0f)
+		if (anguloAlaIzq > 0.0f)
 		{
 			anguloAlaIzq -= movAlaOffset * deltaTime;
 			giraAlaIzq += giraAlaOffset * deltaTime;
-			anguloAlaDer -= movAlaOffset * deltaTime;
-			giraAlaDer -= giraAlaOffset * deltaTime;
+			//printf("Valor: %f \n", anguloAlaIzq);
 
 			if (controlDeltaTimeDesborde0) {
-				anguloAlaIzq = 90.0f;
-				anguloAlaDer = 90.0f;
 				controlDeltaTimeDesborde = false;
+				anguloAlaIzq = 90.0f;
+
 			}
 		}
 
 		else
 		{
 			alaIzq = false;
-			alaDer = false;
 		}
 	}
 
@@ -1400,12 +1408,41 @@ void renderAngelIndependencia() {
 		{
 			anguloAlaIzq += movAlaOffset * deltaTime;
 			giraAlaIzq -= giraAlaOffset * deltaTime;
+		}
+		else
+		{
+			alaIzq = true;
+		}
+	}
+
+
+	if (alaDer)
+	{
+		if (anguloAlaDer >= 0.0f)
+		{
+			anguloAlaDer -= movAlaOffset * deltaTime;
+			giraAlaDer -= giraAlaOffset * deltaTime;
+			if (controlDeltaTimeDesborde0) {
+				controlDeltaTimeDesborde = false;
+				anguloAlaDer = 90.0f;
+
+			}
+		}
+		else
+		{
+			alaDer = false;
+		}
+	}
+
+	else
+	{
+		if (anguloAlaDer <= 90.0f)
+		{
 			anguloAlaDer += movAlaOffset * deltaTime;
 			giraAlaDer += giraAlaOffset * deltaTime;
 		}
 		else
 		{
-			alaIzq = true;
 			alaDer = true;
 		}
 	}
@@ -1422,7 +1459,7 @@ void renderAngelIndependencia() {
 	angel_independencia.RenderModel();
 
 	model = glm::translate(model, glm::vec3(0.0f, 28.5f, -0.5f));
-	model = glm::rotate(model, -70 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, -20 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	model = glm::rotate(model, giraAlaIzq * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 
 	//Ala del angel 1
@@ -1435,7 +1472,7 @@ void renderAngelIndependencia() {
 	model = modelaux2;
 
 	model = glm::translate(model, glm::vec3(0.0f, 28.5f, -0.5f));
-	model = glm::rotate(model, 70 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, 20 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	model = glm::rotate(model, giraAlaDer * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 
 	//Ala del angel 2
@@ -2350,6 +2387,22 @@ void renderFishyFish() {
 	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	fish.RenderModel();
+}
+
+void renderSlamminDonuts() {
+
+	glm::mat4 model;
+
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-275.0f, 0.5f, -580.0));
+	model = glm::scale(model, glm::vec3(1.6f));
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	slamminDonuts.RenderModel();
 }
 
 void renderMutantPlant() {
