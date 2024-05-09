@@ -192,7 +192,6 @@ Texture brickTexture;
 Texture dirtTexture;
 Texture plainTexture;
 Texture pisoTexture;
-Texture AgaveTexture;
 Texture reforma_layout; //piso
 Texture reforma_layout_baked; //piso
 Texture AstrodomoTexture;
@@ -209,15 +208,10 @@ Edificio casaDexter;
 Model nave_cabina;
 Model nave_extra;
 
-
-
-
-
 //GENERAL
 Model luminaria;
 Model angel_independencia;
 Model angel_independencia_ala;
-Model bbva;
 
 Model helicoptero_base;
 Model helicoptero_helice;
@@ -231,7 +225,6 @@ Model reja_der;
 
 Lampara trafficLightAngel;
 Lampara trafficLightEstela;
-//Model traffic_light;
 
 Model brick_wall;
 Model brick_wall_corner;
@@ -253,7 +246,6 @@ Model AE86_LlantaI;
 Model jacaranda;
 
 
-Lampara luminariaP8;
 
 Model RoadBlock;
 Model BusStop;
@@ -322,7 +314,6 @@ Model AstrodomoLetras;
 
 
 //SKYBOX
-Skybox skybox;	//Default
 Skybox currentSkybox; //Skybox que se renderiza
 Skybox dia;
 Skybox noche;
@@ -347,6 +338,7 @@ void calcAverageNormals(unsigned int* indices, unsigned int indiceCount, GLfloat
 	unsigned int vLength, unsigned int normalOffset);
 
 void CreateObjects();
+
 void CreateShaders();
 
 void InitializeModels();
@@ -360,6 +352,7 @@ void InitializeLights();
 void InitializeCameras();
 
 void selectSkybox(int skyboxNumber);
+
 void setCamera(GLint cameraNumber);
 
 void renderAngelIndependencia();
@@ -379,8 +372,8 @@ void renderNaveDexter();
 void renderCamellon();
 
 void renderMetrobus();
+
 void renderPuertaReja();
-//void renderEstela(); //prueba para textura con iluminacion cocinada
 
 void renderBanquetasGenerales();	//Las que no cambiarán
 
@@ -436,7 +429,6 @@ int main()
 	InitializeSkyboxes();
 	InitializeCameras();
 
-	//camera = Camera(glm::vec3(0.0f, 100.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), -60.0f, 0.0f, 5.5f, 0.5f);
 
 
 	glm::mat4 model(1.0);
@@ -521,7 +513,7 @@ int main()
 	busZ = 0.0f;
 	busOffset = 1.0f;
 
-	//Animacion metrobus //------------------SONIDO-----------------------//------------------SONIDO-----------------------//------------------SONIDO-----------------------//------------------SONIDO-----------------------//------------------SONIDO-----------------------//------------------SONIDO-----------------------//------------------SONIDO-----------------------//------------------SONIDO-----------------------
+	//Animacion metrobus 
 	flagBus0 = true;
 	flagBus4 = true;
 	flagBus1 = flagBus2 = flagBus3 = flagBus5 = flagBus6 = flagBus7 = flagBus8 = flagBus9 = flagBus10 = flagBus11 = flagBus12 = flagBus13 = false;
@@ -536,18 +528,19 @@ int main()
 	preview = 0.0f;
 	giroDeMB = 0.0f;
 	giroDeMBOffSet = 0.0f;
+
 	//------------------SONIDO-----------------------
-	////Ambiental
-	//ISoundEngine* Ambiental = createIrrKlangDevice();
-	//Ambiental->play2D("Sound/Ambiental.wav", true);
-	//Ambiental->setSoundVolume(0.8f);
+	//Ambiental
+	ISoundEngine* Ambiental = createIrrKlangDevice();
+	Ambiental->play2D("Sound/Ambiental.wav", true);
+	Ambiental->setSoundVolume(0.8f);
 
-	//////Pista de fondo
-	//ISoundEngine* Intro = createIrrKlangDevice();
-	//Intro->play2D("Sound/Dexter_Pista.wav", true); //cambiar a cancion en loop sin la voz
-	//Intro->setSoundVolume(0.1f);
+	////Pista de fondo
+	ISoundEngine* Intro = createIrrKlangDevice();
+	Intro->play2D("Sound/Dexter_Pista.wav", true); //cambiar a cancion en loop sin la voz
+	Intro->setSoundVolume(0.1f);
 
-	////Sonido con teclado (Pendiente)
+	//Sonido con teclado (Pendiente)
 	/*ISoundEngine* AstrodomoSound = createIrrKlangDevice();
 	AstrodomoSound->play2D("Sound/Mucha_Lucha.wav", true);
 	AstrodomoSound->setSoundVolume(0.1f);*/
@@ -564,37 +557,14 @@ int main()
 		lastTime = now;
 
 		//Luz Direccional, seleccion de skybox
-
 		esDeDia = lightControl.recalculateDirectionalLight(deltaTime);
-		
-
-
 		lightControl.setSkyboxNumber();
 		selectSkybox(lightControl.getSkyboxNumber());
 
-
 		//Recibir eventos del usuario
 		glfwPollEvents();
-		/*camera.keyControl(mainWindow.getsKeys(), deltaTime);
-		camera.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());*/
 
 		setCamera(mainWindow.getTipoCamara());
-		/*camRot = glm::rotate(camRot, glm::radians(mainWindow.getRotacionAvatar()), glm::vec3(0.0f, 1.0f, 0.0f));
-		camPos = dexter.getPos() + glm::vec3(camRot * camoffset);
-		camaraAvatar.mouseControl( mainWindow.getRotacionAvatar(), 0.0f);
-		camaraAvatar.setPosicionX(camPos.x);
-		camaraAvatar.setPosicionY(camPos.y);
-		camaraAvatar.setPosicionZ(camPos.z);*/
-		//-------------------------------------------------------------------------
-
-		/*model = glm::mat4(1.0);
-		dexRotPos = glm::vec4(dexter.getPos(), 1.0);
-
-		model = glm::rotate(model, glm::radians(dexter.getRotY()), glm::vec3(0.0f, 1.0f, 0.0f));
-
-		dexRotPos = model * dexRotPos;*/
-
-		//
 
 		//-------------------------------------------------------------------------
 
@@ -624,7 +594,6 @@ int main()
 		lightControl.animateSpotlight(deltaTime);
 		lightControl.animateTrafficLight();
 		lightControl.chooseSpotLightsArray(esDeDia);
-
 		lightControl.choosePointLightsArray(mainWindow.getLuzActivable());
 
 		//informaci n al shader de fuentes de iluminaci n
@@ -638,15 +607,8 @@ int main()
 		glm::mat4 modelaux(1.0);
 		glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
 
-
-		model = modelaux;
-
 		//PISO 2
-
 		//Más piso para el letrero y letras de Dimmsdale
-
-		/*glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);*/
-
 		model = glm::mat4(1.0);
 		model = glm::translate(model, glm::vec3(0.0f, -1.0f, 850.0f));
 		model = glm::scale(model, glm::vec3(450.0f, 1.0f, 150.0f));
@@ -659,7 +621,6 @@ int main()
 
 
 		//Piso 3
-
 		model = glm::mat4(1.0);
 		model = glm::translate(model, glm::vec3(0.0f, -1.0f, -850.0f));
 		model = glm::scale(model, glm::vec3(450.0f, 1.0f, 150.0f));
@@ -670,10 +631,6 @@ int main()
 		Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
 		meshList[2]->RenderMesh();
 
-
-
-		//INSTANCIAMIENTO DE LOS MODELOS
-		//X para ancho del mapa y Z para largo del mapa
 
 
 		//--------------------Modelos Generales del mundo-------------------
@@ -703,22 +660,12 @@ int main()
 
 		//banqueta normal
 
-		
 		renderBanquetasGenerales();
-
 
 		renderBrickWall();
 
-		
-
-		//renderTrafficLight();
-
 		trafficLightAngel.renderModel();
 		trafficLightEstela.renderModel();
-
-
-
-
 
 		if (esDeDia) {
 			renderBanquetaNormal();
@@ -731,9 +678,6 @@ int main()
 
 			reforma_layout.UseTexture();
 			Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
-
-
-			//RENDERIZAMOS EL PISO
 			meshList[2]->RenderMesh();
 		}
 		else {
@@ -747,13 +691,8 @@ int main()
 
 			reforma_layout_baked.UseTexture();
 			Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
-
-
-			//RENDERIZAMOS EL PISO
 			meshList[2]->RenderMesh();
 		}
-
-		//Banqueta con luz cocinada
 
 
 		//reflector
@@ -769,7 +708,6 @@ int main()
 
 		//BusStop
 		renderBusStop();
-
 
 		//Puerta con reja
 		renderPuertaReja();
@@ -815,7 +753,6 @@ int main()
 		//Big Wand
 		bigWand.renderModel();
 
-
 		//Bus
 		renderTimmyBus();
 
@@ -841,8 +778,6 @@ int main()
 			letrero_dimmsdale_baked.renderModel();
 		}
 		
-		
-
 		//Doidle
 		renderDoidle();
 
@@ -889,9 +824,6 @@ int main()
 		//nave dexter
 		renderNaveDexter();
 
-
-		//MODELO DE LUMINARIA PARA REPORTE 08
-		//luminariaP8.renderModel();
 
 		glUseProgram(0);
 		mainWindow.swapBuffers();
@@ -1031,8 +963,6 @@ void InitializeModels() {
 
 	//Estela de luz
 	estelaDeLuz = Edificio("Models/Estela.obj", &uniformModel, glm::vec3(245.0f, -1.0f, 740.0f), glm::vec3(5.0f));
-	/*estela_de_luz = Model();
-	estela_de_luz.LoadModel("Models/Estela.obj");*/
 
 	//Cuerpo del helicoptero
 	helicoptero_base = Model();
@@ -1042,13 +972,11 @@ void InitializeModels() {
 	helicoptero_helice = Model();
 	helicoptero_helice.LoadModel("Models/Helicoptero_Helice.obj");
 
-	//camellon por piezas
-
+	//Camellon por piezas
 	camellon = Model();
 	camellon.LoadModel("Models/Camellon.obj");
 
 	//Metrobus
-
 	metrobus = Model();
 	metrobus.LoadModel("Models/Metrobus.obj");
 
@@ -1060,22 +988,12 @@ void InitializeModels() {
 	metrobus_llanta_der = Model();
 	metrobus_llanta_der.LoadModel("Models/MetrobusLlantaDer.obj");
 
-	/*traffic_light = Model();
-	traffic_light.LoadModel("Models/TrafficLight.obj");
-		model = glm::mat4(1.0);*/
 
-
-
+	//Semaforos
 	trafficLightAngel = Lampara("Models/TrafficLight.obj", &uniformModel, glm::vec3(75.0f, 0.0f, 55.0f), glm::vec3(17.0f));
 	trafficLightAngel.setRotY(180.0);
 
 	trafficLightEstela = Lampara("Models/TrafficLight.obj", &uniformModel, glm::vec3(-80.0f, 0.0f, 275.0f), glm::vec3(17.0f));
-
-
-
-	//LUMINARIA PARA REPORTE 08
-
-	luminariaP8 = Lampara("Models/luminaria_text.obj", &uniformModel, glm::vec3(-90.0f, -0.95f, -100.0f), glm::vec3(4.0f));
 
 	//Puerta con reja
 	puerta_reja = Model();
@@ -1094,9 +1012,6 @@ void InitializeModels() {
 
 	brick_wall_corner = Model();
 	brick_wall_corner.LoadModel("Models/BrickWallCorner.obj");
-
-
-
 
 	//Banqueta esquina
 	banqueta_esquina = Model();
@@ -1117,7 +1032,6 @@ void InitializeModels() {
 	//reflector
 	reflector = Model();
 	reflector.LoadModel("Models/Reflector.obj");
-
 
 	//LUMINARIA
 	street_lamp = Model();
@@ -1157,13 +1071,11 @@ void InitializeModels() {
 	AstrodomoLetras = Model();
 	AstrodomoLetras.LoadModel("Models/MuchaLucha/AstrodomoLetras.obj");
 
-
 	slamminDonuts = Edificio("Models/MuchaLucha/SlamminDonuts.obj", &uniformModel, glm::vec3(-275.0f, 0.5f, -580.0), glm::vec3(1.6f));
 	slamminDonuts.setRotY(90.0f);
 
 	laPulgaInferior = Model();
 	laPulgaInferior.LoadModel("Models/MuchaLucha/LaPulga_Inferior.obj");
-
 
 	laPulgaSuperior = Model();
 	laPulgaSuperior.LoadModel("Models/MuchaLucha/LaPulga_Superior.obj");
@@ -1222,12 +1134,8 @@ void InitializeModels() {
 
 	letrero_dimmsdale_baked = Edificio("Models/Padrinos/DimsdaleSignBaked.obj", &uniformModel, glm::vec3(230.0f, 1.0f, -620.0), glm::vec3(1.9f));
 
-	//letrero_dimmsdale_baked.setRotY(180.0f);
-
 	doidle = Model();
 	doidle.LoadModel("Models/Padrinos/Doidle.obj");
-
-
 
 
 	//----------Modelos Lab. de Dexter---------------------
@@ -1254,8 +1162,7 @@ void InitializeModels() {
 	mutant_Inf.LoadModel("Models/DextersLab/Mand_Inf_Prueba.obj");
 
 	//AVATAR (DEXTER)
-
-	dexter = MainAvatar(glm::vec3(0.0f, 0.5f, -650.0f), 0.0f, glm::vec3(3.0f, 3.0f, 3.0f), 0.3); //dexter = MainAvatar(glm::vec3(0.0f, 0.5f, -650.0f), 15.0f, glm::vec3(3.0f, 3.0f, 3.0f));
+	dexter = MainAvatar(glm::vec3(0.0f, 0.5f, -700.0f), 0.0f, glm::vec3(3.0f, 3.0f, 3.0f), 0.3); 
 
 
 	//-------------------------Modelos Ratatouille-----------------------------------------
@@ -1275,12 +1182,10 @@ void InitializeModels() {
 
 
 	//Anuncio Gusteau's
-
 	gusteau_sign = Edificio("Models/Ratatouille/GusteauSign.obj", &uniformModel, glm::vec3(-357.0f, 145.0f, 575.0), glm::vec3(35.0f));
 	gusteau_sign.setRotY(90.0f);
 
 	//Torre Eiffel
-
 	eiffel = Edificio("Models/Ratatouille/eiffel.obj", &uniformModel, glm::vec3(-357.0f, 0.0f, 720.0), glm::vec3(2.0f));
 	eiffel.setRotY(90.0f);
 
@@ -1293,15 +1198,6 @@ void InitializeModels() {
 	fountain = Edificio("Models/Ratatouille/fountain.obj", &uniformModel, glm::vec3(-210.0f, 0.0f, 575.0), glm::vec3(25.0f));
 	fountain.setRotY(90.0f);
 
-
-
-
-
-
-
-
-	//camera = Camera(glm::vec3(370.0f, 712.0f, 285.0), glm::vec3(0.0f, 1.0f, 0.0f), -60.0f, 0.0f, 5.5f, 0.5f);
-
 }
 
 void InitializeTextures() { //Texturas y skybox
@@ -1313,8 +1209,7 @@ void InitializeTextures() { //Texturas y skybox
 	plainTexture.LoadTextureA();
 	pisoTexture = Texture("Textures/piso.tga");
 	pisoTexture.LoadTextureA();
-	AgaveTexture = Texture("Textures/Agave.tga");
-	AgaveTexture.LoadTextureA();
+
 
 	reforma_layout = Texture("Textures/reforma_layout.png"); //piso normal
 	reforma_layout.LoadTextureA();
@@ -1333,15 +1228,6 @@ void InitializeTextures() { //Texturas y skybox
 
 void InitializeSkyboxes() {
 
-	std::vector<std::string> skyboxFaces;
-	skyboxFaces.push_back("Textures/Skybox/sky-right.jpg");
-	skyboxFaces.push_back("Textures/Skybox/sky-left.jpg");
-	skyboxFaces.push_back("Textures/Skybox/sky-down.jpg");
-	skyboxFaces.push_back("Textures/Skybox/sky-up.jpg");
-	skyboxFaces.push_back("Textures/Skybox/sky-front.jpg");
-	skyboxFaces.push_back("Textures/Skybox/sky-back.jpg");
-
-	skybox = Skybox(skyboxFaces);
 
 	//Dia caricatura
 	std::vector<std::string> skyboxFaces2;
@@ -1417,6 +1303,7 @@ void InitializeCameras() {
 }
 
 //Otros 
+
 void selectSkybox(int skyboxNumber) {
 	//Asigna el skybox que se va a renderizar a current.
 
@@ -1434,7 +1321,7 @@ void selectSkybox(int skyboxNumber) {
 		currentSkybox = noche;
 		break;
 	default:
-		currentSkybox = skybox;
+		currentSkybox = dia;
 		break;
 	}
 
@@ -1613,11 +1500,6 @@ void renderAngelIndependencia() {
 	AE86_LlantaI.RenderModel();
 
 }
-
-
-
-
-
 
 void renderVespa() {
 
@@ -2162,7 +2044,7 @@ void renderHelicoptero() {
 		if (movHelicopteroX > -400.0f) {
 			inclinacion = 0.4f;
 			movHelicopteroX -= movHelicopteroOffset * deltaTime;
-			if (movHelicopteroX < -20.0f) {
+			if (movHelicopteroX < -50.0f) {
 				movHelicopteroY -= movHelicopteroOffset * deltaTime;
 			}
 
@@ -2254,11 +2136,6 @@ void renderHelicoptero() {
 	modelauxHeli = model;
 	helicoptero_base.RenderModel();
 
-	//Mousequeherramienta misteriosa que nos servirá para despues
-	//Previo prueba cambio de perspectiva
-	/*camera.setPosicionX(350.0f + movHelicopteroX);
-	camera.setPosicionY(702.0f + movHelicopteroY);
-	camera.setPosicionZ(285.0 + movHelicopteroZ);*/
 
 	model = glm::translate(model, glm::vec3(0.5f, 23.5f, 0.0f));
 	model = glm::rotate(model, movHelice * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -2435,8 +2312,6 @@ void renderPerroRicochet() {
 	perro_ricochet.RenderModel();
 }
 
-
-
 void renderBrickWall() {
 	glm::mat4 model,modelaux;
 
@@ -2464,7 +2339,6 @@ void renderBrickWall() {
 
 
 }
-
 
 void renderFishyFish() {
 
@@ -2636,9 +2510,6 @@ void renderMutantPlant() {
 
 }
 
-
-
-
 void renderDoidle() {
 	glm::mat4 model;
 
@@ -2708,9 +2579,6 @@ void renderTrashcan() {
 	trashcan.RenderModel();
 }
 
-
-
-
 void renderTaxi() {
 
 	glm::mat4 model;
@@ -2763,7 +2631,6 @@ void renderTokyoTree() {
 	tokyo_tree.RenderModel();
 
 }
-
 
 void renderJacarandas() {
 
@@ -2819,7 +2686,6 @@ void renderJacarandas() {
 
 
 }
-
 
 void renderNaveDexter() {
 
@@ -3135,93 +3001,3 @@ void renderLetrasAstrodomo() {
 	AstrodomoLetras.RenderModel();
 
 }
-/*
-Código retirado del main que no sé si se va a necesitar en algun momento;.
-
-	glm::mat4 dexRotPos(1.0f);
-
-	dexRotPos = glm::rotate(dexRotPos, glm::radians(dexter.getRotY()), glm::vec3(0.0f, 1.0f, 0.0f));
-
-	glm::vec4 CamPos(dexter.getPos(), 1.0f);
-	glm::vec4 desp(0.0f, 15.0f, -35.0f,0.0f);
-
-	glm::vec4 CamPos(dexter.getPos(), 1.0f);
-
-		////dexRotPos = glm::rotate(dexRotPos, glm::radians(dexter.getRotY()), glm::vec3(0.0f, 1.0f, 0.0f));
-		//dexRotPos = glm::rotate(dexRotPos, glm::radians(mainWindow.getRotacionAvatar()), glm::vec3(0.0f, 1.0f, 0.0f));
-		//CamPos = dexRotPos * (CamPos + desp);
-
-
-		//camera.setPosicionX(CamPos.x);
-		//camera.setPosicionY(CamPos.y);
-		//camera.setPosicionZ(CamPos.z);
-
-	movCoche = 0.0f;
-	movOffset = 0.8f;
-	rotllanta = 0.0f;
-	rotllantaOffset = 5.0f;
-	rotPuertaOffset = 5.0f;
-	avanza = true;
-	abre = true;
-	rotPuerta = 0.5f;
-
-	//DEJO COMENTADO EL INSTANCIAMIENTO DEL AGAVE PARA PRUEBAS DE BLENDING
-
-		////Agave  qu  sucede si lo renderizan antes del coche y el helic ptero?
-		//model = glm::mat4(1.0);
-		//model = glm::translate(model, glm::vec3(0.0f, 1.0f, -4.0f));
-		//model = glm::scale(model, glm::vec3(4.0f, 4.0f, 4.0f));
-		//glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-
-		////blending: transparencia o traslucidez
-		//glEnable(GL_BLEND);
-		//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		//AgaveTexture.UseTexture();
-		////Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
-		//meshList[3]->RenderMesh();
-		//glDisable(GL_BLEND);
-
-		asaDexter.setPos(letras_dimmsdale.getPos());
-		casaDexter.setUniformScale(5.0f);
-		casaDexter.renderModel();
-
-			casaDexter.setPos(glm::vec3(- 380.0f, -0.5f, 370.0));
-		casaDexter.setUniformScale(40.0f); //Codigo Para pruebas
-
-
-
-
-void renderTrafficLight() {
-	glm::mat4 model;
-
-	//desde el angel
-	model = glm::mat4(1.0);
-	model = glm::translate(model, glm::vec3(75.0f, 0.0f, 55.0f));
-	model = glm::scale(model, glm::vec3(17.0f));
-	model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
-	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	traffic_light.RenderModel();
-
-	//desde la estela de luz
-	model = glm::mat4(1.0);
-	model = glm::translate(model, glm::vec3(-80.0f, 0.0f, 275.0f));
-	model = glm::scale(model, glm::vec3(17.0f));
-	//model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
-	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	traffic_light.RenderModel();
-
-
-void renderEstela() {
-	glm::mat4 model, modelaux;
-
-	model = glm::mat4(1.0);
-
-	model = glm::translate(model, glm::vec3(315.0f, -1.0f, 805.0f));
-	modelaux = model;
-	model = glm::scale(model, glm::vec3(5.0f));
-	//material brillante
-	//Material_brillante.UseMaterial(uniformSpecularIntensity, uniformShininess); //esto afecta a todo el mundo
-	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	estela_de_luz.RenderModel();
-
-	model = modelaux; */

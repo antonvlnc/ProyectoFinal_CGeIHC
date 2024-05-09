@@ -137,7 +137,7 @@ void controladorLuces::initializeSpotlights(glm::vec3 posLuz1, glm::vec3 posLuz2
 		1.0f, 1.0f,
 		posLuz1.x, posLuz1.y + (1.0 * 5.0), posLuz1.z - 20.0,
 		0.0f, 1.0f, 0.0f,
-		1.0f, 0.05f, 0.0f,
+		1.0f, 0.01f, 0.0f,
 		50.0f);
 
 	SpotLight angel = SpotLight(0.7f, 0.7f, 0.0f, //Angel 0.7f ,0.0f ,0.7f
@@ -208,7 +208,7 @@ void controladorLuces::animateSpotlight(GLfloat deltaTime) {
 		}
 		else {
 			if (blue >= 0.1) {
-				blue -= 0.01 * deltaTime;
+				blue -= 0.01f * deltaTime;
 			}
 			else {
 				banderaColor = !banderaColor;
@@ -230,14 +230,13 @@ void controladorLuces::animateSpotlight(GLfloat deltaTime) {
 
 void controladorLuces::initializePointlights(glm::vec3 posLuz1, glm::vec3 posLuz2, glm::vec3 posLuz3) {
 
-	//Offset luces semaforo = 
 	//NOTA: Numero entre par�ntesis es la altura a la que esta la fuente de iluminacion en el modelo original por la escala en y del modelo
 
 	trafficLightStartingPos = posLuz1;
 
 	PointLight semaforo = PointLight(1.0f, 0.0f, 0.0f, //0.0f, 0.2f, 1.0f
 		1.0f, 1.0f,
-		posLuz1.x , posLuz1.y , posLuz1.z, //posLuz1.x - (1.95f * 17.0f), posLuz1.y + (5.2 * 17.0f), posLuz1.z + (0.3f * 17.0f), glm::vec3((-1.95f * 17.0f), (5.2 * 17.0f),  (-0.3f * 17.0f) )
+		posLuz1.x , posLuz1.y , posLuz1.z,
 		0.8f, 0.1f, 0.01f);
 
 	PointLight estelaLuz = PointLight(0.8f, 0.8f, 0.8f,
