@@ -37,7 +37,7 @@ controladorLuces::controladorLuces(float duracionDia, float fps, GLboolean esDia
 	velocidadSpot = 0.2;
 	xDirSpot = cos(glm::radians(anguloSpot));
 	yDirSpot = sin(glm::radians(anguloSpot));
-	blue = 0.5;
+	blue = 0.5f;
 	red = 0.8f;
 
 	now = 0;
@@ -138,7 +138,7 @@ void controladorLuces::initializeSpotlights(glm::vec3 posLuz1, glm::vec3 posLuz2
 		posLuz1.x, posLuz1.y + (1.0 * 5.0), posLuz1.z - 20.0,
 		0.0f, 1.0f, 0.0f,
 		1.0f, 0.01f, 0.0f,
-		50.0f);
+		30.0f);
 
 	SpotLight angel = SpotLight(0.7f, 0.7f, 0.0f, //Angel 0.7f ,0.0f ,0.7f
 		1.0f, 1.0f,
