@@ -1453,17 +1453,21 @@ void renderAngelIndependencia() {
 	model = glm::mat4(1.0);
 	model = glm::translate(model, glm::vec3(5.0f, -1.0f, -530.0));
 	model = glm::scale(model, glm::vec3(7.0f, 8.0f, 7.0f));
+
+	modelaux2 = model;
+
 	model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	modelaux2 = model;
 	angel_independencia.RenderModel();
 
-	model = glm::translate(model, glm::vec3(0.0f, 28.5f, -0.5f));
+	model = modelaux2;
+
+	model = glm::translate(model, glm::vec3(0.0f, 28.5f, 0.5f));
 	model = glm::rotate(model, -20 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	model = glm::rotate(model, giraAlaIzq * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 
 	//Ala del angel 1
-	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0));
+	//model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0));
 	model = glm::scale(model, glm::vec3(-1.0f, 1.0f, 1.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	angel_independencia_ala.RenderModel();
@@ -1471,15 +1475,14 @@ void renderAngelIndependencia() {
 
 	model = modelaux2;
 
-	model = glm::translate(model, glm::vec3(0.0f, 28.5f, -0.5f));
+	model = glm::translate(model, glm::vec3(0.0f, 28.5f, 0.5f));
 	model = glm::rotate(model, 20 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	model = glm::rotate(model, giraAlaDer * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 
 	//Ala del angel 2
-	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0));
-	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	angel_independencia_ala.RenderModel();
+
 
 	model = modelaux2;
 
