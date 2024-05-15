@@ -14,26 +14,14 @@ Window::Window(GLint windowWidth, GLint windowHeight)
 	width = windowWidth;
 	height = windowHeight;
 
-	articulacion_capo = 0.0f;
 
 	articulacion_puerta = 0.0f;
 	articulacion_puerta2 = 0.0f;
 
-	articulacion_avanza = 0.0f;
-	articulacion_reversa = 0.0f;
 
-
-	articulacion_gira_der = 0.0f;
-	articulacion_gira_izq = 0.0f;
-
-
-	avanza_retrocede = 0.0f;
-
-	avanza_retrocede_helicoptero = 0.0f;
 
 	MusicaSi = true;
 
-	muevex = 2.0f;
 
 	//Movimiento Avatar
 
@@ -137,7 +125,7 @@ void Window::ManejaTeclado(GLFWwindow* window, int key, int code, int action, in
 		glfwSetWindowShouldClose(window, GL_TRUE);
 	}
 	//Movimiento AVatar: Y -> avanzar hacia adelante, U -> rotar Avatar
-	if (key == GLFW_KEY_V)
+	if (key == GLFW_KEY_W)
 	{
 		if (theWindow->tipoCamara == 1) {
 			if (action == GLFW_PRESS) {
@@ -150,11 +138,24 @@ void Window::ManejaTeclado(GLFWwindow* window, int key, int code, int action, in
 				theWindow->movimientoAvatar = 0.0f;
 			}
 		}
-		
-
-
 	}
-	if (key == GLFW_KEY_B)
+
+	if (key == GLFW_KEY_S)
+	{
+		if (theWindow->tipoCamara == 1) {
+			if (action == GLFW_PRESS) {
+				theWindow->movimientoAvatar = -1.0f;
+				theWindow->banderaCaminata = true;
+
+			}
+			if (action == GLFW_RELEASE) {
+				theWindow->banderaCaminata = false;
+				theWindow->movimientoAvatar = 0.0f;
+			}
+		}
+	}
+
+	if (key == GLFW_KEY_D)
 	{
 		if ((theWindow->tipoCamara == 1)) {
 			if (action == GLFW_RELEASE) {
@@ -168,7 +169,7 @@ void Window::ManejaTeclado(GLFWwindow* window, int key, int code, int action, in
 
 
 	}
-	if (key == GLFW_KEY_C)
+	if (key == GLFW_KEY_A)
 	{
 		if ((theWindow->tipoCamara == 1)) {
 			if (action == GLFW_RELEASE) {
@@ -226,37 +227,6 @@ void Window::ManejaTeclado(GLFWwindow* window, int key, int code, int action, in
 	}
 
 
-
-
-	//CAPO ARRIBA
-	if (key == GLFW_KEY_E)
-	{
-		if (theWindow->articulacion_capo > 45)
-		{
-
-		}
-		else
-		{
-			theWindow->articulacion_capo += 10.0;
-		}
-
-	}
-	//CAPO ABAJO
-	if (key == GLFW_KEY_H)
-	{
-		if (theWindow->articulacion_capo < 5)
-		{
-
-		}
-		else
-		{
-			theWindow->articulacion_capo -= 10.0;
-		}
-
-	}
-
-
-
 	
 	//PUERTA Abrir
 	if (key == GLFW_KEY_P)
@@ -279,98 +249,24 @@ void Window::ManejaTeclado(GLFWwindow* window, int key, int code, int action, in
 		}
 	}
 
-
-
-	//RUEDA GIRA DER
-	if (key == GLFW_KEY_L)
-	{
-		theWindow->articulacion_gira_der += 10.0;
-
-	}
-
-
-
-	//RUEDA GIRA IZQ
-	if (key == GLFW_KEY_J)
-	{
-		theWindow->articulacion_gira_izq -= 10.0;
-
-	}
-
-
-
-
-	////ARTICULACION AVANZA
-	//if (key == GLFW_KEY_I)
-	//{
-
-	//	theWindow->luz_tras = 0.0; //apagamos la luz trasera
-
-	//	theWindow->articulacion_avanza += 10.0;
-	//	//AUTO HACE TRANSLATE (AVANZA O RETROCEDE)
-	//	theWindow->avanza_retrocede += 1.0;
-
-
-	//	
-
-	//	//AQU� LA LUZ DELANTERA (AZUL) DEBE ENCENDERSE, POR DEFECTO DEBE ESTAR ENCENDIDA
-	//	theWindow->luz_del = 1.0;
-
 	//}
 	//ARTICULACION REVERSA
 	if (key == GLFW_KEY_K)
 	{
 		theWindow->luz_del = 0.0; //apagamos la luz delantera
 
-		theWindow->articulacion_avanza -= 10.0;
-		//AUTO HACE TRANSLATE (AVANZA O RETROCEDE)
-		theWindow->avanza_retrocede -= 1.0;
 
 		//AQU� LA LUZ TRASERA (ROJA) DEBE ENCENDERSE, POR DEFECTO DEBE ESTAR APAGADA
 		theWindow->luz_tras = 1.0;
 	}
 
-
-	//MOVIMIENTO HELIC�PTERO
-	if (key == GLFW_KEY_N)
-	{
-		theWindow->avanza_helicoptero += 10.0;
-		//AUTO HACE TRANSLATE (AVANZA O RETROCEDE)
-		theWindow->avanza_retrocede_helicoptero += 1.0;
-
-	}
-	//ARTICULACION REVERSA
-	if (key == GLFW_KEY_M)
-	{
-		theWindow->retrocede_helicoptero -= 10.0;
-		//AUTO HACE TRANSLATE (AVANZA O RETROCEDE)
-		theWindow->avanza_retrocede_helicoptero -= 1.0;
-
-	}
-
-	if (key == GLFW_KEY_Z)
-	{
-		theWindow->anguK += 10.0;
-	}
-
-	if (key == GLFW_KEY_X)
-	{
-		theWindow->anguK -= 10.0;
-	}
-
-
 	//PARA ENCENDER Y APAGAR LAS LUCES PUNTUALES DE DESK_LAMP Y LUMINARIA
 
 	if (key == GLFW_KEY_1)
 	{
-		theWindow->K = 1;
 		if (action == GLFW_PRESS) {
 			theWindow->banderaLuzActivable = !theWindow->banderaLuzActivable;
 		}
-	}
-	if (key == GLFW_KEY_0)
-	{
-		theWindow->K = 0;
 	}
 
 	//Botones para reproducir musica
@@ -382,13 +278,6 @@ void Window::ManejaTeclado(GLFWwindow* window, int key, int code, int action, in
 	{
 		theWindow->MusicaSi = false;
 	}
-
-
-
-
-
-
-
 
 }
 
