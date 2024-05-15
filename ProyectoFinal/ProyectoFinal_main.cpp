@@ -445,15 +445,18 @@ int main()
 	uniformColor = 0;
 
 	//Animaciones
-	alaIzq = true;
-	alaDer = true;
+	alaIzq = false;
+	alaDer = false;
 	controlDeltaTimeDesborde0 = true;
 	giraAlaIzq = 0.0f;
 	giraAlaDer = 0.0f;
-	anguloAlaIzq = 90.0f;
-	anguloAlaDer = 90.0f;
+
+	anguloAlaIzq = 0.0f;
+	anguloAlaDer = 0.0f;
+
 	giraAlaOffset = 1.0f;
 	movAlaOffset = 1.0f;
+
 	giraRotonda = 0.0f; 
 	giraRotondaOffset = 0.5f;
 
@@ -1422,71 +1425,67 @@ void renderAngelIndependencia() {
 
 	giraRotonda -= giraRotondaOffset * deltaTime;
 
+
+	if (anguloAlaIzq < -1.0f || anguloAlaIzq > 70.0) {
+		anguloAlaIzq = 0.0f;
+	}
+
 	if (alaIzq)
 	{
-		if (anguloAlaIzq > 0.0f)
+		if (anguloAlaIzq >= 0.0f)
 		{
 			anguloAlaIzq -= movAlaOffset * deltaTime;
-			giraAlaIzq += giraAlaOffset * deltaTime;
-			//printf("Valor: %f \n", anguloAlaIzq);
 
-			if (controlDeltaTimeDesborde0) {
-				controlDeltaTimeDesborde = false;
-				anguloAlaIzq = 90.0f;
-
-			}
 		}
 
 		else
 		{
-			alaIzq = false;
+			alaIzq = !alaIzq;
 		}
 	}
 
 	else
 	{
-		if (anguloAlaIzq <= 90.0f)
+		if (anguloAlaIzq <= 65.0f)
 		{
 			anguloAlaIzq += movAlaOffset * deltaTime;
-			giraAlaIzq -= giraAlaOffset * deltaTime;
 		}
 		else
 		{
-			alaIzq = true;
+			alaIzq = !alaIzq;
 		}
 	}
 
+	if (anguloAlaDer > 1.0f || anguloAlaDer < -70.0) {
+		anguloAlaDer = 0.0f;
+	}
 
 	if (alaDer)
 	{
-		if (anguloAlaDer >= 0.0f)
+		if (anguloAlaDer <= 0.0f)
 		{
-			anguloAlaDer -= movAlaOffset * deltaTime;
-			giraAlaDer -= giraAlaOffset * deltaTime;
-			if (controlDeltaTimeDesborde0) {
-				controlDeltaTimeDesborde = false;
-				anguloAlaDer = 90.0f;
+			anguloAlaDer += movAlaOffset * deltaTime;
 
-			}
 		}
 		else
 		{
-			alaDer = false;
+			alaDer = !alaDer;
 		}
 	}
 
 	else
 	{
-		if (anguloAlaDer <= 90.0f)
+		if (anguloAlaDer >= -65.0f)
 		{
-			anguloAlaDer += movAlaOffset * deltaTime;
-			giraAlaDer += giraAlaOffset * deltaTime;
+			anguloAlaDer -= movAlaOffset * deltaTime;
 		}
 		else
 		{
-			alaDer = true;
+			alaDer = !alaDer;
 		}
 	}
+
+	
 
 	//Angel de la independencia
 	glm::mat4 model, modelaux2, modelauxAE86;
@@ -1494,21 +1493,23 @@ void renderAngelIndependencia() {
 	model = glm::mat4(1.0);
 	model = glm::translate(model, glm::vec3(5.0f, -1.0f, -530.0));
 	model = glm::scale(model, glm::vec3(7.0f, 8.0f, 7.0f));
+	model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 
 	modelaux2 = model;
+	modelauxAE86 = model;
 
-	model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	angel_independencia.RenderModel();
 
 	model = modelaux2;
 
-	model = glm::translate(model, glm::vec3(0.0f, 28.5f, 0.5f));
-	model = glm::rotate(model, -20 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
-	model = glm::rotate(model, giraAlaIzq * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::translate(model, glm::vec3(0.0f, 28.5f, -0.5f));
+	
 
+	modelaux2 = model;
+	
 	//Ala del angel 1
-	//model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0));
+	model = glm::rotate(model, (20 + anguloAlaIzq) * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	model = glm::scale(model, glm::vec3(-1.0f, 1.0f, 1.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	angel_independencia_ala.RenderModel();
@@ -1516,16 +1517,16 @@ void renderAngelIndependencia() {
 
 	model = modelaux2;
 
-	model = glm::translate(model, glm::vec3(0.0f, 28.5f, 0.5f));
-	model = glm::rotate(model, 20 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
-	model = glm::rotate(model, giraAlaDer * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
-
+	model = glm::rotate(model, (-20.0f + anguloAlaDer) * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	//Ala del angel 2
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	angel_independencia_ala.RenderModel();
 
 
-	model = modelaux2;
+
+	//Jerarquia rara del angel con el ae86 de arturo 
+
+	model = modelauxAE86;
 
 	//AE86
 	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
