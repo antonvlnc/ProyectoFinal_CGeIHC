@@ -533,17 +533,16 @@ int main()
 	giroDeMB = 0.0f;
 	giroDeMBOffSet = 0.0f;
 
-	////------------------SONIDO-----------------------
-	////Ambiental
-	//ISoundEngine* Ambiental = createIrrKlangDevice();
-	//Ambiental->play2D("Sound/Ambiental.wav", true);
-	//Ambiental->setSoundVolume(0.3f);
+	//------------------SONIDO-----------------------
+	//Ambiental
+	ISoundEngine* Ambiental = createIrrKlangDevice();
+	Ambiental->play2D("Sound/Ambiental.wav", true);
+	Ambiental->setSoundVolume(0.3f);
 
-	//////Pista de fondo
-	//ISoundEngine* Intro = createIrrKlangDevice();
-	//Intro->play2D("Sound/Dexter_Pista.wav", true); //cambiar a cancion en loop sin la voz
-	//Intro->setSoundVolume(0.04f);
-
+	////Pista de fondo
+	ISoundEngine* Intro = createIrrKlangDevice();
+	Intro->play2D("Sound/Dexter_Pista.wav", true); //cambiar a cancion en loop sin la voz
+	Intro->setSoundVolume(0.04f);
 	
 	// Posicional Astrodomo
 	ISoundEngine* AstrodomoSound = createIrrKlangDevice();
