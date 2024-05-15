@@ -176,8 +176,15 @@ void controladorLuces::chooseSpotLightsArray(GLboolean esDia) {
 
 void controladorLuces::animateSpotlight(GLfloat deltaTime) {
 
+	if (anguloSpot > 105.0f || anguloSpot < 75.0f) {
+		anguloSpot = 90.0f;
+	}
+
 	if (!esDeDia) {
 		
+		printf("angulo spot %f \n ", anguloSpot);
+
+	
 		if (banderaAnimacionSpotlight) {
 			if (anguloSpot <= 100.0f) {
 				anguloSpot += velocidadSpot * deltaTime;
