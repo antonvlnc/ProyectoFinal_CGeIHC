@@ -13,6 +13,11 @@ public:
 	MainAvatar(glm::vec3 posInicial, GLfloat rotInicial, glm::vec3 scale, GLfloat velocidad);	
 	glm::vec3 getPos();
 
+	glm::vec3 getDirection();
+
+	glm::vec3 getUpVector();
+
+
 	void setUniformModel(GLint uniform);
 	void setMovimiento(GLfloat movimientoAvatar, GLfloat rotacionAvatar, GLboolean rotacionBrazos, GLfloat deltaTime);
 

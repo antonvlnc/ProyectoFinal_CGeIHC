@@ -1,5 +1,6 @@
 #include "MainAvatar.h"
 
+using vec3df = glm::dvec3;
 
 MainAvatar::MainAvatar() {
 
@@ -79,6 +80,17 @@ glm::vec3 MainAvatar::getPos() {
 	glm::vec3 pos = (posAvatar[3]);
 	return pos;
 }
+
+glm::vec3 MainAvatar::getDirection(){
+	// La dirección es simplemente la primera columna de la matriz de rotación
+	return glm::vec3(posAvatar[0][2], posAvatar[1][2], posAvatar[2][2]);
+}
+
+glm::vec3 MainAvatar::getUpVector(){
+	// El vector hacia arriba es la segunda columna de la matriz de rotación
+	return glm::vec3(posAvatar[0][1], posAvatar[1][1], posAvatar[2][1]);
+}
+
 
 void MainAvatar::renderMainAvatar() {
 	

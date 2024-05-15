@@ -530,24 +530,50 @@ int main()
 	giroDeMB = 0.0f;
 	giroDeMBOffSet = 0.0f;
 
-	//------------------SONIDO-----------------------
-	//Ambiental
-	ISoundEngine* Ambiental = createIrrKlangDevice();
-	Ambiental->play2D("Sound/Ambiental.wav", true);
-	Ambiental->setSoundVolume(0.8f);
+	////------------------SONIDO-----------------------
+	////Ambiental
+	//ISoundEngine* Ambiental = createIrrKlangDevice();
+	//Ambiental->play2D("Sound/Ambiental.wav", true);
+	//Ambiental->setSoundVolume(0.3f);
 
-	////Pista de fondo
-	ISoundEngine* Intro = createIrrKlangDevice();
-	Intro->play2D("Sound/Dexter_Pista.wav", true); //cambiar a cancion en loop sin la voz
-	Intro->setSoundVolume(0.1f);
-
-	//Sonido con teclado (Pendiente)
-	/*ISoundEngine* AstrodomoSound = createIrrKlangDevice();
-	AstrodomoSound->play2D("Sound/Mucha_Lucha.wav", true);
-	AstrodomoSound->setSoundVolume(0.1f);*/
+	//////Pista de fondo
+	//ISoundEngine* Intro = createIrrKlangDevice();
+	//Intro->play2D("Sound/Dexter_Pista.wav", true); //cambiar a cancion en loop sin la voz
+	//Intro->setSoundVolume(0.04f);
 
 	
+	// Posicional Astrodomo
+	ISoundEngine* AstrodomoSound = createIrrKlangDevice();
+	if (!AstrodomoSound) {
+		std::cerr << "No se pudo crear el dispositivo de sonido." << std::endl;
+		return 1;
+	}
 
+	// Reproducir el sonido 3D
+	ISound* musicAstrodomo = AstrodomoSound->play3D("Sound/Mucha_Lucha.wav", vec3df(-100.0f, 0.0f, -55.0f), true, false, true);
+	if (!musicAstrodomo) {
+		//std::cerr << "No se pudo reproducir el sonido." << std::endl;
+		return 1;
+	}
+	musicAstrodomo->setVolume(1.0f);
+	musicAstrodomo->setMinDistance(3.0f);
+
+	// Posicional Pulga
+	ISoundEngine* PulgaSound = createIrrKlangDevice();
+	if (!PulgaSound) {
+		//std::cerr << "No se pudo crear el dispositivo de sonido." << std::endl;
+		return 1;
+	}
+
+	// Reproducir el sonido 3D
+	ISound* soundPulga = PulgaSound->play3D("Sound/Ejercicio.wav", vec3df(160.0f, 0.0f, -90.0), true, false, true);
+	if (!soundPulga) {
+		std::cerr << "No se pudo reproducir el sonido." << std::endl;
+		return 1;
+	}
+	soundPulga->setVolume(2.0f);
+	soundPulga->setMinDistance(0.7f);
+	
 
 	////Loop mientras no se cierra la ventana
 	while (!mainWindow.getShouldClose())
@@ -556,6 +582,21 @@ int main()
 		deltaTime = now - lastTime;
 		deltaTime += (now - lastTime) / limitFPS;
 		lastTime = now;
+
+		glm::vec3 dexterPosition = dexter.getPos();
+		glm::vec3 dexterDirection = dexter.getDirection();
+		glm::vec3 dexterUpVector = dexter.getUpVector();
+
+		// Convierte glm::vec3 a vec3df
+		vec3df listenerPosition(dexterPosition.x, dexterPosition.y, dexterPosition.z);
+		vec3df listenerDirection(dexterDirection.x, dexterDirection.y, -dexterDirection.z);
+		vec3df listenerUpVector(dexterUpVector.x, dexterUpVector.y, dexterUpVector.z);
+
+		AstrodomoSound->setListenerPosition(listenerPosition, listenerDirection, vec3df(0, 0, 0), listenerUpVector);
+		PulgaSound->setListenerPosition(listenerPosition, listenerDirection, vec3df(0, 0, 0), listenerUpVector);
+
+		std::cout << dexterDirection.x << std::endl;
+
 
 		//Luz Direccional, seleccion de skybox
 		esDeDia = lightControl.recalculateDirectionalLight(deltaTime);
