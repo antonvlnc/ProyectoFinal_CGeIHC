@@ -270,6 +270,10 @@ void Window::ManejaTeclado(GLFWwindow* window, int key, int code, int action, in
 	{
 		if (action == GLFW_PRESS) {
 			theWindow->banderaLuzActivable = !theWindow->banderaLuzActivable;
+			theWindow->SonidoSi = true;
+		}
+		else {
+			theWindow->SonidoSi = false;
 		}
 	}
 

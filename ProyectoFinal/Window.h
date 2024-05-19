@@ -38,7 +38,7 @@ public:
 
 	//PARA LA MUSICA
 	GLboolean getMusica() { return MusicaSi; }
-
+	GLboolean getSonido() { return SonidoSi; }
 
 
 	bool getShouldClose() {
@@ -65,6 +65,7 @@ private:
 
 	bool mouseFirstMoved;
 	GLboolean MusicaSi;
+	GLboolean SonidoSi;
 	//Avatar
 	GLfloat movimientoAvatar, rotAvatar;
 	GLboolean banderaCaminata;

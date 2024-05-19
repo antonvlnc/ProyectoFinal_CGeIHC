@@ -606,6 +606,12 @@ int main()
 	soundRestaurante->setVolume(1.0f);
 	soundRestaurante->setMinDistance(25.0f);
 
+	//================================================ Sonido varita ================================================
+	ISoundEngine* varitaSound = createIrrKlangDevice();
+	if (!varitaSound) {
+		return 1;
+	}
+	ISound* soundvarita = nullptr;
 
 	////Loop mientras no se cierra la ventana
 	while (!mainWindow.getShouldClose())
@@ -633,6 +639,14 @@ int main()
 			if (!soundsteep || soundsteep->isFinished()) {
 				soundsteep = DexterSteep->play2D("Sound/Pasos.wav", false, false, true);
 				DexterSteep->setSoundVolume(0.09f);
+			}
+		}
+
+		if (mainWindow.getSonido() == true) {
+			// Reproducir el sonido cuando se presiona 1
+			if (!soundvarita || soundvarita->isFinished()) {
+				soundvarita = varitaSound->play2D("Sound/Varita.wav", false, false, true);
+				varitaSound->setSoundVolume(0.1f);
 			}
 		}
 
