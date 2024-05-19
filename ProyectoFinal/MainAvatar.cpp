@@ -91,7 +91,6 @@ glm::vec3 MainAvatar::getUpVector(){
 	return glm::vec3(posAvatar[0][1], posAvatar[1][1], posAvatar[2][1]);
 }
 
-
 void MainAvatar::renderMainAvatar() {
 	
 	glm::mat4 model = this->posAvatar;
