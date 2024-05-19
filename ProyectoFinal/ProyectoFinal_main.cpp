@@ -42,6 +42,9 @@ Integrantes:
 #include "Edificio.h"
 #include "Lampara.h"
 
+#include "variablesAnimacion.h"
+#include "bresenham.h"
+
 //para iluminaci n
 #include "CommonValues.h"
 #include "DirectionalLight.h"
@@ -179,6 +182,7 @@ Camera* currentCamera;
 Camera camaraAvatar;
 Camera camaraLibre;
 Camera camaraAerea;
+
 //Para ajustar la camara del avatar
 glm::vec4 camoffset(0.0f, 15.0f, -55.0f, 1.0f);
 glm::mat4 camRot(1.0);
@@ -341,6 +345,8 @@ void CreateObjects();
 
 void CreateShaders();
 
+void renderCirculosBresenham();
+
 void InitializeModels();
 
 void InitializeTextures();
@@ -374,6 +380,9 @@ void renderCamellon();
 void renderMetrobus();
 
 void renderPuertaReja();
+
+void renderPuertaRejaAuto();
+
 
 void renderBanquetasGenerales();	//Las que no cambiarán
 
@@ -457,7 +466,7 @@ int main()
 	giraAlaOffset = 1.0f;
 	movAlaOffset = 1.0f;
 
-	giraRotonda = 0.0f; 
+	giraRotonda = 0.0f;
 	giraRotondaOffset = 0.5f;
 
 	//Animacion helicoptero
@@ -508,7 +517,7 @@ int main()
 	giraCabezaOffset = 1.0;
 	MueveMandibula = true;
 	anguloMandibula = 0.0f;
-	giraMandibula = 0.0f ;
+	giraMandibula = 0.0f;
 	movMandibulaOffset = 3.0;
 	giraMandibulaOffset = 3.0;
 
@@ -532,6 +541,11 @@ int main()
 	preview = 0.0f;
 	giroDeMB = 0.0f;
 	giroDeMBOffSet = 0.0f;
+
+	//Animacion
+
+	initializeAnimationVars();
+
 
 	//------------------SONIDO-----------------------
 	//Ambiental
@@ -597,7 +611,7 @@ int main()
 		AstrodomoSound->setListenerPosition(listenerPosition, listenerDirection, vec3df(0, 0, 0), listenerUpVector);
 		PulgaSound->setListenerPosition(listenerPosition, listenerDirection, vec3df(0, 0, 0), listenerUpVector);
 
-		std::cout << dexterDirection.x << std::endl;
+		//std::cout << dexterDirection.x << std::endl;
 
 
 		//Luz Direccional, seleccion de skybox
@@ -650,6 +664,7 @@ int main()
 		glm::mat4 model(1.0);
 		glm::mat4 modelaux(1.0);
 		glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
 
 		//PISO 2
 		//Más piso para el letrero y letras de Dimmsdale
@@ -657,7 +672,7 @@ int main()
 		model = glm::translate(model, glm::vec3(0.0f, -1.0f, 850.0f));
 		model = glm::scale(model, glm::vec3(450.0f, 1.0f, 150.0f));
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
+	
 
 		grass.UseTexture();
 		Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
@@ -757,7 +772,9 @@ int main()
 		renderBusStop();
 
 		//Puerta con reja
-		renderPuertaReja();
+		//renderPuertaReja();
+
+		renderPuertaRejaAuto();
 
 		
 		//-------------Modelos Mucha Lucha------------------
@@ -872,6 +889,8 @@ int main()
 
 		//nave dexter
 		renderNaveDexter();
+
+		renderCirculosBresenham();
 
 
 		glUseProgram(0);
@@ -2425,10 +2444,27 @@ void renderFishyFish() {
 
 	glm::mat4 model;
 
+	float xPos, yPos, zPos, yRot;
+	//Animación
+	// Desborde angulo Fishy
+	if (anguloFishy >= 360.0f) {
+		anguloFishy = 0.0f;
+	}
+
+	anguloFishy += anguloFishyOffset * deltaTime;
+
+	xPos = radioFuenteDiana * cos(glm::radians(anguloFishy)) * dianaCazadora.getScale().x;
+	zPos = radioFuenteDiana * sin(glm::radians(anguloFishy)) * dianaCazadora.getScale().z;
+	yPos = (3.2f * 4.5f) + 0.8 * cos(glm::radians(3.0 * anguloFishy));
+
+	yRot = glm::radians(-1.0 * anguloFishy);
+
+	glm::vec3 dianaPos = dianaCazadora.getPos() + glm::vec3(xPos , yPos, zPos); //-9.5f * 3.5f
+
 	model = glm::mat4(1.0);
-	model = glm::translate(model, glm::vec3(0.0f, 15.0f, 145.0f));
+	model = glm::translate(model, dianaPos);
 	model = glm::scale(model, glm::vec3(5.0f));
-	model = glm::rotate(model, 270 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, yRot, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	fish.RenderModel();
 }
@@ -2737,7 +2773,6 @@ void renderJacarandas() {
 	model = glm::mat4(1.0);
 	model = glm::translate(model, glm::vec3(170.0f, 0.0f, 695.0f));
 	model = glm::scale(model, glm::vec3(34.0f, 42.0f, 30.0f));
-	//model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	jacaranda.RenderModel();
 
@@ -2745,14 +2780,12 @@ void renderJacarandas() {
 	model = glm::mat4(1.0);
 	model = glm::translate(model, glm::vec3(175.0f, 0.0f, 65.0f));
 	model = glm::scale(model, glm::vec3(34.0f, 42.0f, 30.0f));
-	//model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	jacaranda.RenderModel();
 
 	model = glm::mat4(1.0);
 	model = glm::translate(model, glm::vec3(190.0f, 0.0f, -455.0f));
 	model = glm::scale(model, glm::vec3(34.0f, 42.0f, 30.0f));
-	//model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	jacaranda.RenderModel();
 
@@ -2760,27 +2793,20 @@ void renderJacarandas() {
 	model = glm::mat4(1.0);
 	model = glm::translate(model, glm::vec3(-170.0f, 0.0f, 695.0f));
 	model = glm::scale(model, glm::vec3(34.0f, 42.0f, 30.0f));
-	//model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	jacaranda.RenderModel();
 
 	model = glm::mat4(1.0);
 	model = glm::translate(model, glm::vec3(-175.0f, 0.0f, 85.0f));
 	model = glm::scale(model, glm::vec3(34.0f, 42.0f, 30.0f));
-	//model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	jacaranda.RenderModel();
 
 	model = glm::mat4(1.0);
 	model = glm::translate(model, glm::vec3(-190.0f, 0.0f, -455.0f));
 	model = glm::scale(model, glm::vec3(34.0f, 42.0f, 30.0f));
-	//model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	jacaranda.RenderModel();
-
-
-
-
 
 }
 
@@ -2897,6 +2923,73 @@ void renderPuertaReja() {
 	
 	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); //40 en x antes
 	model = glm::scale(model, glm::vec3(1.0f));
+	model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	reja_izq.RenderModel();
+}
+
+void renderPuertaRejaAuto() {
+
+	glm::mat4 model, modelauxPuerta;
+	model = glm::mat4(1.0);
+
+	distanciaPuerta = glm::distance(dexter.getPos(), puertaPos);
+
+	if (anguloPuerta >= 91.0f) {
+		anguloPuerta = 90.0f;
+	}
+	else if (anguloPuerta <= -1.0f) {
+		anguloPuerta = 0.0f;
+	}
+
+	if (distanciaPuerta <= maxDistanciaPuerta) {
+		openDoor = true;
+	}
+	else {
+		openDoor = false;
+	}
+
+	if (openDoor) {
+		if (!isOpenDoor) { //si esta cerrada, abrirla
+			if (anguloPuerta <= 90.0f) {
+				anguloPuerta += anguloPuertaOffset * deltaTime;
+			}
+			else {
+				isOpenDoor = !isOpenDoor;
+			}
+		}
+	}
+	else {
+		if (isOpenDoor) { //Si esta abierta cerrarla
+			if (anguloPuerta >= 0.0f) {
+				anguloPuerta -= anguloPuertaOffset * deltaTime;
+			}
+			else {
+				isOpenDoor = !isOpenDoor;
+			}
+		}
+	}
+
+
+	model = glm::translate(model, puertaPos);
+	model = glm::scale(model, glm::vec3(65.0f));
+	modelauxPuerta = model;
+
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	puerta_reja.RenderModel();
+
+	//REJA DERECHA
+	model = glm::translate(model, glm::vec3(-1.05f, 0.8f, 0.0f));
+	model = glm::rotate(model, glm::radians(anguloPuerta), glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	reja_der.RenderModel();
+
+	model = modelauxPuerta;
+
+	//REJA IZQUIERDA
+	model = glm::translate(model, glm::vec3(1.05f, 0.85f, 0.0f));
+	model = glm::rotate(model, glm::radians(-1.0f * anguloPuerta), glm::vec3(0.0f, 1.0f, 0.0f));
 	model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	reja_izq.RenderModel();
@@ -3096,5 +3189,50 @@ void renderLetrasAstrodomo() {
 	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	AstrodomoLetras.RenderModel();
+
+}
+
+void renderCirculosBresenham() {
+
+	glm::mat4 model;
+	float radio, ancho = 1.0f, largo = 1.0f;
+
+	glm::vec3 color = glm::vec3(1.0f, 0.0f, 0.0f);
+	glUniform3fv(uniformColor, 1, glm::value_ptr(color));
+
+	radio = 1000;
+	ancho = (radio * 4 * 2) / 3;
+	largo = (radio * 4 * 2) / 3;
+
+	model = glm::mat4(1.0);
+
+	model = glm::translate(model, puertaPos +  glm::vec3(40.0f, 400.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(20.0f));
+	//model = glm::rotate(model, 90.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+
+
+
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	drawCircle(radio, 0,0,  ancho, largo);
+
+
+	color = glm::vec3(0.0f, 1.0f, 1.0f);
+	glUniform3fv(uniformColor, 1, glm::value_ptr(color));
+
+
+	model = glm::mat4(1.0);
+
+	model = glm::translate(model, puertaPos + glm::vec3(0.0f, 400.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(10.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	drawCircle(radio, 0, 0, ancho, largo);
+
+	model = glm::mat4(1.0);
+
+	model = glm::translate(model, puertaPos + glm::vec3(0.0f, 350.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(30.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	drawCircle(radio, 0, 0, ancho, largo);
+
 
 }

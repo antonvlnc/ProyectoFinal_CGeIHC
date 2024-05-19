@@ -1,23 +1,151 @@
 ﻿C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(531,5): warning MSB8028: El directorio intermedio (Debug\) contiene archivos compartidos de otro proyecto (P07-421124433.vcxproj, P08-421124433.vcxproj, P08_2-421124433.vcxproj). Esto puede dar lugar a un comportamiento incorrecto de limpieza y recompilación.
   ProyectoFinal_main.cpp
-C:\Users\Arturo\Desktop\ProyectoFinal_CGeIHC\ProyectoFinal\Window.h(12,36): warning C4244: 'return': conversión de 'GLint' a 'GLfloat'; posible pérdida de datos
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\Window.h(12,36): warning C4244: 'return': conversión de 'GLint' a 'GLfloat'; posible pérdida de datos
   (compilando archivo de origen "ProyectoFinal_main.cpp")
   
-C:\Users\Arturo\Desktop\ProyectoFinal_CGeIHC\ProyectoFinal\Window.h(13,37): warning C4244: 'return': conversión de 'GLint' a 'GLfloat'; posible pérdida de datos
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\Window.h(13,37): warning C4244: 'return': conversión de 'GLint' a 'GLfloat'; posible pérdida de datos
   (compilando archivo de origen "ProyectoFinal_main.cpp")
   
-C:\Users\Arturo\Desktop\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(583,15): warning C4244: 'inicializando': conversión de 'double' a 'GLfloat'; posible pérdida de datos
-C:\Users\Arturo\Desktop\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(585,33): warning C4244: '+=': conversión de 'double' a 'GLfloat'; posible pérdida de datos
-C:\Users\Arturo\Desktop\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(862,119): warning C4244: 'argumento': conversión de 'GLfloat' a 'GLboolean'; posible pérdida de datos
-C:\Users\Arturo\Desktop\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(1218,89): warning C4305: 'argumento': truncamiento de 'double' a 'GLfloat'
-C:\Users\Arturo\Desktop\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(1337,58): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
-C:\Users\Arturo\Desktop\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(1984,21): warning C4305: '=': truncamiento de 'double' a 'float'
-C:\Users\Arturo\Desktop\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(1998,18): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
-C:\Users\Arturo\Desktop\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(2002,21): warning C4305: '=': truncamiento de 'double' a 'float'
-C:\Users\Arturo\Desktop\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(2009,21): warning C4305: '=': truncamiento de 'double' a 'float'
-C:\Users\Arturo\Desktop\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(2058,105): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
-C:\Users\Arturo\Desktop\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(2077,27): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
-C:\Users\Arturo\Desktop\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(2184,26): warning C4244: '-=': conversión de 'double' a 'float'; posible pérdida de datos
-C:\Users\Arturo\Desktop\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(2200,59): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
-C:\Users\Arturo\Desktop\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(2397,18): warning C4101: 'modelaux': variable local sin referencia
-  P08_2-421124433.vcxproj -> C:\Users\Arturo\Desktop\ProyectoFinal_CGeIHC\ProyectoFinal\Debug\Proyecto_Final.exe
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(35,36): warning C4244: 'argumento': conversión de 'int' a '_Ty'; posible pérdida de datos
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(35,36): warning C4244:         with
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(35,36): warning C4244:         [
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(35,36): warning C4244:             _Ty=GLfloat
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(35,36): warning C4244:         ]
+  (compilando archivo de origen "ProyectoFinal_main.cpp")
+  
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(36,36): warning C4244: 'argumento': conversión de 'int' a '_Ty'; posible pérdida de datos
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(36,36): warning C4244:         with
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(36,36): warning C4244:         [
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(36,36): warning C4244:             _Ty=GLfloat
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(36,36): warning C4244:         ]
+  (compilando archivo de origen "ProyectoFinal_main.cpp")
+  
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(38,36): warning C4244: 'argumento': conversión de 'int' a '_Ty'; posible pérdida de datos
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(38,36): warning C4244:         with
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(38,36): warning C4244:         [
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(38,36): warning C4244:             _Ty=GLfloat
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(38,36): warning C4244:         ]
+  (compilando archivo de origen "ProyectoFinal_main.cpp")
+  
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(39,36): warning C4244: 'argumento': conversión de 'int' a '_Ty'; posible pérdida de datos
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(39,36): warning C4244:         with
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(39,36): warning C4244:         [
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(39,36): warning C4244:             _Ty=GLfloat
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(39,36): warning C4244:         ]
+  (compilando archivo de origen "ProyectoFinal_main.cpp")
+  
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(41,36): warning C4244: 'argumento': conversión de 'int' a '_Ty'; posible pérdida de datos
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(41,36): warning C4244:         with
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(41,36): warning C4244:         [
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(41,36): warning C4244:             _Ty=GLfloat
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(41,36): warning C4244:         ]
+  (compilando archivo de origen "ProyectoFinal_main.cpp")
+  
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(42,36): warning C4244: 'argumento': conversión de 'int' a '_Ty'; posible pérdida de datos
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(42,36): warning C4244:         with
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(42,36): warning C4244:         [
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(42,36): warning C4244:             _Ty=GLfloat
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(42,36): warning C4244:         ]
+  (compilando archivo de origen "ProyectoFinal_main.cpp")
+  
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(44,36): warning C4244: 'argumento': conversión de 'int' a '_Ty'; posible pérdida de datos
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(44,36): warning C4244:         with
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(44,36): warning C4244:         [
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(44,36): warning C4244:             _Ty=GLfloat
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(44,36): warning C4244:         ]
+  (compilando archivo de origen "ProyectoFinal_main.cpp")
+  
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(45,36): warning C4244: 'argumento': conversión de 'int' a '_Ty'; posible pérdida de datos
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(45,36): warning C4244:         with
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(45,36): warning C4244:         [
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(45,36): warning C4244:             _Ty=GLfloat
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(45,36): warning C4244:         ]
+  (compilando archivo de origen "ProyectoFinal_main.cpp")
+  
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(47,36): warning C4244: 'argumento': conversión de 'int' a '_Ty'; posible pérdida de datos
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(47,36): warning C4244:         with
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(47,36): warning C4244:         [
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(47,36): warning C4244:             _Ty=GLfloat
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(47,36): warning C4244:         ]
+  (compilando archivo de origen "ProyectoFinal_main.cpp")
+  
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(48,36): warning C4244: 'argumento': conversión de 'int' a '_Ty'; posible pérdida de datos
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(48,36): warning C4244:         with
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(48,36): warning C4244:         [
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(48,36): warning C4244:             _Ty=GLfloat
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(48,36): warning C4244:         ]
+  (compilando archivo de origen "ProyectoFinal_main.cpp")
+  
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(50,36): warning C4244: 'argumento': conversión de 'int' a '_Ty'; posible pérdida de datos
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(50,36): warning C4244:         with
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(50,36): warning C4244:         [
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(50,36): warning C4244:             _Ty=GLfloat
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(50,36): warning C4244:         ]
+  (compilando archivo de origen "ProyectoFinal_main.cpp")
+  
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(51,36): warning C4244: 'argumento': conversión de 'int' a '_Ty'; posible pérdida de datos
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(51,36): warning C4244:         with
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(51,36): warning C4244:         [
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(51,36): warning C4244:             _Ty=GLfloat
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(51,36): warning C4244:         ]
+  (compilando archivo de origen "ProyectoFinal_main.cpp")
+  
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(53,36): warning C4244: 'argumento': conversión de 'int' a '_Ty'; posible pérdida de datos
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(53,36): warning C4244:         with
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(53,36): warning C4244:         [
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(53,36): warning C4244:             _Ty=GLfloat
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(53,36): warning C4244:         ]
+  (compilando archivo de origen "ProyectoFinal_main.cpp")
+  
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(54,36): warning C4244: 'argumento': conversión de 'int' a '_Ty'; posible pérdida de datos
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(54,36): warning C4244:         with
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(54,36): warning C4244:         [
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(54,36): warning C4244:             _Ty=GLfloat
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(54,36): warning C4244:         ]
+  (compilando archivo de origen "ProyectoFinal_main.cpp")
+  
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(56,36): warning C4244: 'argumento': conversión de 'int' a '_Ty'; posible pérdida de datos
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(56,36): warning C4244:         with
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(56,36): warning C4244:         [
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(56,36): warning C4244:             _Ty=GLfloat
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(56,36): warning C4244:         ]
+  (compilando archivo de origen "ProyectoFinal_main.cpp")
+  
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(57,36): warning C4244: 'argumento': conversión de 'int' a '_Ty'; posible pérdida de datos
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(57,36): warning C4244:         with
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(57,36): warning C4244:         [
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(57,36): warning C4244:             _Ty=GLfloat
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(57,36): warning C4244:         ]
+  (compilando archivo de origen "ProyectoFinal_main.cpp")
+  
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(597,15): warning C4244: 'inicializando': conversión de 'double' a 'GLfloat'; posible pérdida de datos
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(599,33): warning C4244: '+=': conversión de 'double' a 'GLfloat'; posible pérdida de datos
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(879,119): warning C4244: 'argumento': conversión de 'GLfloat' a 'GLboolean'; posible pérdida de datos
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(1237,89): warning C4305: 'argumento': truncamiento de 'double' a 'GLfloat'
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(1356,58): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(2003,21): warning C4305: '=': truncamiento de 'double' a 'float'
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(2017,18): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(2021,21): warning C4305: '=': truncamiento de 'double' a 'float'
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(2028,21): warning C4305: '=': truncamiento de 'double' a 'float'
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(2077,105): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(2096,27): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(2203,26): warning C4244: '-=': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(2219,59): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(2416,18): warning C4101: 'modelaux': variable local sin referencia
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(2458,23): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(2460,21): warning C4244: '=': conversión de 'genType' a 'float'; posible pérdida de datos
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(2460,21): warning C4244:         with
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(2460,21): warning C4244:         [
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(2460,21): warning C4244:             genType=double
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(2460,21): warning C4244:         ]
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(3216,33): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(3216,26): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(3216,13): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(3228,33): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(3228,26): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(3228,13): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(3235,33): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(3235,26): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
+C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(3235,13): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
+LINK : warning LNK4098: la biblioteca predeterminada'MSVCRT' entra en conflicto con otras bibliotecas; use la biblioteca /NODEFAULTLIB:biblioteca
+  P08_2-421124433.vcxproj -> C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\Debug\Proyecto_Final.exe
