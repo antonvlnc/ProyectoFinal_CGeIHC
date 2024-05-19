@@ -181,8 +181,7 @@ void controladorLuces::animateSpotlight(GLfloat deltaTime) {
 	}
 
 	if (!esDeDia) {
-		
-		printf("angulo spot %f \n ", anguloSpot);
+
 
 	
 		if (banderaAnimacionSpotlight) {
