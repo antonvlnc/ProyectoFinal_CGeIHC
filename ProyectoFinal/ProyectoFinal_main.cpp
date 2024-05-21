@@ -42,6 +42,10 @@ Integrantes:
 #include "Edificio.h"
 #include "Lampara.h"
 
+#include "ToroideRodrigo.h"
+#include "ToroideDavid.h"
+
+
 #include "variablesAnimacion.h"
 #include "bresenham.h"
 
@@ -64,6 +68,10 @@ const float toRadians = 3.14159265f / 180.0f;
 GLfloat deltaTime = 0.0f;
 GLfloat lastTime = 0.0f;
 static double limitFPS = 1.0 / 60.0;
+
+//Toroides
+ToroideRodrigo toroideR;
+ToroideDavid toroideD;
 
 //Para animaci n
 bool alaIzq;
@@ -327,6 +335,7 @@ Skybox atardecer;
 //MATERIALES
 Material Material_brillante;
 Material Material_opaco;
+Material Material_Avatar;
 
 
 
@@ -423,7 +432,7 @@ void renderBusStop();
 
 void renderSlamminDonuts();
 
-void renderTrafficLight();
+void renderToroides();
 
 
 int main()
@@ -690,7 +699,7 @@ int main()
 		Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
 		meshList[2]->RenderMesh();
 
-
+		renderToroides();
 
 		//--------------------Modelos Generales del mundo-------------------
 
@@ -875,10 +884,14 @@ int main()
 		fountain.renderModel();
 
 		//-------------------Modelos - Laboratorio de Dexter---------------------
+
+		Material_Avatar.UseMaterial(uniformSpecularIntensity, uniformShininess);
+
 		dexter.setUniformModel(uniformModel);
 		dexter.setMovimiento(mainWindow.getMovimientoAvatar(), mainWindow.getRotacionAvatar(), mainWindow.getBanderaCaminata(), deltaTime);
 		dexter.renderMainAvatar();
 
+		Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
 
 		//Casa de dexter
 		casaDexter.renderModel();
@@ -1270,6 +1283,19 @@ void InitializeModels() {
 	fountain = Edificio("Models/Ratatouille/fountain.obj", &uniformModel, glm::vec3(-210.0f, 0.0f, 575.0), glm::vec3(25.0f));
 	fountain.setRotY(90.0f);
 
+	//Toroides
+
+	toroideR = ToroideRodrigo();
+	toroideR.createToroide();
+
+	float inRadius = 1.0f;
+	float outRadius = 0.5f;
+	int nSides = 20;
+	int nRings = 20;
+
+	toroideD = ToroideDavid(inRadius, outRadius, nSides, nRings);
+	toroideD.generateTorus();
+
 }
 
 void InitializeTextures() { //Texturas y skybox
@@ -1295,6 +1321,9 @@ void InitializeTextures() { //Texturas y skybox
 
 	Material_brillante = Material(4.0f, 256);
 	Material_opaco = Material(0.3f, 4);
+
+	Material_Avatar = Material(0.8f, 25);
+
 
 }
 
@@ -3204,35 +3233,78 @@ void renderCirculosBresenham() {
 	ancho = (radio * 4 * 2) / 3;
 	largo = (radio * 4 * 2) / 3;
 
-	model = glm::mat4(1.0);
-
-	model = glm::translate(model, puertaPos +  glm::vec3(40.0f, 400.0f, 0.0f));
-	model = glm::scale(model, glm::vec3(20.0f));
-	//model = glm::rotate(model, 90.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-
-
-
-	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	drawCircle(radio, 0,0,  ancho, largo);
 
 
 	color = glm::vec3(0.0f, 1.0f, 1.0f);
 	glUniform3fv(uniformColor, 1, glm::value_ptr(color));
 
+	//Circulo Banqueta
 
 	model = glm::mat4(1.0);
 
-	model = glm::translate(model, puertaPos + glm::vec3(0.0f, 400.0f, 0.0f));
-	model = glm::scale(model, glm::vec3(10.0f));
-	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	drawCircle(radio, 0, 0, ancho, largo);
-
-	model = glm::mat4(1.0);
-
-	model = glm::translate(model, puertaPos + glm::vec3(0.0f, 350.0f, 0.0f));
+	model = glm::translate(model, glm::vec3(140.0f, -27.0f, 350.0f));
+	model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	model = glm::scale(model, glm::vec3(30.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	drawCircle(radio, 0, 0, ancho, largo);
 
+	//Circulo para el helicoptero
+
+	model = glm::mat4(1.0);
+
+	model = glm::translate(model, glm::vec3(-5.0f, 410.0f, -400.0f));
+
+	model = glm::scale(model, glm::vec3(50.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	drawCircle(radio, 0, 0, ancho, largo);
+
+
+	//Marca que deja el toyota al estar haciendo drifting
+
+	model = glm::mat4(1.0);
+
+	model = glm::translate(model, glm::vec3(180.0f, -180.0f, -350.0));
+	model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(180.0f));
+	
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	drawCircle(radio, 0, 0, ancho, largo);
+
+}
+
+void renderToroides() {
+
+	glm::mat4 model, modelaux;
+
+	glm::vec3 color = glm::vec3(1.0f, 0.0f, 0.0f);
+	glUniform3fv(uniformColor, 1, glm::value_ptr(color));
+
+	model = glm::mat4(1.0);
+
+	model = glm::translate(model, glm::vec3(-225.0f, 2.0f, -580.0));
+
+	modelaux = model;
+	
+	model = glm::translate(model, glm::vec3(0.0f, 5.0f, 0.0f));
+	model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::scale(model, glm::vec3(5.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	toroideR.renderToroideRodrigo();
+
+	color = glm::vec3(0.0f, 1.0f, 0.0f);
+	glUniform3fv(uniformColor, 1, glm::value_ptr(color));
+
+	//model = glm::mat4(1.0);
+
+	model = modelaux;
+
+	model = glm::translate(model, glm::vec3(0.0f, 5.0f, 16.0f));
+	model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(5.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	toroideD.render();
+
+	color = glm::vec3(1.0f, 1.0f, 1.0f);
+	glUniform3fv(uniformColor, 1, glm::value_ptr(color));
 
 }

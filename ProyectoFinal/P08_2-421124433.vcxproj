@@ -158,6 +158,8 @@
     <ClInclude Include="SpotLight.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="ToroideDavid.h" />
+    <ClInclude Include="ToroideRodrigo.h" />
     <ClInclude Include="variablesAnimacion.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
@@ -179,6 +181,8 @@
     <ClCompile Include="Sphere.cpp" />
     <ClCompile Include="SpotLight.cpp" />
     <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="ToroideDavid.cpp" />
+    <ClCompile Include="ToroideRodrigo.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
