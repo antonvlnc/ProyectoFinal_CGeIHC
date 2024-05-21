@@ -557,48 +557,84 @@ int main()
 
 
 	//------------------SONIDO-----------------------
-	//Ambiental
+	//================================================ Ambiental ================================================
 	ISoundEngine* Ambiental = createIrrKlangDevice();
 	Ambiental->play2D("Sound/Ambiental.wav", true);
-	Ambiental->setSoundVolume(0.3f);
+	Ambiental->setSoundVolume(0.4f);
 
-	////Pista de fondo
+	//================================================ Pista de fondo ================================================
 	ISoundEngine* Intro = createIrrKlangDevice();
-	Intro->play2D("Sound/Dexter_Pista.wav", true); //cambiar a cancion en loop sin la voz
-	Intro->setSoundVolume(0.04f);
+	Intro->play2D("Sound/Dexter_Pista.wav", true); 
+	Intro->setSoundVolume(0.1f);
 	
-	// Posicional Astrodomo
+	//================================================ Posicional Astrodomo ================================================
 	ISoundEngine* AstrodomoSound = createIrrKlangDevice();
 	if (!AstrodomoSound) {
 		std::cerr << "No se pudo crear el dispositivo de sonido." << std::endl;
 		return 1;
 	}
-
-	// Reproducir el sonido 3D
-	ISound* musicAstrodomo = AstrodomoSound->play3D("Sound/Mucha_Lucha.wav", vec3df(-100.0f, 0.0f, -55.0f), true, false, true);
+	//Ubicacion Sonido del Astrodomo
+	ISound* musicAstrodomo = AstrodomoSound->play3D("Sound/Mucha_Lucha.wav", vec3df(-120.0f, 0.0f, -55.0f), true, false, true);
 	if (!musicAstrodomo) {
-		//std::cerr << "No se pudo reproducir el sonido." << std::endl;
 		return 1;
 	}
 	musicAstrodomo->setVolume(1.0f);
-	musicAstrodomo->setMinDistance(3.0f);
+	musicAstrodomo->setMinDistance(5.0f);
 
-	// Posicional Pulga
+	//================================================ Posicional Astrodomo ================================================
+	ISoundEngine* LuchaSound = createIrrKlangDevice();
+	if (!LuchaSound) {
+		std::cerr << "No se pudo crear el dispositivo de sonido." << std::endl;
+		return 1;
+	}
+	//Ubicacion Sonido del Astrodomo
+	ISound* soundLucha = LuchaSound->play3D("Sound/Luchas.wav", vec3df(190.0f, 0.0f, -270.0), true, false, true);
+	if (!soundLucha) {
+		return 1;
+	}
+	soundLucha->setVolume(3.5f);
+	soundLucha->setMinDistance(10.0f);
+
+
+	//================================================ Posicional Pulga ================================================
 	ISoundEngine* PulgaSound = createIrrKlangDevice();
 	if (!PulgaSound) {
-		//std::cerr << "No se pudo crear el dispositivo de sonido." << std::endl;
 		return 1;
 	}
-
-	// Reproducir el sonido 3D
+	// Ubicacion posicional La pulga
 	ISound* soundPulga = PulgaSound->play3D("Sound/Ejercicio.wav", vec3df(160.0f, 0.0f, -90.0), true, false, true);
 	if (!soundPulga) {
-		std::cerr << "No se pudo reproducir el sonido." << std::endl;
 		return 1;
 	}
-	soundPulga->setVolume(2.0f);
-	soundPulga->setMinDistance(0.7f);
+	soundPulga->setVolume(1.0f);
+	soundPulga->setMinDistance(4.0f);
+
+	//================================================ Dexter pasos ================================================
+	ISoundEngine* DexterSteep = createIrrKlangDevice();
+	if (!DexterSteep) {
+		return 1;
+	}
+	ISound* soundsteep = nullptr;
 	
+	//================================================ Posicional Restaurante ================================================
+	ISoundEngine* RestaranteSound = createIrrKlangDevice();
+	if (!RestaranteSound) {
+		return 1;
+	}
+	// Ubicacion del Restaurante
+	ISound* soundRestaurante = RestaranteSound->play3D("Sound/Restaurante.wav", vec3df(-300.0f, 0.0f, 550.0), true, false, true);
+	if (!soundRestaurante) {
+		return 1;
+	}
+	soundRestaurante->setVolume(1.0f);
+	soundRestaurante->setMinDistance(25.0f);
+
+	//================================================ Sonido varita ================================================
+	ISoundEngine* varitaSound = createIrrKlangDevice();
+	if (!varitaSound) {
+		return 1;
+	}
+	ISound* soundvarita = nullptr;
 
 	////Loop mientras no se cierra la ventana
 	while (!mainWindow.getShouldClose())
@@ -612,16 +648,36 @@ int main()
 		glm::vec3 dexterDirection = dexter.getDirection();
 		glm::vec3 dexterUpVector = dexter.getUpVector();
 
-		// Convierte glm::vec3 a vec3df
+		// Convierte glm::vec3 a vec3df (formato de irrklang)
 		vec3df listenerPosition(dexterPosition.x, dexterPosition.y, dexterPosition.z);
 		vec3df listenerDirection(dexterDirection.x, dexterDirection.y, -dexterDirection.z);
 		vec3df listenerUpVector(dexterUpVector.x, dexterUpVector.y, dexterUpVector.z);
 
 		AstrodomoSound->setListenerPosition(listenerPosition, listenerDirection, vec3df(0, 0, 0), listenerUpVector);
 		PulgaSound->setListenerPosition(listenerPosition, listenerDirection, vec3df(0, 0, 0), listenerUpVector);
+		LuchaSound->setListenerPosition(listenerPosition, listenerDirection, vec3df(0, 0, 0), listenerUpVector);
+		
+		if (mainWindow.getMusica() == true) {
+			// Reproducir el sonido cuando se presiona W o S
+			if (!soundsteep || soundsteep->isFinished()) {
+				soundsteep = DexterSteep->play2D("Sound/Pasos.wav", false, false, true);
+				DexterSteep->setSoundVolume(0.09f);
+			}
+		}
 
+<<<<<<< HEAD
+		if (mainWindow.getSonido() == true) {
+			// Reproducir el sonido cuando se presiona 1
+			if (!soundvarita || soundvarita->isFinished()) {
+				soundvarita = varitaSound->play2D("Sound/Varita.wav", false, false, true);
+				varitaSound->setSoundVolume(0.1f);
+			}
+		}
+=======
 		//std::cout << dexterDirection.x << std::endl;
+>>>>>>> 61f4bc92ae60844ae7bf5268d53cf4278c80794a
 
+		RestaranteSound->setListenerPosition(listenerPosition, listenerDirection, vec3df(0, 0, 0), listenerUpVector);
 
 		//Luz Direccional, seleccion de skybox
 		esDeDia = lightControl.recalculateDirectionalLight(deltaTime);

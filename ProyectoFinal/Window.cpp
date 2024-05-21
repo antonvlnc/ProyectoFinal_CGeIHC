@@ -20,7 +20,7 @@ Window::Window(GLint windowWidth, GLint windowHeight)
 
 
 
-	MusicaSi = true;
+	MusicaSi = false;
 
 
 	//Movimiento Avatar
@@ -131,10 +131,12 @@ void Window::ManejaTeclado(GLFWwindow* window, int key, int code, int action, in
 			if (action == GLFW_PRESS) {
 				theWindow->movimientoAvatar = 1.0f;
 				theWindow->banderaCaminata = true;
+				theWindow->MusicaSi = true;
 
 			}
 			if (action == GLFW_RELEASE) {
 				theWindow->banderaCaminata = false;
+				theWindow->MusicaSi = false;
 				theWindow->movimientoAvatar = 0.0f;
 			}
 		}
@@ -146,10 +148,12 @@ void Window::ManejaTeclado(GLFWwindow* window, int key, int code, int action, in
 			if (action == GLFW_PRESS) {
 				theWindow->movimientoAvatar = -1.0f;
 				theWindow->banderaCaminata = true;
+				theWindow->MusicaSi = true;
 
 			}
 			if (action == GLFW_RELEASE) {
 				theWindow->banderaCaminata = false;
+				theWindow->MusicaSi = false;
 				theWindow->movimientoAvatar = 0.0f;
 			}
 		}
@@ -266,6 +270,10 @@ void Window::ManejaTeclado(GLFWwindow* window, int key, int code, int action, in
 	{
 		if (action == GLFW_PRESS) {
 			theWindow->banderaLuzActivable = !theWindow->banderaLuzActivable;
+			theWindow->SonidoSi = true;
+		}
+		else {
+			theWindow->SonidoSi = false;
 		}
 	}
 

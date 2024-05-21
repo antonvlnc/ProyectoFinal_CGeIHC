@@ -6,6 +6,25 @@ C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\Window.h(12
 C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\Window.h(13,37): warning C4244: 'return': conversión de 'GLint' a 'GLfloat'; posible pérdida de datos
   (compilando archivo de origen "ProyectoFinal_main.cpp")
   
+<<<<<<< HEAD
+C:\Users\Arturo\Desktop\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(619,15): warning C4244: 'inicializando': conversión de 'double' a 'GLfloat'; posible pérdida de datos
+C:\Users\Arturo\Desktop\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(621,33): warning C4244: '+=': conversión de 'double' a 'GLfloat'; posible pérdida de datos
+C:\Users\Arturo\Desktop\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(637,33): warning C4805: '==': combinación no segura del tipo 'GLboolean' y el tipo 'bool' en la operación
+C:\Users\Arturo\Desktop\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(645,33): warning C4805: '==': combinación no segura del tipo 'GLboolean' y el tipo 'bool' en la operación
+C:\Users\Arturo\Desktop\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(914,119): warning C4244: 'argumento': conversión de 'GLfloat' a 'GLboolean'; posible pérdida de datos
+C:\Users\Arturo\Desktop\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(1270,89): warning C4305: 'argumento': truncamiento de 'double' a 'GLfloat'
+C:\Users\Arturo\Desktop\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(1389,58): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\Arturo\Desktop\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(2036,21): warning C4305: '=': truncamiento de 'double' a 'float'
+C:\Users\Arturo\Desktop\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(2050,18): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\Arturo\Desktop\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(2054,21): warning C4305: '=': truncamiento de 'double' a 'float'
+C:\Users\Arturo\Desktop\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(2061,21): warning C4305: '=': truncamiento de 'double' a 'float'
+C:\Users\Arturo\Desktop\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(2110,105): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\Arturo\Desktop\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(2129,27): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\Arturo\Desktop\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(2236,26): warning C4244: '-=': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\Arturo\Desktop\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(2252,59): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\Arturo\Desktop\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(2449,18): warning C4101: 'modelaux': variable local sin referencia
+  P08_2-421124433.vcxproj -> C:\Users\Arturo\Desktop\ProyectoFinal_CGeIHC\ProyectoFinal\Debug\Proyecto_Final.exe
+=======
 C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(35,36): warning C4244: 'argumento': conversión de 'int' a '_Ty'; posible pérdida de datos
 C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(35,36): warning C4244:         with
 C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\bresenham.h(35,36): warning C4244:         [
@@ -148,3 +167,4 @@ C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFin
 C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(3271,26): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
 C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\ProyectoFinal_main.cpp(3271,13): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
   P08_2-421124433.vcxproj -> C:\Users\Rodrigo\Documents\GitHub\ProyectoFinal_CGeIHC\ProyectoFinal\Debug\Proyecto_Final.exe
+>>>>>>> 61f4bc92ae60844ae7bf5268d53cf4278c80794a
