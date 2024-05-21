@@ -665,7 +665,6 @@ int main()
 			}
 		}
 
-<<<<<<< HEAD
 		if (mainWindow.getSonido() == true) {
 			// Reproducir el sonido cuando se presiona 1
 			if (!soundvarita || soundvarita->isFinished()) {
@@ -673,9 +672,7 @@ int main()
 				varitaSound->setSoundVolume(0.1f);
 			}
 		}
-=======
 		//std::cout << dexterDirection.x << std::endl;
->>>>>>> 61f4bc92ae60844ae7bf5268d53cf4278c80794a
 
 		RestaranteSound->setListenerPosition(listenerPosition, listenerDirection, vec3df(0, 0, 0), listenerUpVector);
 
@@ -1270,10 +1267,10 @@ void InitializeModels() {
 	letras_dimmsdale = Edificio("Models/Padrinos/Dimmsdale.obj", &uniformModel, glm::vec3(0.0f, 0.0f, 995.0), glm::vec3(75.0f));
 	letras_dimmsdale.setRotY(180.0f);
 
-	letrero_dimmsdale = Edificio("Models/Padrinos/DimsdaleSign.obj", &uniformModel, glm::vec3(230.0f, 1.0f, -620.0), glm::vec3(1.9f));
+	letrero_dimmsdale = Edificio("Models/Padrinos/DimsdaleSign.obj", &uniformModel, glm::vec3(130.0f, 1.0f, -820.0), glm::vec3(1.9f));
 	letrero_dimmsdale.setRotY(180.0f);
 
-	letrero_dimmsdale_baked = Edificio("Models/Padrinos/DimsdaleSignBaked.obj", &uniformModel, glm::vec3(230.0f, 1.0f, -620.0), glm::vec3(1.9f));
+	letrero_dimmsdale_baked = Edificio("Models/Padrinos/DimsdaleSignBaked.obj", &uniformModel, glm::vec3(130.0f, 1.0f, -820.0), glm::vec3(1.9f));
 
 	doidle = Model();
 	doidle.LoadModel("Models/Padrinos/Doidle.obj");
@@ -1303,7 +1300,7 @@ void InitializeModels() {
 	mutant_Inf.LoadModel("Models/DextersLab/Mand_Inf_Prueba.obj");
 
 	//AVATAR (DEXTER)
-	dexter = MainAvatar(glm::vec3(0.0f, 0.5f, -850.0f), 0.0f, glm::vec3(3.0f, 3.0f, 3.0f), 0.3); 
+	dexter = MainAvatar(glm::vec3(0.0f, 0.5f, -945.0f), 0.0f, glm::vec3(3.0f, 3.0f, 3.0f), 0.3); 
 
 
 	//-------------------------Modelos Ratatouille-----------------------------------------
@@ -1979,7 +1976,7 @@ void renderReflector() {
 	glm::mat4 model;
 
 	model = glm::mat4(1.0);
-	model = glm::translate(model, glm::vec3(230.0f, 0.5f, -750.0f));
+	model = glm::translate(model, glm::vec3(130.0f, 0.5f, -950.0f));
 	model = glm::scale(model, glm::vec3(5.0f));
 	//model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
