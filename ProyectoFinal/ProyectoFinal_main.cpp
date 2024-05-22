@@ -1375,7 +1375,7 @@ void InitializeTextures() { //Texturas y skybox
 	Material_brillante = Material(4.0f, 256);
 	Material_opaco = Material(0.3f, 4);
 
-	Material_Avatar = Material(0.8f, 25);
+	Material_Avatar = Material(1.0f, 0);
 
 
 }
